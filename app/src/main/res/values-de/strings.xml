@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Meine Einkaufsliste</string>
+
+    <string name="action_save">Speichern</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_continue">Fortfahren</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_duplicate">Duplizieren</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="delete_named">%1$s löschen</string>
+
+    <string name="lists_empty">Noch keine Listen.\nTippe auf +, um eine zu erstellen.</string>
+    <string name="list_new">Neue Liste</string>
+    <string name="list_edit">Liste bearbeiten</string>
+    <string name="list_options">Listenoptionen</string>
+    <string name="list_copy_name">Kopie von %1$s</string>
+    <plurals name="list_summary">
+        <item quantity="one">%1$d Artikel · %2$d gekauft</item>
+        <item quantity="other">%1$d Artikel · %2$d gekauft</item>
+    </plurals>
+
+    <string name="detail_empty">Noch nichts zu kaufen.\nTippe auf +, um ein Produkt hinzuzufügen.</string>
+    <string name="summary_to_spend">Auszugeben</string>
+    <string name="summary_spent">Ausgegeben</string>
+    <string name="summary_remaining">Verbleibend</string>
+    <string name="budget_exceeded_title">Budget überschritten</string>
+    <string name="budget_exceeded_message">%1$s abzuhaken bringt dich %2$s über das Budget von %3$s. Fortfahren?</string>
+
+    <string name="item_add">Artikel hinzufügen</string>
+    <string name="item_edit">Artikel bearbeiten</string>
+    <string name="field_product">Produkt</string>
+    <string name="field_quantity">Menge</string>
+    <string name="field_price">Preis</string>
+
+    <string name="field_name">Name</string>
+    <string name="field_budget">Maximales Budget (optional)</string>
+
+    <string name="products_title">Produkte</string>
+    <string name="product_new">Neues Produkt</string>
+    <string name="product_add">Produkt hinzufügen</string>
+    <string name="product_edit">Produkt bearbeiten</string>
+    <string name="field_default_price">Standardpreis (optional)</string>
+    <string name="name_taken">„%1$s“ existiert bereits</string>
+    <string name="products_empty">Noch keine Produkte.\nTippe auf +, um eines hinzuzufügen, oder sie\nwerden beim Hinzufügen von Artikeln gespeichert.</string>
+    <string name="product_unused">nicht verwendet</string>
+    <plurals name="product_usage">
+        <item quantity="one">in %1$d Artikel</item>
+        <item quantity="other">in %1$d Artikeln</item>
+    </plurals>
+
+    <string name="settings_show_quantity">Menge anzeigen</string>
+    <string name="settings_show_quantity_desc">Menge je Produkt abfragen und anzeigen</string>
+    <string name="settings_show_price">Preis anzeigen</string>
+    <string name="settings_show_price_desc">Preise abfragen und Listensummen anzeigen</string>
+    <string name="settings_budget">Maximales Budget</string>
+    <string name="settings_budget_desc">Ein Ausgabenlimit pro Liste festlegen und bei Überschreitung warnen</string>
+    <string name="settings_version">Version</string>
+    <plurals name="settings_product_count">
+        <item quantity="one">%1$d gespeichertes Produkt</item>
+        <item quantity="other">%1$d gespeicherte Produkte</item>
+    </plurals>
+</resources>

@@ -78,6 +78,7 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
             productCount = products.size,
             onShowQuantityChange = viewModel::setShowQuantity,
             onShowPriceChange = viewModel::setShowPrice,
+            onBudgetEnabledChange = viewModel::setBudgetEnabled,
             onOpenProducts = { showProducts = true },
             onBack = { showSettings = false },
         )
@@ -93,6 +94,7 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
         else -> ListsScreen(
             lists = lists,
             showPrice = settings.showPrice,
+            budgetEnabled = settings.budgetEnabled,
             viewModel = viewModel,
             onOpenList = { openListId = it },
             onOpenSettings = { showSettings = true },
@@ -123,6 +125,7 @@ private fun ListDetailRoute(
         products = products,
         showQuantity = settings.showQuantity,
         showPrice = settings.showPrice,
+        budgetEnabled = settings.budgetEnabled,
         viewModel = viewModel,
         onBack = onBack,
     )

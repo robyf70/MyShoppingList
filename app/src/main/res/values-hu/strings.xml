@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bevásárlólistám</string>
+
+    <string name="action_save">Mentés</string>
+    <string name="action_cancel">Mégse</string>
+    <string name="action_continue">Folytatás</string>
+    <string name="action_edit">Szerkesztés</string>
+    <string name="action_duplicate">Másolás</string>
+    <string name="action_delete">Törlés</string>
+    <string name="action_back">Vissza</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="delete_named">%1$s törlése</string>
+
+    <string name="lists_empty">Még nincs lista.\nKoppintson a + gombra egy létrehozásához.</string>
+    <string name="list_new">Új lista</string>
+    <string name="list_edit">Lista szerkesztése</string>
+    <string name="list_options">Lista beállításai</string>
+    <string name="list_copy_name">%1$s másolata</string>
+    <!-- Hungarian keeps the noun singular after a number, so both forms are identical -->
+    <plurals name="list_summary">
+        <item quantity="one">%1$d tétel · %2$d megvéve</item>
+        <item quantity="other">%1$d tétel · %2$d megvéve</item>
+    </plurals>
+
+    <string name="detail_empty">Még nincs mit megvenni.\nKoppintson a + gombra termék hozzáadásához.</string>
+    <string name="summary_to_spend">Költendő</string>
+    <string name="summary_spent">Elköltve</string>
+    <string name="summary_remaining">Maradt</string>
+    <string name="budget_exceeded_title">Keret túllépve</string>
+    <string name="budget_exceeded_message">A(z) %1$s kipipálásával %2$s összeggel túllépi a(z) %3$s keretet. Folytatja?</string>
+
+    <string name="item_add">Tétel hozzáadása</string>
+    <string name="item_edit">Tétel szerkesztése</string>
+    <string name="field_product">Termék</string>
+    <string name="field_quantity">Mennyiség</string>
+    <string name="field_price">Ár</string>
+
+    <string name="field_name">Név</string>
+    <string name="field_budget">Maximális keret (opcionális)</string>
+
+    <string name="products_title">Termékek</string>
+    <string name="product_new">Új termék</string>
+    <string name="product_add">Termék hozzáadása</string>
+    <string name="product_edit">Termék szerkesztése</string>
+    <string name="field_default_price">Alapértelmezett ár (opcionális)</string>
+    <string name="name_taken">A(z) „%1$s” már létezik</string>
+    <string name="products_empty">Még nincs termék.\nKoppintson a + gombra, vagy mentésre kerülnek,\nahogy tételeket ad a listákhoz.</string>
+    <string name="product_unused">nem használt</string>
+    <plurals name="product_usage">
+        <item quantity="one">%1$d tételen</item>
+        <item quantity="other">%1$d tételen</item>
+    </plurals>
+
+    <string name="settings_show_quantity">Mennyiség megjelenítése</string>
+    <string name="settings_show_quantity_desc">Kérdezze és mutassa, hányat az egyes termékekből</string>
+    <string name="settings_show_price">Ár megjelenítése</string>
+    <string name="settings_show_price_desc">Kérdezze az árakat és mutassa a listák összegét</string>
+    <string name="settings_budget">Maximális költési keret</string>
+    <string name="settings_budget_desc">Állítson be listánkénti költési korlátot, és figyelmeztessen túllépéskor</string>
+    <string name="settings_version">Verzió</string>
+    <plurals name="settings_product_count">
+        <item quantity="one">%1$d mentett termék</item>
+        <item quantity="other">%1$d mentett termék</item>
+    </plurals>
+</resources>

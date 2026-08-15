@@ -1,5 +1,6 @@
 package it.robertofichera.myshoppinglist.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -12,6 +13,8 @@ data class ShoppingList(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val createdAt: Long = System.currentTimeMillis(),
+    /** 0 means no budget set. The SQL default lets migration 2→3 add the column in place. */
+    @ColumnInfo(defaultValue = "0") val budgetCents: Long = 0,
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */

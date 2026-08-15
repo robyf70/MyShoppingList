@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">La mia lista della spesa</string>
+
+    <string name="action_save">Salva</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="action_continue">Continua</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_duplicate">Duplica</string>
+    <string name="action_delete">Elimina</string>
+    <string name="action_back">Indietro</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="delete_named">Elimina %1$s</string>
+
+    <string name="lists_empty">Nessuna lista.\nTocca + per crearne una.</string>
+    <string name="list_new">Nuova lista</string>
+    <string name="list_edit">Modifica lista</string>
+    <string name="list_options">Opzioni lista</string>
+    <string name="list_copy_name">Copia di %1$s</string>
+    <plurals name="list_summary">
+        <item quantity="one">%1$d articolo · %2$d comprati</item>
+        <item quantity="other">%1$d articoli · %2$d comprati</item>
+    </plurals>
+
+    <string name="detail_empty">Niente da comprare.\nTocca + per aggiungere un prodotto.</string>
+    <string name="summary_to_spend">Da spendere</string>
+    <string name="summary_spent">Speso</string>
+    <string name="summary_remaining">Rimanente</string>
+    <string name="budget_exceeded_title">Fuori budget</string>
+    <string name="budget_exceeded_message">Spuntare %1$s ti porta %2$s oltre il budget di %3$s. Continuare?</string>
+
+    <string name="item_add">Aggiungi articolo</string>
+    <string name="item_edit">Modifica articolo</string>
+    <string name="field_product">Prodotto</string>
+    <string name="field_quantity">Quantità</string>
+    <string name="field_price">Prezzo</string>
+
+    <string name="field_name">Nome</string>
+    <string name="field_budget">Budget massimo (facoltativo)</string>
+
+    <string name="products_title">Prodotti</string>
+    <string name="product_new">Nuovo prodotto</string>
+    <string name="product_add">Aggiungi prodotto</string>
+    <string name="product_edit">Modifica prodotto</string>
+    <string name="field_default_price">Prezzo predefinito (facoltativo)</string>
+    <string name="name_taken">«%1$s» esiste già</string>
+    <string name="products_empty">Nessun prodotto.\nTocca + per aggiungerne uno, oppure\nvengono salvati aggiungendo articoli a una lista.</string>
+    <string name="product_unused">non utilizzato</string>
+    <plurals name="product_usage">
+        <item quantity="one">su %1$d articolo</item>
+        <item quantity="other">su %1$d articoli</item>
+    </plurals>
+
+    <string name="settings_show_quantity">Mostra quantità</string>
+    <string name="settings_show_quantity_desc">Chiedi e mostra quanti pezzi per ogni prodotto</string>
+    <string name="settings_show_price">Mostra prezzo</string>
+    <string name="settings_show_price_desc">Chiedi i prezzi e mostra i totali delle liste</string>
+    <string name="settings_budget">Budget massimo di spesa</string>
+    <string name="settings_budget_desc">Imposta un limite di spesa per lista e avvisa quando viene superato</string>
+    <string name="settings_version">Versione</string>
+    <plurals name="settings_product_count">
+        <item quantity="one">%1$d prodotto salvato</item>
+        <item quantity="other">%1$d prodotti salvati</item>
+    </plurals>
+</resources>

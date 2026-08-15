@@ -32,15 +32,16 @@ data/
   Entities.kt          ShoppingList + Product + Item @Entity, ItemWithProduct,
                        ListWithItems, ProductWithUsage, total helpers
   ShoppingDao.kt       @Dao, returns Flows for reads
-  AppDatabase.kt       @Database(version = 2) + getInstance() singleton + MIGRATION_1_2
+  AppDatabase.kt       @Database(version = 3) + getInstance() + MIGRATION_1_2, MIGRATION_2_3
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
+  Budget.kt            spentCents / remainingCents / overspendCents — pure, unit-tested
 ui/
   ListsScreen.kt       list overview, EmptyState
   ListDetailScreen.kt  items within one list
   SettingsScreen.kt    field-visibility toggles + link to Products
   ProductsScreen.kt    catalog manager: add, edit, delete-when-unused
-  NameDialog.kt        create/rename a list (duplicates allowed, so name-only)
+  ListDialog.kt        create/edit a list: name + optional max budget
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
   theme/               Material 3 theme (from the Android Studio template)
@@ -65,11 +66,32 @@ Unit tests: `app/src/test/java/it/robertofichera/myshoppinglist/`. There is no `
 
 **Navigation is three saveable values, not a library.** `ShoppingApp()` holds `openListId: Long?`, `showSettings: Boolean` and `showProducts: Boolean` in `rememberSaveable`, with a `BackHandler` unwinding products → settings → lists. All three types are natively saveable, so no custom `Saver` is needed. The hierarchy is a strict linear drill-down; adopt `navigation-compose` when deep links, screen-to-screen arguments, or transition animations arrive — the screen count alone is not the trigger.
 
+**The budget is measured against what has been spent, not what is planned.** `Remaining = budget − spent` (bought items only), and the over-budget prompt fires when *ticking an item as bought* would push spend past `ShoppingList.budgetCents`. Unticking never prompts. `budgetCents = 0` means no budget. If a list is already over, every further tick asks again — deliberately, so the warning does not go quiet once breached. Editing a bought item's price can still push spend over without prompting; the check is on ticking only.
+
 **Settings change what is rendered, never what is stored.** `showQuantity` / `showPrice` hide fields in the dialogs and rows; values already on an `Item` are preserved and reappear when the toggle goes back on. With price shown but quantity hidden, rows display the line total (not the unit price), so a "3 × €2" line isn't misrepresented.
 
 **`Item.listId` has a CASCADE foreign key**, so deleting a list drops its items in the database. Don't delete items manually first.
 
 **Reads are Flows from the DAO**, collected with `collectAsStateWithLifecycle()`. Writes go through `ShoppingViewModel` in `viewModelScope`. Don't call the DAO from a composable.
+
+## Strings
+
+**No user-visible string belongs in Kotlin.** Everything goes through `res/values/strings.xml` and
+`stringResource` / `pluralStringResource`. The app ships twelve `values*` folders: the default plus
+`values-en`, `-it`, `-de`, `-nl`, `-es`, `-pt`, `-pt-rBR`, `-fr`, `-el`, `-pl`, `-hu`. Adding a
+string means adding it to **all** of them; `./gradlew lintDebug` fails the build on a missing
+translation.
+
+Anything countable uses `<plurals>`, never `if (n == 1)` in code — the number of forms is per
+language, not universal. Most locales here need `one`/`other`, **Polish needs `one`/`few`/`many`/
+`other`** (1 / 2–4 / 5+ / fractions), and Hungarian keeps the noun singular after any number so both
+its forms are deliberately identical. Never assume two forms is enough.
+
+Format-only strings (separators, symbol layouts like `%1$s × %2$s = %3$s`) are marked
+`translatable="false"` and live only in the default folder.
+
+Currency and number formatting comes from `Money.kt` via `NumberFormat`, which follows the device
+locale on its own — do not hand-format money, or an Italian device will show `$` and a full stop.
 
 ## Code style
 

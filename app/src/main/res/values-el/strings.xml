@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Η λίστα αγορών μου</string>
+
+    <string name="action_save">Αποθήκευση</string>
+    <string name="action_cancel">Άκυρο</string>
+    <string name="action_continue">Συνέχεια</string>
+    <string name="action_edit">Επεξεργασία</string>
+    <string name="action_duplicate">Αντιγραφή</string>
+    <string name="action_delete">Διαγραφή</string>
+    <string name="action_back">Πίσω</string>
+    <string name="action_settings">Ρυθμίσεις</string>
+    <string name="delete_named">Διαγραφή %1$s</string>
+
+    <string name="lists_empty">Δεν υπάρχουν λίστες.\nΠατήστε + για να δημιουργήσετε μία.</string>
+    <string name="list_new">Νέα λίστα</string>
+    <string name="list_edit">Επεξεργασία λίστας</string>
+    <string name="list_options">Επιλογές λίστας</string>
+    <string name="list_copy_name">Αντίγραφο του %1$s</string>
+    <plurals name="list_summary">
+        <item quantity="one">%1$d είδος · %2$d αγορασμένα</item>
+        <item quantity="other">%1$d είδη · %2$d αγορασμένα</item>
+    </plurals>
+
+    <string name="detail_empty">Δεν υπάρχει τίποτα για αγορά.\nΠατήστε + για να προσθέσετε ένα προϊόν.</string>
+    <string name="summary_to_spend">Για δαπάνη</string>
+    <string name="summary_spent">Δαπανήθηκαν</string>
+    <string name="summary_remaining">Υπόλοιπο</string>
+    <string name="budget_exceeded_title">Υπέρβαση προϋπολογισμού</string>
+    <string name="budget_exceeded_message">Η επιλογή %1$s σάς βάζει %2$s πάνω από τον προϋπολογισμό των %3$s. Συνέχεια;</string>
+
+    <string name="item_add">Προσθήκη είδους</string>
+    <string name="item_edit">Επεξεργασία είδους</string>
+    <string name="field_product">Προϊόν</string>
+    <string name="field_quantity">Ποσότητα</string>
+    <string name="field_price">Τιμή</string>
+
+    <string name="field_name">Όνομα</string>
+    <string name="field_budget">Μέγιστος προϋπολογισμός (προαιρετικό)</string>
+
+    <string name="products_title">Προϊόντα</string>
+    <string name="product_new">Νέο προϊόν</string>
+    <string name="product_add">Προσθήκη προϊόντος</string>
+    <string name="product_edit">Επεξεργασία προϊόντος</string>
+    <string name="field_default_price">Προεπιλεγμένη τιμή (προαιρετικό)</string>
+    <string name="name_taken">«%1$s» υπάρχει ήδη</string>
+    <string name="products_empty">Δεν υπάρχουν προϊόντα.\nΠατήστε + για να προσθέσετε ένα, ή αποθηκεύονται\nκαθώς προσθέτετε είδη σε μια λίστα.</string>
+    <string name="product_unused">αχρησιμοποίητο</string>
+    <plurals name="product_usage">
+        <item quantity="one">σε %1$d είδος</item>
+        <item quantity="other">σε %1$d είδη</item>
+    </plurals>
+
+    <string name="settings_show_quantity">Εμφάνιση ποσότητας</string>
+    <string name="settings_show_quantity_desc">Να ζητούνται και να εμφανίζονται τα τεμάχια κάθε προϊόντος</string>
+    <string name="settings_show_price">Εμφάνιση τιμής</string>
+    <string name="settings_show_price_desc">Να ζητούνται τιμές και να εμφανίζονται τα σύνολα των λιστών</string>
+    <string name="settings_budget">Μέγιστος προϋπολογισμός</string>
+    <string name="settings_budget_desc">Ορίστε όριο δαπανών ανά λίστα και ειδοποίηση όταν ξεπεραστεί</string>
+    <string name="settings_version">Έκδοση</string>
+    <plurals name="settings_product_count">
+        <item quantity="one">%1$d αποθηκευμένο προϊόν</item>
+        <item quantity="other">%1$d αποθηκευμένα προϊόντα</item>
+    </plurals>
+</resources>

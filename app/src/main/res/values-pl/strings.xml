@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Moja lista zakupów</string>
+
+    <string name="action_save">Zapisz</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_continue">Kontynuuj</string>
+    <string name="action_edit">Edytuj</string>
+    <string name="action_duplicate">Duplikuj</string>
+    <string name="action_delete">Usuń</string>
+    <string name="action_back">Wstecz</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="delete_named">Usuń %1$s</string>
+
+    <string name="lists_empty">Brak list.\nNaciśnij +, aby utworzyć nową.</string>
+    <string name="list_new">Nowa lista</string>
+    <string name="list_edit">Edytuj listę</string>
+    <string name="list_options">Opcje listy</string>
+    <string name="list_copy_name">Kopia %1$s</string>
+    <!-- Polish splits counts four ways: 1 / 2-4 / 5+ / fractions -->
+    <plurals name="list_summary">
+        <item quantity="one">%1$d pozycja · %2$d kupionych</item>
+        <item quantity="few">%1$d pozycje · %2$d kupionych</item>
+        <item quantity="many">%1$d pozycji · %2$d kupionych</item>
+        <item quantity="other">%1$d pozycji · %2$d kupionych</item>
+    </plurals>
+
+    <string name="detail_empty">Nie ma nic do kupienia.\nNaciśnij +, aby dodać produkt.</string>
+    <string name="summary_to_spend">Do wydania</string>
+    <string name="summary_spent">Wydano</string>
+    <string name="summary_remaining">Pozostało</string>
+    <string name="budget_exceeded_title">Przekroczono budżet</string>
+    <string name="budget_exceeded_message">Zaznaczenie %1$s przekracza budżet %3$s o %2$s. Kontynuować?</string>
+
+    <string name="item_add">Dodaj pozycję</string>
+    <string name="item_edit">Edytuj pozycję</string>
+    <string name="field_product">Produkt</string>
+    <string name="field_quantity">Ilość</string>
+    <string name="field_price">Cena</string>
+
+    <string name="field_name">Nazwa</string>
+    <string name="field_budget">Maksymalny budżet (opcjonalnie)</string>
+
+    <string name="products_title">Produkty</string>
+    <string name="product_new">Nowy produkt</string>
+    <string name="product_add">Dodaj produkt</string>
+    <string name="product_edit">Edytuj produkt</string>
+    <string name="field_default_price">Cena domyślna (opcjonalnie)</string>
+    <string name="name_taken">„%1$s” już istnieje</string>
+    <string name="products_empty">Brak produktów.\nNaciśnij +, aby dodać, albo zapiszą się\npodczas dodawania pozycji do listy.</string>
+    <string name="product_unused">nieużywany</string>
+    <plurals name="product_usage">
+        <item quantity="one">na %1$d pozycji</item>
+        <item quantity="few">na %1$d pozycjach</item>
+        <item quantity="many">na %1$d pozycjach</item>
+        <item quantity="other">na %1$d pozycji</item>
+    </plurals>
+
+    <string name="settings_show_quantity">Pokaż ilość</string>
+    <string name="settings_show_quantity_desc">Pytaj i pokazuj ilość każdego produktu</string>
+    <string name="settings_show_price">Pokaż cenę</string>
+    <string name="settings_show_price_desc">Pytaj o ceny i pokazuj sumy list</string>
+    <string name="settings_budget">Maksymalny budżet</string>
+    <string name="settings_budget_desc">Ustaw limit wydatków na listę i ostrzegaj po jego przekroczeniu</string>
+    <string name="settings_version">Wersja</string>
+    <plurals name="settings_product_count">
+        <item quantity="one">%1$d zapisany produkt</item>
+        <item quantity="few">%1$d zapisane produkty</item>
+        <item quantity="many">%1$d zapisanych produktów</item>
+        <item quantity="other">%1$d zapisanego produktu</item>
+    </plurals>
+</resources>

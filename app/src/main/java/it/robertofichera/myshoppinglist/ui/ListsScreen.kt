@@ -33,7 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.ShoppingList
@@ -45,32 +48,33 @@ import it.robertofichera.myshoppinglist.formatCents
 fun ListsScreen(
     lists: List<ListWithItems>,
     showPrice: Boolean,
+    budgetEnabled: Boolean,
     viewModel: ShoppingViewModel,
     onOpenList: (Long) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     var showNewDialog by remember { mutableStateOf(false) }
-    var renaming by remember { mutableStateOf<ShoppingList?>(null) }
+    var editing by remember { mutableStateOf<ShoppingList?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Shopping List") },
+                title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.action_settings))
                     }
                 },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { showNewDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = "New list")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.list_new))
             }
         },
     ) { padding ->
         if (lists.isEmpty()) {
-            EmptyState("No lists yet.\nTap + to create one.", Modifier.padding(padding))
+            EmptyState(stringResource(R.string.lists_empty), Modifier.padding(padding))
         } else {
             LazyColumn(
                 modifier = Modifier.padding(padding),
@@ -82,7 +86,8 @@ fun ListsScreen(
                         entry = entry,
                         showPrice = showPrice,
                         onOpen = { onOpenList(entry.list.id) },
-                        onRename = { renaming = entry.list },
+                        onEdit = { editing = entry.list },
+                        onDuplicate = { viewModel.copyList(entry) },
                         onDelete = { viewModel.deleteList(entry.list) },
                     )
                 }
@@ -91,24 +96,27 @@ fun ListsScreen(
     }
 
     if (showNewDialog) {
-        NameDialog(
-            title = "New list",
+        ListDialog(
+            title = stringResource(R.string.list_new),
+            showBudget = budgetEnabled,
             onDismiss = { showNewDialog = false },
-            onConfirm = { name ->
-                viewModel.addList(name)
+            onConfirm = { name, budgetCents ->
+                viewModel.addList(name, budgetCents)
                 showNewDialog = false
             },
         )
     }
 
-    renaming?.let { list ->
-        NameDialog(
-            title = "Rename list",
+    editing?.let { list ->
+        ListDialog(
+            title = stringResource(R.string.list_edit),
             initialName = list.name,
-            onDismiss = { renaming = null },
-            onConfirm = { name ->
-                viewModel.renameList(list, name)
-                renaming = null
+            initialBudgetCents = list.budgetCents,
+            showBudget = budgetEnabled,
+            onDismiss = { editing = null },
+            onConfirm = { name, budgetCents ->
+                viewModel.updateList(list, name, budgetCents)
+                editing = null
             },
         )
     }
@@ -119,7 +127,8 @@ private fun ListCard(
     entry: ListWithItems,
     showPrice: Boolean,
     onOpen: () -> Unit,
-    onRename: () -> Unit,
+    onEdit: () -> Unit,
+    onDuplicate: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
@@ -133,7 +142,12 @@ private fun ListCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(entry.list.name, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "${entry.items.size} items · $boughtCount bought",
+                    pluralStringResource(
+                        R.plurals.list_summary,
+                        entry.items.size,
+                        entry.items.size,
+                        boughtCount,
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -146,15 +160,19 @@ private fun ListCard(
             }
             Box {
                 IconButton(onClick = { menuOpen = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "List options")
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.list_options))
                 }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                     DropdownMenuItem(
-                        text = { Text("Rename") },
-                        onClick = { menuOpen = false; onRename() },
+                        text = { Text(stringResource(R.string.action_edit)) },
+                        onClick = { menuOpen = false; onEdit() },
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete") },
+                        text = { Text(stringResource(R.string.action_duplicate)) },
+                        onClick = { menuOpen = false; onDuplicate() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_delete)) },
                         onClick = { menuOpen = false; onDelete() },
                     )
                 }

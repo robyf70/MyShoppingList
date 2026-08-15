@@ -14,7 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.parsePriceCents
 
@@ -49,19 +51,19 @@ fun ProductDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (product == null) "Add product" else "Edit product") },
+        title = { Text(stringResource(if (product == null) R.string.product_add else R.string.product_edit)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.field_name)) },
                     singleLine = true,
                     isError = isTaken,
                 )
                 if (isTaken) {
                     Text(
-                        "\"${name.trim()}\" already exists",
+                        stringResource(R.string.name_taken, name.trim()),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -70,7 +72,7 @@ fun ProductDialog(
                     OutlinedTextField(
                         value = priceText,
                         onValueChange = { priceText = it },
-                        label = { Text("Default price (optional)") },
+                        label = { Text(stringResource(R.string.field_default_price)) },
                         singleLine = true,
                         isError = priceText.isNotBlank() && priceCents == null,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -82,8 +84,8 @@ fun ProductDialog(
             TextButton(
                 enabled = isValid,
                 onClick = { onConfirm(name, priceCents ?: 0L) },
-            ) { Text("Save") }
+            ) { Text(stringResource(R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

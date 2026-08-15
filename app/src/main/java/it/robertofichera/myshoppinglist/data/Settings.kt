@@ -8,9 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 data class Settings(
     val showQuantity: Boolean = true,
     val showPrice: Boolean = true,
+    val budgetEnabled: Boolean = false,
 )
 
-/** Reads both values once at construction, so the blocking load is small enough to do inline. */
+/** Reads the values once at construction, so the blocking load is small enough to do inline. */
 class SettingsStore(context: Context) {
 
     private val prefs =
@@ -20,6 +21,7 @@ class SettingsStore(context: Context) {
         Settings(
             showQuantity = prefs.getBoolean(KEY_QUANTITY, true),
             showPrice = prefs.getBoolean(KEY_PRICE, true),
+            budgetEnabled = prefs.getBoolean(KEY_BUDGET, false),
         )
     )
     val settings: StateFlow<Settings> = _settings.asStateFlow()
@@ -34,8 +36,14 @@ class SettingsStore(context: Context) {
         _settings.value = _settings.value.copy(showPrice = show)
     }
 
+    fun setBudgetEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_BUDGET, enabled).apply()
+        _settings.value = _settings.value.copy(budgetEnabled = enabled)
+    }
+
     private companion object {
         const val KEY_QUANTITY = "show_quantity"
         const val KEY_PRICE = "show_price"
+        const val KEY_BUDGET = "budget_enabled"
     }
 }

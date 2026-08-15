@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -20,22 +21,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import android.content.Context
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.lineTotalCents
+import it.robertofichera.myshoppinglist.data.overspendCents
+import it.robertofichera.myshoppinglist.data.remainingCents
+import it.robertofichera.myshoppinglist.data.spentCents
 import it.robertofichera.myshoppinglist.data.totalCents
 import it.robertofichera.myshoppinglist.formatCents
 import it.robertofichera.myshoppinglist.formatQuantity
@@ -47,59 +58,111 @@ fun ListDetailScreen(
     products: List<Product>,
     showQuantity: Boolean,
     showPrice: Boolean,
+    budgetEnabled: Boolean,
     viewModel: ShoppingViewModel,
     onBack: () -> Unit,
 ) {
     var addingItem by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
+    var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
+
+    val budgetCents = if (budgetEnabled) entry.list.budgetCents else 0L
+    val spent = entry.spentCents
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(entry.list.name)
-                        if (showPrice) {
-                            Text(
-                                formatCents(entry.totalCents),
-                                style = MaterialTheme.typography.bodySmall,
+                    Text(
+                        if (budgetCents > 0) {
+                            stringResource(
+                                R.string.format_title_budget,
+                                entry.list.name,
+                                formatCents(budgetCents),
                             )
+                        } else {
+                            entry.list.name
                         }
-                    }
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
                     }
                 },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { addingItem = true }) {
-                Icon(Icons.Default.Add, contentDescription = "Add item")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.item_add))
             }
         },
     ) { padding ->
-        if (entry.items.isEmpty()) {
-            EmptyState("Nothing to buy yet.\nTap + to add a product.", Modifier.padding(padding))
-        } else {
-            LazyColumn(
-                modifier = Modifier.padding(padding),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                items(entry.items, key = { it.item.id }) { row ->
-                    ItemRow(
-                        row = row,
-                        showQuantity = showQuantity,
-                        showPrice = showPrice,
-                        onToggle = { viewModel.toggleBought(row.item) },
-                        onEdit = { editingItem = row },
-                        onDelete = { viewModel.deleteItem(row.item) },
-                    )
+        Column(modifier = Modifier.padding(padding)) {
+            if (showPrice) {
+                SummaryBar(
+                    toSpendCents = entry.totalCents,
+                    spentCents = spent,
+                    budgetCents = budgetCents,
+                )
+            }
+            if (entry.items.isEmpty()) {
+                EmptyState(stringResource(R.string.detail_empty))
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    items(entry.items, key = { it.item.id }) { row ->
+                        ItemRow(
+                            row = row,
+                            showQuantity = showQuantity,
+                            showPrice = showPrice,
+                            onToggle = {
+                                // Only ticking on can breach the budget; unticking frees it up.
+                                val overspend = if (row.item.bought) null else {
+                                    overspendCents(spent, row.lineTotalCents, budgetCents)
+                                }
+                                if (overspend == null) {
+                                    viewModel.toggleBought(row.item)
+                                } else {
+                                    pendingTick = row
+                                }
+                            },
+                            onEdit = { editingItem = row },
+                            onDelete = { viewModel.deleteItem(row.item) },
+                        )
+                    }
                 }
             }
         }
+    }
+
+    pendingTick?.let { row ->
+        val overspend = overspendCents(spent, row.lineTotalCents, budgetCents) ?: 0L
+        AlertDialog(
+            onDismissRequest = { pendingTick = null },
+            title = { Text(stringResource(R.string.budget_exceeded_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.budget_exceeded_message,
+                        row.product.name,
+                        formatCents(overspend),
+                        formatCents(budgetCents),
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.toggleBought(row.item)
+                    pendingTick = null
+                }) { Text(stringResource(R.string.action_continue)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingTick = null }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
     }
 
     if (addingItem) {
@@ -131,6 +194,52 @@ fun ListDetailScreen(
     }
 }
 
+/** Remaining is only meaningful against a budget, so that column appears only when one is set. */
+@Composable
+private fun SummaryBar(toSpendCents: Long, spentCents: Long, budgetCents: Long) {
+    val remaining = remainingCents(budgetCents, spentCents)
+
+    Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            SummaryFigure(stringResource(R.string.summary_to_spend), formatCents(toSpendCents), Modifier.weight(1f))
+            SummaryFigure(stringResource(R.string.summary_spent), formatCents(spentCents), Modifier.weight(1f))
+            if (budgetCents > 0) {
+                SummaryFigure(
+                    label = stringResource(R.string.summary_remaining),
+                    value = formatCents(remaining),
+                    modifier = Modifier.weight(1f),
+                    valueColor = if (remaining < 0) MaterialTheme.colorScheme.error else null,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SummaryFigure(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    valueColor: Color? = null,
+) {
+    Column(modifier = modifier) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.titleMedium,
+            color = valueColor ?: MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
 @Composable
 private fun ItemRow(
     row: ItemWithProduct,
@@ -155,7 +264,7 @@ private fun ItemRow(
                 style = MaterialTheme.typography.bodyLarge,
                 textDecoration = if (item.bought) TextDecoration.LineThrough else null,
             )
-            itemSubtitle(row, showQuantity, showPrice)?.let { subtitle ->
+            itemSubtitle(LocalContext.current, row, showQuantity, showPrice)?.let { subtitle ->
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -164,7 +273,7 @@ private fun ItemRow(
             }
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = "Delete ${row.product.name}")
+            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete_named, row.product.name))
         }
     }
 }
@@ -174,15 +283,20 @@ private fun ItemRow(
  * so that case shows the line total instead.
  */
 private fun itemSubtitle(
+    context: Context,
     row: ItemWithProduct,
     showQuantity: Boolean,
     showPrice: Boolean,
 ): String? = when {
     showQuantity && showPrice ->
-        "${formatQuantity(row.item.quantity)} × ${formatCents(row.item.priceCents)} = " +
-            formatCents(row.lineTotalCents)
+        context.getString(
+            R.string.format_qty_price_total,
+            formatQuantity(row.item.quantity),
+            formatCents(row.item.priceCents),
+            formatCents(row.lineTotalCents),
+        )
 
-    showQuantity -> "× ${formatQuantity(row.item.quantity)}"
+    showQuantity -> context.getString(R.string.format_qty_only, formatQuantity(row.item.quantity))
     showPrice -> formatCents(row.lineTotalCents)
     else -> null
 }

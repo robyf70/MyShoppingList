@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.filterProducts
@@ -63,13 +65,13 @@ fun ItemDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (item == null) "Add item" else "Edit item") },
+        title = { Text(stringResource(if (item == null) R.string.item_add else R.string.item_edit)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Product") },
+                    label = { Text(stringResource(R.string.field_product)) },
                     singleLine = true,
                 )
                 if (suggestions.isNotEmpty()) {
@@ -88,7 +90,7 @@ fun ItemDialog(
                     OutlinedTextField(
                         value = quantityText,
                         onValueChange = { quantityText = it },
-                        label = { Text("Quantity") },
+                        label = { Text(stringResource(R.string.field_quantity)) },
                         singleLine = true,
                         isError = quantityText.isNotBlank() && quantity == null,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -98,7 +100,7 @@ fun ItemDialog(
                     OutlinedTextField(
                         value = priceText,
                         onValueChange = { priceText = it },
-                        label = { Text("Price") },
+                        label = { Text(stringResource(R.string.field_price)) },
                         singleLine = true,
                         isError = priceText.isNotBlank() && priceCents == null,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -110,9 +112,9 @@ fun ItemDialog(
             TextButton(
                 enabled = isValid,
                 onClick = { onConfirm(name, quantity ?: 1.0, priceCents ?: 0L) },
-            ) { Text("Save") }
+            ) { Text(stringResource(R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
 

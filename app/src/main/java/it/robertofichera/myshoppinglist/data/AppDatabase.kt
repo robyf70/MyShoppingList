@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 2)
+@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun shoppingDao(): ShoppingDao
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "shopping.db",
-                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
             }
 
         /**
@@ -64,6 +64,15 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE `items_new` RENAME TO `items`")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_listId` ON `items` (`listId`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_productId` ON `items` (`productId`)")
+            }
+        }
+
+        /** Adds the optional per-list spending budget; 0 means none is set. */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `shopping_lists` ADD COLUMN `budgetCents` INTEGER NOT NULL DEFAULT 0"
+                )
             }
         }
     }

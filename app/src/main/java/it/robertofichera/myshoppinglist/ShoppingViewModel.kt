@@ -3,6 +3,7 @@ package it.robertofichera.myshoppinglist
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
 import it.robertofichera.myshoppinglist.data.AppDatabase
 import it.robertofichera.myshoppinglist.data.Item
 import it.robertofichera.myshoppinglist.data.ListWithItems
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val dao = AppDatabase.getInstance(app).shoppingDao()
+    private val db = AppDatabase.getInstance(app)
+    private val dao = db.shoppingDao()
     private val settingsStore = SettingsStore(app)
 
     val settings = settingsStore.settings
@@ -32,15 +34,31 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     fun observeList(listId: Long): Flow<ListWithItems?> = dao.observeList(listId)
 
-    fun addList(name: String) = viewModelScope.launch {
-        dao.insertList(ShoppingList(name = name.trim()))
+    fun addList(name: String, budgetCents: Long) = viewModelScope.launch {
+        dao.insertList(ShoppingList(name = name.trim(), budgetCents = budgetCents))
     }
 
-    fun renameList(list: ShoppingList, name: String) = viewModelScope.launch {
-        dao.updateList(list.copy(name = name.trim()))
+    fun updateList(list: ShoppingList, name: String, budgetCents: Long) = viewModelScope.launch {
+        dao.updateList(list.copy(name = name.trim(), budgetCents = budgetCents))
     }
 
     fun deleteList(list: ShoppingList) = viewModelScope.launch { dao.deleteList(list) }
+
+    /** A copy starts a fresh trip: same items and budget, nothing ticked off yet. */
+    fun copyList(entry: ListWithItems) = viewModelScope.launch {
+        db.withTransaction {
+            val newId = dao.insertList(
+                ShoppingList(
+                    name = getApplication<Application>()
+                        .getString(R.string.list_copy_name, entry.list.name),
+                    budgetCents = entry.list.budgetCents,
+                )
+            )
+            entry.items.forEach { row ->
+                dao.insertItem(row.item.copy(id = 0, listId = newId, bought = false))
+            }
+        }
+    }
 
     fun addItem(listId: Long, productName: String, quantity: Double, priceCents: Long) =
         viewModelScope.launch {
@@ -95,6 +113,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     fun setShowQuantity(show: Boolean) = settingsStore.setShowQuantity(show)
 
     fun setShowPrice(show: Boolean) = settingsStore.setShowPrice(show)
+
+    fun setBudgetEnabled(enabled: Boolean) = settingsStore.setBudgetEnabled(enabled)
 
     /**
      * Reuses the matching product or creates it, and remembers the price entered
