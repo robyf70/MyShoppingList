@@ -39,7 +39,7 @@ android {
     signingConfigs {
         if (releaseStoreFile != null) {
             create("release") {
-                storeFile = file(releaseStoreFile)
+                storeFile = rootProject.file(releaseStoreFile)
                 storePassword = credential("storePassword", "MSL_STORE_PASSWORD")
                 keyAlias = credential("keyAlias", "MSL_KEY_ALIAS")
                 keyPassword = credential("keyPassword", "MSL_KEY_PASSWORD")

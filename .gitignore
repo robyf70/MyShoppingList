@@ -2,6 +2,7 @@
 .gradle
 /local.properties
 .idea/
+keys/
 .DS_Store
 
 # Release signing. A leaked or lost signing key cannot be replaced: every future
