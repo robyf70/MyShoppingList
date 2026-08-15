@@ -65,10 +65,13 @@
     <string name="settings_budget">Max spending budget</string>
     <string name="settings_budget_desc">Set a spending limit per list and warn when it is passed</string>
     <string name="settings_version">Version</string>
+    <string name="settings_source">Source code</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d saved product</item>
         <item quantity="other">%1$d saved products</item>
     </plurals>
+
+    <string name="repository_url" translatable="false">https://github.com/robyf70/MyShoppingList</string>
 
     <!-- Layout-only formats: symbols and separators, identical in every language -->
     <string name="format_title_budget" translatable="false">%1$s · %2$s</string>

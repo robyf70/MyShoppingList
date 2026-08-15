@@ -1,5 +1,6 @@
 package it.robertofichera.myshoppinglist.ui
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +21,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.robertofichera.myshoppinglist.R
+import androidx.core.net.toUri
 import it.robertofichera.myshoppinglist.BuildConfig
+import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.data.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,6 +84,37 @@ fun SettingsScreen(
                     Text(stringResource(R.string.products_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
                         pluralStringResource(R.plurals.settings_product_count, productCount, productCount),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                )
+            }
+            HorizontalDivider()
+            val repositoryUrl = stringResource(R.string.repository_url)
+            val context = LocalContext.current
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        // A device with no browser would otherwise throw ActivityNotFoundException.
+                        runCatching {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, repositoryUrl.toUri()))
+                        }
+                    }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.settings_source),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        repositoryUrl,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

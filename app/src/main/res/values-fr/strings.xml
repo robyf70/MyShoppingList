@@ -58,6 +58,7 @@
     <string name="settings_budget">Budget maximum</string>
     <string name="settings_budget_desc">Définir une limite de dépenses par liste et avertir en cas de dépassement</string>
     <string name="settings_version">Version</string>
+    <string name="settings_source">Code source</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d produit enregistré</item>
         <item quantity="other">%1$d produits enregistrés</item>

@@ -1,5 +1,7 @@
 # My Shopping List
 
+<https://github.com/robyf70/MyShoppingList>
+
 An Android app for keeping several named shopping lists, each holding products with a quantity
 and a price. Products live in a catalogue shared across lists, so a product you bought last week
 is offered as autocomplete this week, with the price you last paid.
@@ -27,6 +29,11 @@ permissions — it has no network access at all.
 | Android SDK | API 37 platform installed |
 | JDK | Provisioned automatically — Gradle downloads the JDK 25 toolchain on first build |
 
+```bash
+git clone https://github.com/robyf70/MyShoppingList.git
+cd MyShoppingList
+```
+
 No Android Studio needed to build; the Gradle wrapper is checked in. Point Gradle at your SDK by
 creating `local.properties` in the project root (Android Studio writes this for you):
 
@@ -45,8 +52,38 @@ Alternatively export `ANDROID_HOME` instead.
 ./gradlew clean
 ```
 
-`assembleRelease` also works but the release build has **no signing configuration**, so it
-produces an unsigned APK that no device will install. Add a `signingConfig` before shipping.
+### Signing a release build
+
+`assembleRelease` works without any setup, but produces `app-release-unsigned.apk`, which no device
+will install. To get a signed build, create a key and point the build at it.
+
+```bash
+keytool -genkeypair -v \
+    -keystore ~/keys/myshoppinglist-release.jks \
+    -alias myshoppinglist -keyalg RSA -keysize 4096 -validity 10000
+
+cp keystore.properties.example keystore.properties   # then fill it in
+./gradlew assembleRelease                            # -> app-release.apk, signed
+```
+
+Keep the `.jks` **outside the repository** and back it up somewhere durable. Every future update of
+a published app must be signed with the same key: lose it and you cannot update the app, only
+publish a new one under a different application id. Leak it and someone else can publish updates
+that Android will accept as yours.
+
+`keystore.properties`, `*.jks` and `*.keystore` are all git-ignored. CI can supply
+`MSL_STORE_FILE`, `MSL_STORE_PASSWORD`, `MSL_KEY_ALIAS` and `MSL_KEY_PASSWORD` as environment
+variables instead; they apply when `keystore.properties` is absent.
+
+Verify what you produced before shipping it:
+
+```bash
+$ANDROID_HOME/build-tools/36.0.0/apksigner verify --print-certs \
+    app/build/outputs/apk/release/app-release.apk
+```
+
+Note that release builds currently have R8 disabled (`optimization { enable = false }`), so the APK
+is unminified.
 
 ## Installing
 
