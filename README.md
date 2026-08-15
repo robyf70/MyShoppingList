@@ -9,6 +9,12 @@ is offered as autocomplete this week, with the price you last paid.
 Everything is stored on the device. There is no account, no backend, and the app requests no
 permissions — it has no network access at all.
 
+## Download
+
+**[Latest release](https://github.com/robyf70/MyShoppingList/releases/latest)** — download the APK
+and open it on the device. Android 12 (API 31) or newer. Sideloading needs "install unknown apps"
+allowed for whichever app opens the file; the app itself is not on any store.
+
 ## Features
 
 - **Multiple lists**, each with its own items, and a **Duplicate** action for the shop you repeat every week
