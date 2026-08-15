@@ -137,6 +137,16 @@ UI and Room wiring are verified by running the app, not by tests. If you add a F
 
 **KSP's version must track Kotlin's.** `ksp = "2.2.10-2.0.2"` pairs with `kotlin = "2.2.10"`. Bumping Kotlin without bumping KSP fails at configuration time.
 
+**Release builds are minified by R8; debug builds are not.** That asymmetry matters: a keep-rule
+problem cannot show up in day-to-day debug testing, only in the shipped artifact, and it surfaces at
+*runtime* rather than at build time. Smoke-test a release build before shipping — at minimum open a
+list, add an item and check autocomplete, since Room resolves its generated `AppDatabase_Impl` by
+name and that is the first thing a missing rule would break.
+
+Project-specific keep rules go in `app/src/main/keepRules/*.keep`, which AGP combines automatically
+(there is no `proguardFiles` entry). None are currently needed: Room and Compose ship their own
+consumer rules.
+
 **Room schema export is on**, written to `app/schemas/` via the `room.schemaLocation` ksp arg. When writing a migration, build first and copy the DDL out of the exported JSON — the migration's SQL must match Room's generated DDL exactly or the app throws `IllegalStateException: Migration didn't properly handle…` at open. Kotlin default values do **not** become SQL `DEFAULT` clauses.
 
 **Migrations are hand-written and must be tested against real data.** There is no `MigrationTestHelper` suite (no `androidTest` source set), so the guard is: seed the old version on a device, `installDebug` over it without uninstalling, then check the data survived and `PRAGMA foreign_key_check` is clean. `MIGRATION_1_2` rebuilds `items` to add the `productId` foreign key and seeds `products` from the distinct names already in use.

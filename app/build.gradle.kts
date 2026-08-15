@@ -51,7 +51,7 @@ android {
         release {
             signingConfig = signingConfigs.findByName("release")
             optimization {
-                enable = false
+                enable = true
             }
         }
     }

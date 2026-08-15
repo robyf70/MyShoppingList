@@ -82,8 +82,10 @@ $ANDROID_HOME/build-tools/36.0.0/apksigner verify --print-certs \
     app/build/outputs/apk/release/app-release.apk
 ```
 
-Note that release builds currently have R8 disabled (`optimization { enable = false }`), so the APK
-is unminified.
+Release builds are minified and shrunk by R8, which takes the APK from about 30 MB to 2 MB. Debug
+builds are not, so an R8 problem can only appear in a release artifact — smoke-test one before
+shipping. Project-specific keep rules belong in `app/src/main/keepRules/*.keep`, which AGP combines
+automatically; none are needed today.
 
 ## Installing
 
