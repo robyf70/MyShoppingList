@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+      Trademark rights in this name, and in its translations under values-*, are
+      reserved and not granted with the code: see ADDITIONAL_TERMS.md
+      (GPL v3 section 7(e)). A fork must ship under its own name.
+    -->
     <string name="app_name">My Shopping List</string>
 
     <!-- Actions -->

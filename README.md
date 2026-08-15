@@ -154,8 +154,9 @@ migration procedure, and the code style.
 
 ## Licence
 
-GNU General Public License v3 or later (`GPL-3.0-or-later`), with additional terms under
-[section 7](https://www.gnu.org/licenses/gpl-3.0.html#section7). See [LICENSE](LICENSE).
+GNU General Public License v3 or later — [LICENSE](LICENSE) — **plus additional terms** under
+[section 7](https://www.gnu.org/licenses/gpl-3.0.html#section7), in
+[ADDITIONAL_TERMS.md](ADDITIONAL_TERMS.md).
 
 The name **My Shopping List** and the basket icon are reserved trademarks and are not licensed with
 the code. You may fork, modify and redistribute this app — including on app stores — under the GPL,

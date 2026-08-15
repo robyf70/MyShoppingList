@@ -3,6 +3,9 @@
   Basket with a ticked list inside. Everything sits within the centred 72x72 safe
   zone (corners stay inside radius 36 of 54,54) so no mask shape crops it.
   Single colour throughout: this drawable doubles as the <monochrome> layer.
+
+  Trademark rights in this artwork are reserved and not granted with the code:
+  see ADDITIONAL_TERMS.md (GPL v3 section 7(e)).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
