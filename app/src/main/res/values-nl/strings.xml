@@ -58,6 +58,7 @@
     <string name="settings_budget">Maximaal budget</string>
     <string name="settings_budget_desc">Stel een uitgavenlimiet per lijst in en waarschuw bij overschrijding</string>
     <string name="settings_version">Versie</string>
+    <string name="settings_latest_release">Nieuwste versie</string>
     <string name="settings_source">Broncode</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d opgeslagen product</item>

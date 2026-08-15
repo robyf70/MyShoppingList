@@ -59,6 +59,7 @@
     <string name="settings_budget">Maximális költési keret</string>
     <string name="settings_budget_desc">Állítson be listánkénti költési korlátot, és figyelmeztessen túllépéskor</string>
     <string name="settings_version">Verzió</string>
+    <string name="settings_latest_release">Legújabb kiadás</string>
     <string name="settings_source">Forráskód</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d mentett termék</item>

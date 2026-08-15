@@ -58,6 +58,7 @@
     <string name="settings_budget">Μέγιστος προϋπολογισμός</string>
     <string name="settings_budget_desc">Ορίστε όριο δαπανών ανά λίστα και ειδοποίηση όταν ξεπεραστεί</string>
     <string name="settings_version">Έκδοση</string>
+    <string name="settings_latest_release">Τελευταία έκδοση</string>
     <string name="settings_source">Πηγαίος κώδικας</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d αποθηκευμένο προϊόν</item>

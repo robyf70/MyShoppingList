@@ -58,6 +58,7 @@
     <string name="settings_budget">Maximales Budget</string>
     <string name="settings_budget_desc">Ein Ausgabenlimit pro Liste festlegen und bei Überschreitung warnen</string>
     <string name="settings_version">Version</string>
+    <string name="settings_latest_release">Neueste Version</string>
     <string name="settings_source">Quellcode</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d gespeichertes Produkt</item>

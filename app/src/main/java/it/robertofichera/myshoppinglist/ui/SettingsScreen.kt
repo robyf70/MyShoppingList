@@ -73,57 +73,31 @@ fun SettingsScreen(
                 onCheckedChange = onBudgetEnabledChange,
             )
             HorizontalDivider()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onOpenProducts)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.products_title), style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        pluralStringResource(R.plurals.settings_product_count, productCount, productCount),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                )
-            }
+            NavigationRow(
+                title = stringResource(R.string.products_title),
+                subtitle = pluralStringResource(R.plurals.settings_product_count, productCount, productCount),
+                onClick = onOpenProducts,
+            )
             HorizontalDivider()
-            val repositoryUrl = stringResource(R.string.repository_url)
             val context = LocalContext.current
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        // A device with no browser would otherwise throw ActivityNotFoundException.
-                        runCatching {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, repositoryUrl.toUri()))
-                        }
-                    }
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        stringResource(R.string.settings_source),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        repositoryUrl,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null,
-                )
+            val openUrl: (String) -> Unit = { url ->
+                // A device with no browser would otherwise throw ActivityNotFoundException.
+                runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
             }
+            val repositoryUrl = stringResource(R.string.repository_url)
+            NavigationRow(
+                title = stringResource(R.string.settings_source),
+                subtitle = repositoryUrl,
+                onClick = { openUrl(repositoryUrl) },
+            )
+            HorizontalDivider()
+            // Next to the installed version, so the two read as a comparison.
+            val releasesUrl = stringResource(R.string.releases_url)
+            NavigationRow(
+                title = stringResource(R.string.settings_latest_release),
+                subtitle = releasesUrl,
+                onClick = { openUrl(releasesUrl) },
+            )
             HorizontalDivider()
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodyLarge)
@@ -134,6 +108,34 @@ fun SettingsScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NavigationRow(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+        )
     }
 }
 
