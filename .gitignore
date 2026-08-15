@@ -3,6 +3,13 @@
 /local.properties
 .idea/
 .DS_Store
+
+# Release signing. A leaked or lost signing key cannot be replaced: every future
+# update of a published app must be signed with the same key.
+keystore.properties
+*.jks
+*.keystore
+
 /build
 /captures
 .externalNativeBuild

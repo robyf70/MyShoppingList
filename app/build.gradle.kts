@@ -1,8 +1,24 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
+
+// Release signing credentials, from keystore.properties (git-ignored) or, for CI,
+// from the environment. Neither the keystore nor its passwords belong in the repo.
+// When both are absent the release build is simply left unsigned instead of failing,
+// so a fresh clone still builds.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun credential(key: String, environmentVariable: String): String? =
+    keystoreProperties.getProperty(key) ?: System.getenv(environmentVariable)
+
+val releaseStoreFile = credential("storeFile", "MSL_STORE_FILE")
 
 android {
     namespace = "it.robertofichera.myshoppinglist"
@@ -20,8 +36,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = credential("storePassword", "MSL_STORE_PASSWORD")
+                keyAlias = credential("keyAlias", "MSL_KEY_ALIAS")
+                keyPassword = credential("keyPassword", "MSL_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             optimization {
                 enable = false
             }
