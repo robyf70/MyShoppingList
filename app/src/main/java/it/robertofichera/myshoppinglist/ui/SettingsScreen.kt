@@ -19,11 +19,16 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import it.robertofichera.myshoppinglist.BuildConfig
@@ -31,6 +36,8 @@ import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.UpdateState
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.Settings
+import it.robertofichera.myshoppinglist.data.countryChoice
+import it.robertofichera.myshoppinglist.phoneCountry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,9 +51,12 @@ fun SettingsScreen(
     onShowPriceChange: (Boolean) -> Unit,
     onBudgetEnabledChange: (Boolean) -> Unit,
     onConfirmDeleteChange: (Boolean) -> Unit,
+    onCurrencyCountryChange: (String) -> Unit,
     onOpenProducts: () -> Unit,
     onBack: () -> Unit,
 ) {
+    var pickingCurrency by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -85,6 +95,11 @@ fun SettingsScreen(
                 onCheckedChange = onConfirmDeleteChange,
             )
             HorizontalDivider()
+            CurrencyRow(
+                selected = settings.currencyCountry,
+                onClick = { pickingCurrency = true },
+            )
+            HorizontalDivider()
             NavigationRow(
                 title = stringResource(R.string.products_title),
                 subtitle = pluralStringResource(R.plurals.settings_product_count, productCount, productCount),
@@ -116,6 +131,44 @@ fun SettingsScreen(
             }
         }
     }
+
+    if (pickingCurrency) {
+        CurrencyDialog(
+            selected = settings.currencyCountry,
+            onSelect = { country ->
+                onCurrencyCountryChange(country)
+                pickingCurrency = false
+            },
+            onDismiss = { pickingCurrency = false },
+        )
+    }
+}
+
+/**
+ * Names the country prices are priced in and the symbol that follows from it. On "Automatic" it
+ * names the country the phone resolved to, so a surprising symbol is traceable without guessing.
+ */
+@Composable
+private fun CurrencyRow(selected: String, onClick: () -> Unit) {
+    val locale = Locale.current.platformLocale
+    val country = selected.ifEmpty { phoneCountry() }
+    val choice = remember(locale, country) { countryChoice(country, locale) }
+
+    NavigationRow(
+        title = stringResource(R.string.settings_currency),
+        subtitle = when {
+            choice == null -> stringResource(R.string.currency_automatic)
+            selected.isEmpty() -> stringResource(
+                R.string.format_currency_automatic,
+                stringResource(R.string.currency_automatic),
+                choice.name,
+                choice.currencySymbol,
+            )
+
+            else -> stringResource(R.string.format_currency, choice.name, choice.currencySymbol)
+        },
+        onClick = onClick,
+    )
 }
 
 /**

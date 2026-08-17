@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,45 +67,52 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
         }
     }
 
-    when {
-        showProducts -> ProductsScreen(
-            products = productsWithUsage,
-            showPrice = settings.showPrice,
-            viewModel = viewModel,
-            onBack = { showProducts = false },
-        )
+    CompositionLocalProvider(
+        LocalMoneyFormat provides remember(settings.currencyCountry) {
+            MoneyFormat(settings.currencyCountry)
+        },
+    ) {
+        when {
+            showProducts -> ProductsScreen(
+                products = productsWithUsage,
+                showPrice = settings.showPrice,
+                viewModel = viewModel,
+                onBack = { showProducts = false },
+            )
 
-        showSettings -> SettingsScreen(
-            settings = settings,
-            productCount = products.size,
-            onShowQuantityChange = viewModel::setShowQuantity,
-            onShowPriceChange = viewModel::setShowPrice,
-            onBudgetEnabledChange = viewModel::setBudgetEnabled,
-            onConfirmDeleteChange = viewModel::setConfirmDelete,
-            update = update,
-            onCheckUpdate = { viewModel.checkForUpdate(force = true) },
-            onInstallUpdate = viewModel::downloadAndInstall,
-            onOpenProducts = { showProducts = true },
-            onBack = { showSettings = false },
-        )
+            showSettings -> SettingsScreen(
+                settings = settings,
+                productCount = products.size,
+                onShowQuantityChange = viewModel::setShowQuantity,
+                onShowPriceChange = viewModel::setShowPrice,
+                onBudgetEnabledChange = viewModel::setBudgetEnabled,
+                onConfirmDeleteChange = viewModel::setConfirmDelete,
+                onCurrencyCountryChange = viewModel::setCurrencyCountry,
+                update = update,
+                onCheckUpdate = { viewModel.checkForUpdate(force = true) },
+                onInstallUpdate = viewModel::downloadAndInstall,
+                onOpenProducts = { showProducts = true },
+                onBack = { showSettings = false },
+            )
 
-        listId != null -> ListDetailRoute(
-            listId = listId,
-            products = products,
-            settings = settings,
-            viewModel = viewModel,
-            onBack = { openListId = null },
-        )
+            listId != null -> ListDetailRoute(
+                listId = listId,
+                products = products,
+                settings = settings,
+                viewModel = viewModel,
+                onBack = { openListId = null },
+            )
 
-        else -> ListsScreen(
-            lists = lists,
-            showPrice = settings.showPrice,
-            budgetEnabled = settings.budgetEnabled,
-            confirmDelete = settings.confirmDelete,
-            viewModel = viewModel,
-            onOpenList = { openListId = it },
-            onOpenSettings = { showSettings = true },
-        )
+            else -> ListsScreen(
+                lists = lists,
+                showPrice = settings.showPrice,
+                budgetEnabled = settings.budgetEnabled,
+                confirmDelete = settings.confirmDelete,
+                viewModel = viewModel,
+                onOpenList = { openListId = it },
+                onOpenSettings = { showSettings = true },
+            )
+        }
     }
 }
 

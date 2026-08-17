@@ -48,6 +48,8 @@ import it.robertofichera.myshoppinglist.data.overspendCents
 import it.robertofichera.myshoppinglist.data.remainingCents
 import it.robertofichera.myshoppinglist.data.spentCents
 import it.robertofichera.myshoppinglist.data.totalCents
+import it.robertofichera.myshoppinglist.LocalMoneyFormat
+import it.robertofichera.myshoppinglist.MoneyFormat
 import it.robertofichera.myshoppinglist.formatCents
 import it.robertofichera.myshoppinglist.formatQuantity
 
@@ -277,7 +279,7 @@ private fun ItemRow(
                 style = MaterialTheme.typography.bodyLarge,
                 textDecoration = if (item.bought) TextDecoration.LineThrough else null,
             )
-            itemSubtitle(LocalContext.current, row, showQuantity, showPrice)?.let { subtitle ->
+            itemSubtitle(LocalContext.current, LocalMoneyFormat.current, row, showQuantity, showPrice)?.let { subtitle ->
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -297,6 +299,7 @@ private fun ItemRow(
  */
 private fun itemSubtitle(
     context: Context,
+    money: MoneyFormat,
     row: ItemWithProduct,
     showQuantity: Boolean,
     showPrice: Boolean,
@@ -305,11 +308,11 @@ private fun itemSubtitle(
         context.getString(
             R.string.format_qty_price_total,
             formatQuantity(row.item.quantity),
-            formatCents(row.item.priceCents),
-            formatCents(row.lineTotalCents),
+            money.format(row.item.priceCents),
+            money.format(row.lineTotalCents),
         )
 
     showQuantity -> context.getString(R.string.format_qty_only, formatQuantity(row.item.quantity))
-    showPrice -> formatCents(row.lineTotalCents)
+    showPrice -> money.format(row.lineTotalCents)
     else -> null
 }

@@ -137,6 +137,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setConfirmDelete(enabled: Boolean) = settingsStore.setConfirmDelete(enabled)
 
+    fun setCurrencyCountry(country: String) = settingsStore.setCurrencyCountry(country)
+
     /**
      * The launch check is silent and at most daily; [force] is the Settings button, which
      * always asks and is allowed to report that nothing was found.

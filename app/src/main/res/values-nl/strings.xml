@@ -64,6 +64,8 @@
     <string name="settings_budget_desc">Stel een uitgavenlimiet per lijst in en waarschuw bij overschrijding</string>
     <string name="settings_confirm_delete">Bevestigen voor verwijderen</string>
     <string name="settings_confirm_delete_desc">Vraag het voordat een lijst of item wordt verwijderd</string>
+    <string name="settings_currency">Valuta</string>
+    <string name="currency_automatic">Automatisch</string>
     <string name="settings_version">Versie</string>
     <string name="settings_check_updates">Controleren op updates</string>
     <string name="update_checking">Bezig met controleren…</string>

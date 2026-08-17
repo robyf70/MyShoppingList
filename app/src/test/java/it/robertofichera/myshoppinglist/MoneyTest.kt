@@ -67,16 +67,22 @@ class MoneyTest {
     }
 
     @Test
-    fun `currency follows the phone region, not the app language`() {
-        val locale = currencyLocale(Locale.US, listOf(Locale.ENGLISH, Locale.ITALY))
+    fun `the chosen country wins over the phone, keeping the language's number format`() {
+        val locale = currencyLocale(Locale.US, listOf(Locale.US), country = "IT")
         assertEquals("EUR", Currency.getInstance(locale).currencyCode)
         assertEquals("en", locale.language)
     }
 
     @Test
-    fun `falls back to the format locale when the phone names no country`() {
-        assertEquals(Locale.US, currencyLocale(Locale.US, listOf(Locale.ENGLISH, Locale.GERMAN)))
-        assertEquals(Locale.US, currencyLocale(Locale.US, emptyList()))
+    fun `no chosen country falls back to the phone's own region`() {
+        val locale = currencyLocale(Locale.US, listOf(Locale.ENGLISH, Locale.ITALY), country = "")
+        assertEquals("EUR", Currency.getInstance(locale).currencyCode)
+    }
+
+    @Test
+    fun `falls back to the format locale when nothing names a country`() {
+        assertEquals(Locale.US, currencyLocale(Locale.US, listOf(Locale.ENGLISH), country = ""))
+        assertEquals(Locale.US, currencyLocale(Locale.US, emptyList(), country = ""))
     }
 
     private fun item(quantity: Double, priceCents: Long) =

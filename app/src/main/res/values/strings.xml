@@ -76,6 +76,8 @@
     <string name="settings_budget_desc">Set a spending limit per list and warn when it is passed</string>
     <string name="settings_confirm_delete">Confirm before deleting</string>
     <string name="settings_confirm_delete_desc">Ask before removing a list or an item</string>
+    <string name="settings_currency">Currency</string>
+    <string name="currency_automatic">Automatic</string>
     <string name="settings_version">Version</string>
     <string name="settings_check_updates">Check for updates</string>
     <string name="update_checking">Checking…</string>
@@ -96,6 +98,8 @@
 
     <!-- Layout-only formats: symbols and separators, identical in every language -->
     <string name="format_title_budget" translatable="false">%1$s · %2$s</string>
+    <string name="format_currency" translatable="false">%1$s · %2$s</string>
+    <string name="format_currency_automatic" translatable="false">%1$s · %2$s · %3$s</string>
     <string name="format_dot_pair" translatable="false">%1$s · %2$s</string>
     <string name="format_version" translatable="false">%1$s (%2$d)</string>
     <string name="format_qty_price_total" translatable="false">%1$s × %2$s = %3$s</string>

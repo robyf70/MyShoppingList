@@ -10,6 +10,8 @@ data class Settings(
     val showPrice: Boolean = true,
     val budgetEnabled: Boolean = false,
     val confirmDelete: Boolean = true,
+    /** ISO country whose currency prices use. Empty follows the phone, which is the default. */
+    val currencyCountry: String = "",
 )
 
 /** Reads the values once at construction, so the blocking load is small enough to do inline. */
@@ -24,6 +26,7 @@ class SettingsStore(context: Context) {
             showPrice = prefs.getBoolean(KEY_PRICE, true),
             budgetEnabled = prefs.getBoolean(KEY_BUDGET, false),
             confirmDelete = prefs.getBoolean(KEY_CONFIRM_DELETE, true),
+            currencyCountry = prefs.getString(KEY_CURRENCY_COUNTRY, "").orEmpty(),
         )
     )
     val settings: StateFlow<Settings> = _settings.asStateFlow()
@@ -43,6 +46,11 @@ class SettingsStore(context: Context) {
         _settings.value = _settings.value.copy(budgetEnabled = enabled)
     }
 
+    fun setCurrencyCountry(country: String) {
+        prefs.edit().putString(KEY_CURRENCY_COUNTRY, country).apply()
+        _settings.value = _settings.value.copy(currencyCountry = country)
+    }
+
     /** Not part of [Settings]: it is bookkeeping for the update check, not something the user sets. */
     var lastUpdateCheck: Long
         get() = prefs.getLong(KEY_LAST_UPDATE_CHECK, 0L)
@@ -58,6 +66,7 @@ class SettingsStore(context: Context) {
         const val KEY_PRICE = "show_price"
         const val KEY_BUDGET = "budget_enabled"
         const val KEY_CONFIRM_DELETE = "confirm_delete"
+        const val KEY_CURRENCY_COUNTRY = "currency_country"
         const val KEY_LAST_UPDATE_CHECK = "last_update_check"
     }
 }

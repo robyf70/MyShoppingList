@@ -64,6 +64,8 @@
     <string name="settings_budget_desc">Ορίστε όριο δαπανών ανά λίστα και ειδοποίηση όταν ξεπεραστεί</string>
     <string name="settings_confirm_delete">Επιβεβαίωση πριν τη διαγραφή</string>
     <string name="settings_confirm_delete_desc">Ερώτηση πριν την αφαίρεση λίστας ή είδους</string>
+    <string name="settings_currency">Νόμισμα</string>
+    <string name="currency_automatic">Αυτόματο</string>
     <string name="settings_version">Έκδοση</string>
     <string name="settings_check_updates">Έλεγχος για ενημερώσεις</string>
     <string name="update_checking">Έλεγχος…</string>

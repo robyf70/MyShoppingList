@@ -64,6 +64,8 @@
     <string name="settings_budget_desc">Define um limite de gastos por lista e avisa quando é ultrapassado</string>
     <string name="settings_confirm_delete">Confirmar antes de eliminar</string>
     <string name="settings_confirm_delete_desc">Perguntar antes de remover uma lista ou um artigo</string>
+    <string name="settings_currency">Moeda</string>
+    <string name="currency_automatic">Automática</string>
     <string name="settings_version">Versão</string>
     <string name="settings_check_updates">Procurar atualizações</string>
     <string name="update_checking">A verificar…</string>

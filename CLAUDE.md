@@ -38,6 +38,7 @@ data/
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
   Budget.kt            spentCents / remainingCents / overspendCents — pure, unit-tested
   Updates.kt           GitHub release lookup, DownloadManager download, install intent
+  Countries.kt         the currency picker's country list, collated for the reader's locale
 ui/
   ListsScreen.kt       list overview, EmptyState
   ListDetailScreen.kt  items within one list
@@ -47,6 +48,7 @@ ui/
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
+  CurrencyDialog.kt    country picker for the currency, "Automatic" first
   theme/               Material 3 theme (from the Android Studio template)
 ```
 
@@ -63,7 +65,13 @@ Unit tests: `app/src/test/java/it/robertofichera/myshoppinglist/`. There is no `
 
 **Money is integer cents (`Long`), never `Double`.** `Item.priceCents` is the stored form; `Money.kt` parses and formats it. Parsing goes through `BigDecimal` so `"1.005"` becomes `101` rather than `100`. Both `.` and `,` are accepted as decimal separators.
 
-**The currency comes from the phone's region, the number format from its language.** `currencyLocale()` in `Money.kt` reads `Resources.getSystem().configuration.locales` — the *system* configuration, so a per-app language override cannot hide the region — takes the first locale naming a country, and builds a locale from that region plus the format language. `formatCents` then asks `NumberFormat` for that locale, which is what keeps a zero-decimal currency like JPY on zero decimals. An English-language phone set to Italy shows `€1,234.50`.
+**The currency comes from a country picked in Settings, defaulting to the phone's.** `Settings.currencyCountry` holds an ISO country code; empty means follow the phone, and `currencyLocale()` in `Money.kt` then takes the first locale naming a country from `Resources.getSystem().configuration.locales` — the *system* configuration, so a per-app language override cannot hide it.
+
+The setting exists because a phone's region is not what a user thinks it is. Android only ever exposes the country baked into the language entry ("English (United States)" → `US`). A vendor Region setting (Xiaomi's `ro.miui.region`) has no public API, and the Android 14+ regional-preferences API covers temperature, first day of week and numbering system — never currency. So a phone can be set to Italy in every way its owner can see and still tell apps `US`. Deriving the currency is a guess; the picker is the answer.
+
+`currencyLocale` pairs the language with the country and lets CLDR format the pair — `en` + `IT` gives `1.234,50 €`, the Italian layout, not an English one wearing a euro sign. Building a locale rather than overriding `NumberFormat.currency` is what keeps a zero-decimal currency like JPY on zero decimals.
+
+`MoneyFormat` reaches the UI through the `LocalMoneyFormat` composition local, so the ~18 price call sites stay `formatCents(cents)` with no country threaded through their signatures. `formatCents` is `@Composable` for that reason; a non-composable caller needs `MoneyFormat.format` and one passed instance, as `itemSubtitle` does.
 
 **Line totals round once per line, then sum** (`Item.lineTotalCents`, `ListWithItems.totalCents`). Quantities are `Double` because decimal quantities (1.5 kg) are supported, so `quantity * priceCents` needs rounding — doing it per line and summing matches how a receipt adds up. Don't sum unrounded products.
 

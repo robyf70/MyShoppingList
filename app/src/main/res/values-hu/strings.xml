@@ -65,6 +65,8 @@
     <string name="settings_budget_desc">Állítson be listánkénti költési korlátot, és figyelmeztessen túllépéskor</string>
     <string name="settings_confirm_delete">Megerősítés törlés előtt</string>
     <string name="settings_confirm_delete_desc">Kérdezzen rá lista vagy tétel eltávolítása előtt</string>
+    <string name="settings_currency">Pénznem</string>
+    <string name="currency_automatic">Automatikus</string>
     <string name="settings_version">Verzió</string>
     <string name="settings_check_updates">Frissítések keresése</string>
     <string name="update_checking">Keresés…</string>

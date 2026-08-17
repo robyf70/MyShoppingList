@@ -69,6 +69,8 @@
     <string name="settings_budget_desc">Ustaw limit wydatków na listę i ostrzegaj po jego przekroczeniu</string>
     <string name="settings_confirm_delete">Potwierdzaj przed usunięciem</string>
     <string name="settings_confirm_delete_desc">Pytaj przed usunięciem listy lub produktu</string>
+    <string name="settings_currency">Waluta</string>
+    <string name="currency_automatic">Automatyczna</string>
     <string name="settings_version">Wersja</string>
     <string name="settings_check_updates">Sprawdź aktualizacje</string>
     <string name="update_checking">Sprawdzanie…</string>
