@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import it.robertofichera.myshoppinglist.BuildConfig
 import it.robertofichera.myshoppinglist.R
+import it.robertofichera.myshoppinglist.UpdateState
+import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,9 +37,13 @@ import it.robertofichera.myshoppinglist.data.Settings
 fun SettingsScreen(
     settings: Settings,
     productCount: Int,
+    update: UpdateState,
+    onCheckUpdate: () -> Unit,
+    onInstallUpdate: (Release) -> Unit,
     onShowQuantityChange: (Boolean) -> Unit,
     onShowPriceChange: (Boolean) -> Unit,
     onBudgetEnabledChange: (Boolean) -> Unit,
+    onConfirmDeleteChange: (Boolean) -> Unit,
     onOpenProducts: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -72,6 +78,12 @@ fun SettingsScreen(
                 checked = settings.budgetEnabled,
                 onCheckedChange = onBudgetEnabledChange,
             )
+            SwitchRow(
+                title = stringResource(R.string.settings_confirm_delete),
+                subtitle = stringResource(R.string.settings_confirm_delete_desc),
+                checked = settings.confirmDelete,
+                onCheckedChange = onConfirmDeleteChange,
+            )
             HorizontalDivider()
             NavigationRow(
                 title = stringResource(R.string.products_title),
@@ -92,12 +104,7 @@ fun SettingsScreen(
             )
             HorizontalDivider()
             // Next to the installed version, so the two read as a comparison.
-            val releasesUrl = stringResource(R.string.releases_url)
-            NavigationRow(
-                title = stringResource(R.string.settings_latest_release),
-                subtitle = releasesUrl,
-                onClick = { openUrl(releasesUrl) },
-            )
+            UpdateRow(state = update, onCheck = onCheckUpdate, onInstall = onInstallUpdate)
             HorizontalDivider()
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(stringResource(R.string.settings_version), style = MaterialTheme.typography.bodyLarge)
@@ -111,16 +118,48 @@ fun SettingsScreen(
     }
 }
 
+/**
+ * One row for the whole update flow: it reports the last check, offers the release when there
+ * is one, and goes inert while a check or download is in flight.
+ */
+@Composable
+private fun UpdateRow(
+    state: UpdateState,
+    onCheck: () -> Unit,
+    onInstall: (Release) -> Unit,
+) {
+    val title = when (state) {
+        is UpdateState.Available -> stringResource(R.string.update_available, state.release.versionName)
+        is UpdateState.Downloading -> stringResource(R.string.update_available, state.release.versionName)
+        else -> stringResource(R.string.settings_check_updates)
+    }
+    val subtitle = when (state) {
+        UpdateState.Idle -> stringResource(R.string.releases_url)
+        UpdateState.Checking -> stringResource(R.string.update_checking)
+        UpdateState.UpToDate -> stringResource(R.string.update_up_to_date)
+        UpdateState.Failed -> stringResource(R.string.update_failed)
+        is UpdateState.Available -> stringResource(R.string.update_install_hint)
+        is UpdateState.Downloading -> stringResource(R.string.update_downloading)
+    }
+    val onClick: (() -> Unit)? = when (state) {
+        UpdateState.Checking, is UpdateState.Downloading -> null
+        is UpdateState.Available -> ({ onInstall(state.release) })
+        else -> onCheck
+    }
+
+    NavigationRow(title = title, subtitle = subtitle, onClick = onClick)
+}
+
 @Composable
 private fun NavigationRow(
     title: String,
     subtitle: String,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (onClick == null) Modifier else Modifier.clickable(onClick = onClick))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

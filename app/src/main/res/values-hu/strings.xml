@@ -11,6 +11,9 @@
     <string name="action_back">Vissza</string>
     <string name="action_settings">Beállítások</string>
     <string name="delete_named">%1$s törlése</string>
+    <string name="delete_confirm_title">Törli a következőt: %1$s?</string>
+    <string name="delete_list_message">A lista és a teljes tartalma törlődik.</string>
+    <string name="delete_item_message">Ez a tétel eltávolításra kerül a listáról.</string>
 
     <string name="lists_empty">Még nincs lista.\nKoppintson a + gombra egy létrehozásához.</string>
     <string name="list_new">Új lista</string>
@@ -22,6 +25,8 @@
         <item quantity="one">%1$d tétel · %2$d megvéve</item>
         <item quantity="other">%1$d tétel · %2$d megvéve</item>
     </plurals>
+    <string name="list_budget_remaining">%2$s keretből %1$s maradt</string>
+    <string name="list_budget_over">%1$s a(z) %2$s kereten felül</string>
 
     <string name="detail_empty">Még nincs mit megvenni.\nKoppintson a + gombra termék hozzáadásához.</string>
     <string name="summary_to_spend">Költendő</string>
@@ -58,8 +63,16 @@
     <string name="settings_show_price_desc">Kérdezze az árakat és mutassa a listák összegét</string>
     <string name="settings_budget">Maximális költési keret</string>
     <string name="settings_budget_desc">Állítson be listánkénti költési korlátot, és figyelmeztessen túllépéskor</string>
+    <string name="settings_confirm_delete">Megerősítés törlés előtt</string>
+    <string name="settings_confirm_delete_desc">Kérdezzen rá lista vagy tétel eltávolítása előtt</string>
     <string name="settings_version">Verzió</string>
-    <string name="settings_latest_release">Legújabb kiadás</string>
+    <string name="settings_check_updates">Frissítések keresése</string>
+    <string name="update_checking">Keresés…</string>
+    <string name="update_up_to_date">A legfrissebb verziót használja</string>
+    <string name="update_failed">Nem sikerült frissítést keresni</string>
+    <string name="update_available">A(z) %1$s verzió elérhető</string>
+    <string name="update_install_hint">Koppintson a letöltéshez és telepítéshez</string>
+    <string name="update_downloading">Letöltés…</string>
     <string name="settings_source">Forráskód</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d mentett termék</item>

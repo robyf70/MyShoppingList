@@ -59,11 +59,13 @@ fun ListDetailScreen(
     showQuantity: Boolean,
     showPrice: Boolean,
     budgetEnabled: Boolean,
+    confirmDelete: Boolean,
     viewModel: ShoppingViewModel,
     onBack: () -> Unit,
 ) {
     var addingItem by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
+    var deletingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
 
     val budgetCents = if (budgetEnabled) entry.list.budgetCents else 0L
@@ -130,7 +132,9 @@ fun ListDetailScreen(
                                 }
                             },
                             onEdit = { editingItem = row },
-                            onDelete = { viewModel.deleteItem(row.item) },
+                            onDelete = {
+                                if (confirmDelete) deletingItem = row else viewModel.deleteItem(row.item)
+                            },
                         )
                     }
                 }
@@ -162,6 +166,15 @@ fun ListDetailScreen(
             dismissButton = {
                 TextButton(onClick = { pendingTick = null }) { Text(stringResource(R.string.action_cancel)) }
             },
+        )
+    }
+
+    deletingItem?.let { row ->
+        ConfirmDeleteDialog(
+            name = row.product.name,
+            message = stringResource(R.string.delete_item_message),
+            onConfirm = { viewModel.deleteItem(row.item) },
+            onDismiss = { deletingItem = null },
         )
     }
 

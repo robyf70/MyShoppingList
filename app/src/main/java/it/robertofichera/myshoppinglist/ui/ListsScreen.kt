@@ -40,6 +40,8 @@ import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.ShoppingList
+import it.robertofichera.myshoppinglist.data.remainingCents
+import it.robertofichera.myshoppinglist.data.spentCents
 import it.robertofichera.myshoppinglist.data.totalCents
 import it.robertofichera.myshoppinglist.formatCents
 
@@ -49,12 +51,14 @@ fun ListsScreen(
     lists: List<ListWithItems>,
     showPrice: Boolean,
     budgetEnabled: Boolean,
+    confirmDelete: Boolean,
     viewModel: ShoppingViewModel,
     onOpenList: (Long) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     var showNewDialog by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<ShoppingList?>(null) }
+    var deleting by remember { mutableStateOf<ShoppingList?>(null) }
 
     Scaffold(
         topBar = {
@@ -85,10 +89,13 @@ fun ListsScreen(
                     ListCard(
                         entry = entry,
                         showPrice = showPrice,
+                        budgetEnabled = budgetEnabled,
                         onOpen = { onOpenList(entry.list.id) },
                         onEdit = { editing = entry.list },
                         onDuplicate = { viewModel.copyList(entry) },
-                        onDelete = { viewModel.deleteList(entry.list) },
+                        onDelete = {
+                            if (confirmDelete) deleting = entry.list else viewModel.deleteList(entry.list)
+                        },
                     )
                 }
             }
@@ -120,12 +127,22 @@ fun ListsScreen(
             },
         )
     }
+
+    deleting?.let { list ->
+        ConfirmDeleteDialog(
+            name = list.name,
+            message = stringResource(R.string.delete_list_message),
+            onConfirm = { viewModel.deleteList(list) },
+            onDismiss = { deleting = null },
+        )
+    }
 }
 
 @Composable
 private fun ListCard(
     entry: ListWithItems,
     showPrice: Boolean,
+    budgetEnabled: Boolean,
     onOpen: () -> Unit,
     onEdit: () -> Unit,
     onDuplicate: () -> Unit,
@@ -151,6 +168,9 @@ private fun ListCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (budgetEnabled && entry.list.budgetCents > 0) {
+                    BudgetLine(entry.list.budgetCents, entry.spentCents)
+                }
             }
             if (showPrice) {
                 Text(
@@ -179,6 +199,22 @@ private fun ListCard(
             }
         }
     }
+}
+
+/** Once the budget is breached "left" would read as a negative, so the overspend gets its own wording. */
+@Composable
+private fun BudgetLine(budgetCents: Long, spentCents: Long) {
+    val remaining = remainingCents(budgetCents, spentCents)
+    val over = remaining < 0
+    Text(
+        text = if (over) {
+            stringResource(R.string.list_budget_over, formatCents(-remaining), formatCents(budgetCents))
+        } else {
+            stringResource(R.string.list_budget_remaining, formatCents(remaining), formatCents(budgetCents))
+        },
+        style = MaterialTheme.typography.bodySmall,
+        color = if (over) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable

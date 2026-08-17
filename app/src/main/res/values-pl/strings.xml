@@ -11,6 +11,9 @@
     <string name="action_back">Wstecz</string>
     <string name="action_settings">Ustawienia</string>
     <string name="delete_named">Usuń %1$s</string>
+    <string name="delete_confirm_title">Usunąć %1$s?</string>
+    <string name="delete_list_message">Lista i cała jej zawartość zostaną usunięte.</string>
+    <string name="delete_item_message">Ten produkt zostanie usunięty z listy.</string>
 
     <string name="lists_empty">Brak list.\nNaciśnij +, aby utworzyć nową.</string>
     <string name="list_new">Nowa lista</string>
@@ -24,6 +27,8 @@
         <item quantity="many">%1$d pozycji · %2$d kupionych</item>
         <item quantity="other">%1$d pozycji · %2$d kupionych</item>
     </plurals>
+    <string name="list_budget_remaining">Pozostało %1$s z %2$s</string>
+    <string name="list_budget_over">%1$s ponad budżet %2$s</string>
 
     <string name="detail_empty">Nie ma nic do kupienia.\nNaciśnij +, aby dodać produkt.</string>
     <string name="summary_to_spend">Do wydania</string>
@@ -62,8 +67,16 @@
     <string name="settings_show_price_desc">Pytaj o ceny i pokazuj sumy list</string>
     <string name="settings_budget">Maksymalny budżet</string>
     <string name="settings_budget_desc">Ustaw limit wydatków na listę i ostrzegaj po jego przekroczeniu</string>
+    <string name="settings_confirm_delete">Potwierdzaj przed usunięciem</string>
+    <string name="settings_confirm_delete_desc">Pytaj przed usunięciem listy lub produktu</string>
     <string name="settings_version">Wersja</string>
-    <string name="settings_latest_release">Najnowsza wersja</string>
+    <string name="settings_check_updates">Sprawdź aktualizacje</string>
+    <string name="update_checking">Sprawdzanie…</string>
+    <string name="update_up_to_date">Masz najnowszą wersję</string>
+    <string name="update_failed">Nie udało się sprawdzić aktualizacji</string>
+    <string name="update_available">Dostępna wersja %1$s</string>
+    <string name="update_install_hint">Dotknij, aby pobrać i zainstalować</string>
+    <string name="update_downloading">Pobieranie…</string>
     <string name="settings_source">Kod źródłowy</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d zapisany produkt</item>

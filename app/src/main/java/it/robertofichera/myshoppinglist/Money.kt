@@ -1,8 +1,10 @@
 package it.robertofichera.myshoppinglist
 
+import android.content.res.Resources
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * Prices are integer cents everywhere. Parsing goes through BigDecimal rather than
@@ -21,8 +23,27 @@ fun parseQuantity(input: String): Double? {
     return quantity
 }
 
-fun formatCents(cents: Long): String =
-    NumberFormat.getCurrencyInstance().format(BigDecimal.valueOf(cents, 2))
+/**
+ * Currency belongs to the region, digit grouping to the language: an English-language phone
+ * set to Italy spends euros and writes them "€1,234.50". Falls back to [format] when the phone
+ * names no country. Building a locale rather than overriding the currency is what keeps the
+ * fraction digits right — a zero-decimal currency such as JPY gets its own default.
+ */
+internal fun currencyLocale(format: Locale, phone: List<Locale>): Locale {
+    val region = phone.firstOrNull { it.country.isNotEmpty() }?.country ?: return format
+    return runCatching { Locale.Builder().setLocale(format).setRegion(region).build() }
+        .getOrDefault(format)
+}
+
+fun formatCents(cents: Long): String {
+    // The system configuration, not the app's: a per-app language override must not hide the region.
+    val phone = Resources.getSystem().configuration.locales
+    val locale = currencyLocale(
+        format = Locale.getDefault(Locale.Category.FORMAT),
+        phone = List(phone.size()) { phone[it] },
+    )
+    return NumberFormat.getCurrencyInstance(locale).format(BigDecimal.valueOf(cents, 2))
+}
 
 /** Whole quantities read as "2", not "2.0". */
 fun formatQuantity(quantity: Double): String =

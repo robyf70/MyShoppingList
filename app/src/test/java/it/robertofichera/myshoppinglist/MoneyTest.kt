@@ -5,6 +5,8 @@ import it.robertofichera.myshoppinglist.data.lineTotalCents
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import java.util.Currency
+import java.util.Locale
 
 class MoneyTest {
 
@@ -62,6 +64,19 @@ class MoneyTest {
         assertEquals("2", formatQuantity(2.0))
         assertEquals("1.5", formatQuantity(1.5))
         assertEquals("0.75", formatQuantity(0.75))
+    }
+
+    @Test
+    fun `currency follows the phone region, not the app language`() {
+        val locale = currencyLocale(Locale.US, listOf(Locale.ENGLISH, Locale.ITALY))
+        assertEquals("EUR", Currency.getInstance(locale).currencyCode)
+        assertEquals("en", locale.language)
+    }
+
+    @Test
+    fun `falls back to the format locale when the phone names no country`() {
+        assertEquals(Locale.US, currencyLocale(Locale.US, listOf(Locale.ENGLISH, Locale.GERMAN)))
+        assertEquals(Locale.US, currencyLocale(Locale.US, emptyList()))
     }
 
     private fun item(quantity: Double, priceCents: Long) =

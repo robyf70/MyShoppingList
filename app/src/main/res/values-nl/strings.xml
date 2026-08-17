@@ -11,6 +11,9 @@
     <string name="action_back">Terug</string>
     <string name="action_settings">Instellingen</string>
     <string name="delete_named">%1$s verwijderen</string>
+    <string name="delete_confirm_title">%1$s verwijderen?</string>
+    <string name="delete_list_message">De lijst en alles erop wordt verwijderd.</string>
+    <string name="delete_item_message">Dit item wordt van de lijst verwijderd.</string>
 
     <string name="lists_empty">Nog geen lijsten.\nTik op + om er een te maken.</string>
     <string name="list_new">Nieuwe lijst</string>
@@ -21,6 +24,8 @@
         <item quantity="one">%1$d item · %2$d gekocht</item>
         <item quantity="other">%1$d items · %2$d gekocht</item>
     </plurals>
+    <string name="list_budget_remaining">%1$s over van %2$s</string>
+    <string name="list_budget_over">%1$s boven het budget van %2$s</string>
 
     <string name="detail_empty">Nog niets te kopen.\nTik op + om een product toe te voegen.</string>
     <string name="summary_to_spend">Uit te geven</string>
@@ -57,8 +62,16 @@
     <string name="settings_show_price_desc">Vraag prijzen en toon lijsttotalen</string>
     <string name="settings_budget">Maximaal budget</string>
     <string name="settings_budget_desc">Stel een uitgavenlimiet per lijst in en waarschuw bij overschrijding</string>
+    <string name="settings_confirm_delete">Bevestigen voor verwijderen</string>
+    <string name="settings_confirm_delete_desc">Vraag het voordat een lijst of item wordt verwijderd</string>
     <string name="settings_version">Versie</string>
-    <string name="settings_latest_release">Nieuwste versie</string>
+    <string name="settings_check_updates">Controleren op updates</string>
+    <string name="update_checking">Bezig met controleren…</string>
+    <string name="update_up_to_date">Je hebt de nieuwste versie</string>
+    <string name="update_failed">Controleren op updates mislukt</string>
+    <string name="update_available">Versie %1$s beschikbaar</string>
+    <string name="update_install_hint">Tik om te downloaden en installeren</string>
+    <string name="update_downloading">Bezig met downloaden…</string>
     <string name="settings_source">Broncode</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d opgeslagen product</item>

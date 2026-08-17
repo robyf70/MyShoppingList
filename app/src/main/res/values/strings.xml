@@ -17,6 +17,9 @@
     <string name="action_back">Back</string>
     <string name="action_settings">Settings</string>
     <string name="delete_named">Delete %1$s</string>
+    <string name="delete_confirm_title">Delete %1$s?</string>
+    <string name="delete_list_message">The list and everything on it will be removed.</string>
+    <string name="delete_item_message">This item will be removed from the list.</string>
 
     <!-- Lists overview -->
     <string name="lists_empty">No lists yet.\nTap + to create one.</string>
@@ -28,6 +31,8 @@
         <item quantity="one">%1$d item · %2$d bought</item>
         <item quantity="other">%1$d items · %2$d bought</item>
     </plurals>
+    <string name="list_budget_remaining">%1$s left of %2$s</string>
+    <string name="list_budget_over">%1$s over the %2$s budget</string>
 
     <!-- List detail -->
     <string name="detail_empty">Nothing to buy yet.\nTap + to add a product.</string>
@@ -69,8 +74,16 @@
     <string name="settings_show_price_desc">Ask for prices and show list totals</string>
     <string name="settings_budget">Max spending budget</string>
     <string name="settings_budget_desc">Set a spending limit per list and warn when it is passed</string>
+    <string name="settings_confirm_delete">Confirm before deleting</string>
+    <string name="settings_confirm_delete_desc">Ask before removing a list or an item</string>
     <string name="settings_version">Version</string>
-    <string name="settings_latest_release">Latest release</string>
+    <string name="settings_check_updates">Check for updates</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_up_to_date">You are on the latest version</string>
+    <string name="update_failed">Could not check for updates</string>
+    <string name="update_available">Version %1$s available</string>
+    <string name="update_install_hint">Tap to download and install</string>
+    <string name="update_downloading">Downloading…</string>
     <string name="settings_source">Source code</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d saved product</item>
@@ -79,6 +92,7 @@
 
     <string name="repository_url" translatable="false">https://github.com/robyf70/MyShoppingList</string>
     <string name="releases_url" translatable="false">https://github.com/robyf70/MyShoppingList/releases/latest</string>
+    <string name="releases_api_url" translatable="false">https://api.github.com/repos/robyf70/MyShoppingList/releases/latest</string>
 
     <!-- Layout-only formats: symbols and separators, identical in every language -->
     <string name="format_title_budget" translatable="false">%1$s · %2$s</string>

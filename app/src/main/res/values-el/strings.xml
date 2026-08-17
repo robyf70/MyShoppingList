@@ -11,6 +11,9 @@
     <string name="action_back">Πίσω</string>
     <string name="action_settings">Ρυθμίσεις</string>
     <string name="delete_named">Διαγραφή %1$s</string>
+    <string name="delete_confirm_title">Διαγραφή %1$s;</string>
+    <string name="delete_list_message">Η λίστα και όλα όσα περιέχει θα διαγραφούν.</string>
+    <string name="delete_item_message">Αυτό το είδος θα αφαιρεθεί από τη λίστα.</string>
 
     <string name="lists_empty">Δεν υπάρχουν λίστες.\nΠατήστε + για να δημιουργήσετε μία.</string>
     <string name="list_new">Νέα λίστα</string>
@@ -21,6 +24,8 @@
         <item quantity="one">%1$d είδος · %2$d αγορασμένα</item>
         <item quantity="other">%1$d είδη · %2$d αγορασμένα</item>
     </plurals>
+    <string name="list_budget_remaining">Απομένουν %1$s από %2$s</string>
+    <string name="list_budget_over">%1$s πάνω από τον προϋπολογισμό των %2$s</string>
 
     <string name="detail_empty">Δεν υπάρχει τίποτα για αγορά.\nΠατήστε + για να προσθέσετε ένα προϊόν.</string>
     <string name="summary_to_spend">Για δαπάνη</string>
@@ -57,8 +62,16 @@
     <string name="settings_show_price_desc">Να ζητούνται τιμές και να εμφανίζονται τα σύνολα των λιστών</string>
     <string name="settings_budget">Μέγιστος προϋπολογισμός</string>
     <string name="settings_budget_desc">Ορίστε όριο δαπανών ανά λίστα και ειδοποίηση όταν ξεπεραστεί</string>
+    <string name="settings_confirm_delete">Επιβεβαίωση πριν τη διαγραφή</string>
+    <string name="settings_confirm_delete_desc">Ερώτηση πριν την αφαίρεση λίστας ή είδους</string>
     <string name="settings_version">Έκδοση</string>
-    <string name="settings_latest_release">Τελευταία έκδοση</string>
+    <string name="settings_check_updates">Έλεγχος για ενημερώσεις</string>
+    <string name="update_checking">Έλεγχος…</string>
+    <string name="update_up_to_date">Έχετε την πιο πρόσφατη έκδοση</string>
+    <string name="update_failed">Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις</string>
+    <string name="update_available">Διαθέσιμη έκδοση %1$s</string>
+    <string name="update_install_hint">Πατήστε για λήψη και εγκατάσταση</string>
+    <string name="update_downloading">Γίνεται λήψη…</string>
     <string name="settings_source">Πηγαίος κώδικας</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d αποθηκευμένο προϊόν</item>

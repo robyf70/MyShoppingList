@@ -54,6 +54,7 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val products by viewModel.products.collectAsStateWithLifecycle()
     val productsWithUsage by viewModel.productsWithUsage.collectAsStateWithLifecycle()
+    val update by viewModel.update.collectAsStateWithLifecycle()
 
     val listId = openListId
 
@@ -79,6 +80,10 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
             onShowQuantityChange = viewModel::setShowQuantity,
             onShowPriceChange = viewModel::setShowPrice,
             onBudgetEnabledChange = viewModel::setBudgetEnabled,
+            onConfirmDeleteChange = viewModel::setConfirmDelete,
+            update = update,
+            onCheckUpdate = { viewModel.checkForUpdate(force = true) },
+            onInstallUpdate = viewModel::downloadAndInstall,
             onOpenProducts = { showProducts = true },
             onBack = { showSettings = false },
         )
@@ -95,6 +100,7 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
             lists = lists,
             showPrice = settings.showPrice,
             budgetEnabled = settings.budgetEnabled,
+            confirmDelete = settings.confirmDelete,
             viewModel = viewModel,
             onOpenList = { openListId = it },
             onOpenSettings = { showSettings = true },
@@ -126,6 +132,7 @@ private fun ListDetailRoute(
         showQuantity = settings.showQuantity,
         showPrice = settings.showPrice,
         budgetEnabled = settings.budgetEnabled,
+        confirmDelete = settings.confirmDelete,
         viewModel = viewModel,
         onBack = onBack,
     )

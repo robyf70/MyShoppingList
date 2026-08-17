@@ -11,6 +11,9 @@
     <string name="action_back">Indietro</string>
     <string name="action_settings">Impostazioni</string>
     <string name="delete_named">Elimina %1$s</string>
+    <string name="delete_confirm_title">Eliminare %1$s?</string>
+    <string name="delete_list_message">La lista e tutto ciò che contiene verranno eliminati.</string>
+    <string name="delete_item_message">Questo articolo verrà rimosso dalla lista.</string>
 
     <string name="lists_empty">Nessuna lista.\nTocca + per crearne una.</string>
     <string name="list_new">Nuova lista</string>
@@ -21,6 +24,8 @@
         <item quantity="one">%1$d articolo · %2$d comprati</item>
         <item quantity="other">%1$d articoli · %2$d comprati</item>
     </plurals>
+    <string name="list_budget_remaining">%1$s rimanenti su %2$s</string>
+    <string name="list_budget_over">%1$s oltre il budget di %2$s</string>
 
     <string name="detail_empty">Niente da comprare.\nTocca + per aggiungere un prodotto.</string>
     <string name="summary_to_spend">Da spendere</string>
@@ -57,8 +62,16 @@
     <string name="settings_show_price_desc">Chiedi i prezzi e mostra i totali delle liste</string>
     <string name="settings_budget">Budget massimo di spesa</string>
     <string name="settings_budget_desc">Imposta un limite di spesa per lista e avvisa quando viene superato</string>
+    <string name="settings_confirm_delete">Conferma prima di eliminare</string>
+    <string name="settings_confirm_delete_desc">Chiedi conferma prima di rimuovere una lista o un articolo</string>
     <string name="settings_version">Versione</string>
-    <string name="settings_latest_release">Ultima versione</string>
+    <string name="settings_check_updates">Cerca aggiornamenti</string>
+    <string name="update_checking">Controllo in corso…</string>
+    <string name="update_up_to_date">Hai già l\'ultima versione</string>
+    <string name="update_failed">Impossibile cercare aggiornamenti</string>
+    <string name="update_available">Versione %1$s disponibile</string>
+    <string name="update_install_hint">Tocca per scaricare e installare</string>
+    <string name="update_downloading">Download in corso…</string>
     <string name="settings_source">Codice sorgente</string>
     <plurals name="settings_product_count">
         <item quantity="one">%1$d prodotto salvato</item>

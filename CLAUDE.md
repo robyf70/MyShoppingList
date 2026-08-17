@@ -4,7 +4,8 @@ Guidance for Claude Code (claude.ai/code) when working in this repository.
 
 ## Overview
 
-**My Shopping List** — a single-module Android app for keeping multiple named shopping lists, each holding products with a quantity and a price. Products live in a reusable catalog shared across lists, with autocomplete when adding an item. Jetpack Compose UI, Room for persistence, no backend and no network access.
+**My Shopping List** — a single-module Android app for keeping multiple named shopping lists, each holding products with a quantity and a price. Products live in a reusable catalog shared across lists, with autocomplete when adding an item. Jetpack Compose UI, Room for persistence, no backend. The only network call in the app is the
+update check against the GitHub releases API.
 
 It is deliberately small. There is no DI framework, no navigation library, no repository layer over the DAO, and one ViewModel for the whole app. Before adding any of those, check that a concrete need exists — the app is currently well under the size where they pay for themselves.
 
@@ -36,6 +37,7 @@ data/
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
   Budget.kt            spentCents / remainingCents / overspendCents — pure, unit-tested
+  Updates.kt           GitHub release lookup, DownloadManager download, install intent
 ui/
   ListsScreen.kt       list overview, EmptyState
   ListDetailScreen.kt  items within one list
@@ -44,6 +46,7 @@ ui/
   ListDialog.kt        create/edit a list: name + optional max budget
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
+  ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
   theme/               Material 3 theme (from the Android Studio template)
 ```
 
@@ -60,9 +63,21 @@ Unit tests: `app/src/test/java/it/robertofichera/myshoppinglist/`. There is no `
 
 **Money is integer cents (`Long`), never `Double`.** `Item.priceCents` is the stored form; `Money.kt` parses and formats it. Parsing goes through `BigDecimal` so `"1.005"` becomes `101` rather than `100`. Both `.` and `,` are accepted as decimal separators.
 
+**The currency comes from the phone's region, the number format from its language.** `currencyLocale()` in `Money.kt` reads `Resources.getSystem().configuration.locales` — the *system* configuration, so a per-app language override cannot hide the region — takes the first locale naming a country, and builds a locale from that region plus the format language. `formatCents` then asks `NumberFormat` for that locale, which is what keeps a zero-decimal currency like JPY on zero decimals. An English-language phone set to Italy shows `€1,234.50`.
+
 **Line totals round once per line, then sum** (`Item.lineTotalCents`, `ListWithItems.totalCents`). Quantities are `Double` because decimal quantities (1.5 kg) are supported, so `quantity * priceCents` needs rounding — doing it per line and summing matches how a receipt adds up. Don't sum unrounded products.
 
 **Products are a shared catalog, referenced by id.** They are created either from `ProductsScreen` directly or implicitly by naming one while adding a list item; the two are indistinguishable afterwards. `Item.productId` points at a `Product`; the name lives only in the catalog, so renaming a product renames it on every list including past ones. Editing a product's `defaultPriceCents` does **not** rewrite existing items — they keep the price of the trip they belong to. Deleting a product that is still referenced is blocked — `ProductsScreen` disables the button and shows the usage count, with `ForeignKey.RESTRICT` as the database-level backstop. Product lookup is `COLLATE NOCASE`, so typing "milk" reuses an existing "Milk" instead of creating a twin. `Product.defaultPriceCents` is the last price entered for it and only prefills the dialog; each item still records what that trip actually cost.
+
+**The app updates itself from GitHub releases.** `ShoppingViewModel` checks
+`releases_api_url` at most once a day at launch (silently — a failed check says nothing) and
+on demand from the Settings row, which renders the whole flow off one `UpdateState`. Only a
+check that reached GitHub stamps `SettingsStore.lastUpdateCheck`, so an offline day retries.
+The APK goes to the public Downloads folder rather than app-private storage: that is what makes
+`DownloadManager.getUriForDownloadedFile` return a URI grantable to the system installer, so no
+`FileProvider` is needed. Download and install run in `viewModelScope`, so leaving Settings
+mid-download does not abandon it. Tags are compared by `isNewerVersion`, which ignores a leading
+`v` and refuses anything that is not dotted numbers.
 
 **Navigation is three saveable values, not a library.** `ShoppingApp()` holds `openListId: Long?`, `showSettings: Boolean` and `showProducts: Boolean` in `rememberSaveable`, with a `BackHandler` unwinding products → settings → lists. All three types are natively saveable, so no custom `Saver` is needed. The hierarchy is a strict linear drill-down; adopt `navigation-compose` when deep links, screen-to-screen arguments, or transition animations arrive — the screen count alone is not the trigger.
 
@@ -122,6 +137,8 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 ## Testing
 
 `MoneyTest.kt` covers the money path — parsing, rejection of bad input, per-line rounding, and that totals sum rounded lines. Money and rounding logic must stay covered; that is where a silent bug costs the user real money.
+
+`UpdatesTest.kt` covers `isNewerVersion`. Keep version comparison pure and out of the networking path — offering a downgrade, or refusing a real update, is the failure that matters there.
 
 `ProductSuggestionsTest.kt` covers `filterProducts` / `isSettledOn`. Keep autocomplete logic in `ProductSuggestions.kt` as pure functions so it stays testable without an emulator.
 
