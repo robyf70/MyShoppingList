@@ -1,6 +1,7 @@
 package it.robertofichera.myshoppinglist
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.withTransaction
@@ -10,7 +11,9 @@ import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.DownloadResult
 import it.robertofichera.myshoppinglist.data.Release
+import it.robertofichera.myshoppinglist.data.ScannedItem
 import it.robertofichera.myshoppinglist.data.SettingsStore
+import it.robertofichera.myshoppinglist.data.scanImageForItems
 import it.robertofichera.myshoppinglist.data.ShoppingList
 import it.robertofichera.myshoppinglist.data.downloadedApk
 import it.robertofichera.myshoppinglist.data.enqueueDownload
@@ -33,6 +36,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** [Offered.existing] is the local list this share replaces, or null when it is new here. */
+/** What the picture yielded, from the moment one is chosen to the moment its items are added. */
+sealed interface ScanState {
+    data object None : ScanState
+    data object Working : ScanState
+    data class Found(val items: List<ScannedItem>) : ScanState
+    data object Empty : ScanState
+}
+
 sealed interface ImportState {
     data object None : ImportState
     data class Offered(val shared: SharedList, val existing: ShoppingList?) : ImportState
@@ -49,6 +60,37 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val update: StateFlow<UpdateState> = _update.asStateFlow()
+
+    private val _scan = MutableStateFlow<ScanState>(ScanState.None)
+    val scan: StateFlow<ScanState> = _scan.asStateFlow()
+
+    /** Recognition happens off the main thread inside ML Kit; this only waits for it. */
+    fun scanImage(uri: Uri) = viewModelScope.launch {
+        _scan.value = ScanState.Working
+        val items = scanImageForItems(getApplication(), uri)
+        _scan.value = if (items.isEmpty()) ScanState.Empty else ScanState.Found(items)
+    }
+
+    fun dismissScan() {
+        _scan.value = ScanState.None
+    }
+
+    /** One transaction, so a picture full of items either lands or does not. */
+    fun addScanned(listId: Long, items: List<ScannedItem>) = viewModelScope.launch {
+        _scan.value = ScanState.None
+        db.withTransaction {
+            items.forEach { item ->
+                dao.insertItem(
+                    Item(
+                        listId = listId,
+                        productId = productIdFor(item.name, item.priceCents),
+                        quantity = item.quantity,
+                        priceCents = item.priceCents,
+                    ),
+                )
+            }
+        }
+    }
 
     private val _pendingImport = MutableStateFlow<ImportState>(ImportState.None)
     val pendingImport: StateFlow<ImportState> = _pendingImport.asStateFlow()

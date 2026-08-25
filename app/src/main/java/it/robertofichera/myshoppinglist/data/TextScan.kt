@@ -1,0 +1,36 @@
+package it.robertofichera.myshoppinglist.data
+
+import android.content.Context
+import android.net.Uri
+import androidx.core.content.FileProvider
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
+/**
+ * Reads [uri] and returns the items its text spells out, empty when there is nothing to read.
+ * Recognition is on-device: the picture never leaves the phone.
+ */
+suspend fun scanImageForItems(context: Context, uri: Uri): List<ScannedItem> {
+    val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull() ?: return emptyList()
+    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    val text = suspendCoroutine { continuation ->
+        recognizer.process(image)
+            .addOnSuccessListener { continuation.resume(it.text) }
+            .addOnFailureListener { continuation.resume("") }
+    }
+    recognizer.close()
+    return parseScannedText(text)
+}
+
+/**
+ * Where the camera app writes the picture being read. It is the cache, so nothing lands in the
+ * gallery, and one fixed name means each picture replaces the last rather than piling up.
+ */
+fun newCameraImageUri(context: Context): Uri {
+    val dir = File(context.cacheDir, "scans").apply { mkdirs() }
+    return FileProvider.getUriForFile(context, "${context.packageName}.files", File(dir, "scan.jpg"))
+}

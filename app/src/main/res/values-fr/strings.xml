@@ -92,4 +92,11 @@
     <string name="color_swatch">Couleur %1$d</string>
     <string name="settings_share_app">Partager cette application</string>
     <string name="settings_share_app_desc">Envoyer à quelqu’un le lien pour l’installer</string>
+    <string name="item_add_from_image">Ajouter depuis une image</string>
+    <string name="scan_source_message">Lire les produits sur une photo de liste, une note ou une capture d’écran.</string>
+    <string name="scan_camera">En prendre une</string>
+    <string name="scan_pick">En choisir une</string>
+    <string name="scan_working">Lecture de l’image…</string>
+    <string name="scan_none">Aucun produit n’a pu être lu sur cette image</string>
+    <string name="scan_title">Produits trouvés</string>
 </resources>

@@ -30,8 +30,8 @@ android {
         applicationId = "it.robertofichera.myshoppinglist"
         minSdk = 31
         targetSdk = 37
-        versionCode = 12
-        versionName = "1.7.1"
+        versionCode = 13
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,6 +50,9 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("release")
+            // ML Kit's OCR library is ~10 MB per architecture and every phone runs one of them.
+            // Debug keeps them all so an x86_64 emulator still works.
+            ndk { abiFilters += "arm64-v8a" }
             optimization {
                 enable = true
             }
@@ -85,6 +88,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.mlkit.text.recognition)
     testImplementation(libs.junit)
     // org.json is an empty stub in unit tests; this supplies the real one.
     testImplementation(libs.json)

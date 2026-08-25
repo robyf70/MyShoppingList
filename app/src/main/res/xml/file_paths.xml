@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- The camera app writes here; the picture is read, then overwritten by the next one. -->
+    <cache-path name="scans" path="scans/" />
+</paths>

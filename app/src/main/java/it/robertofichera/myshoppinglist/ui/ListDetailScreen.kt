@@ -17,7 +17,12 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import android.net.Uri
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,12 +42,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import it.robertofichera.myshoppinglist.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import it.robertofichera.myshoppinglist.ScanState
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
+import it.robertofichera.myshoppinglist.data.newCameraImageUri
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.lineTotalCents
@@ -71,6 +80,17 @@ fun ListDetailScreen(
     var editingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
     var deletingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
+    var scanSourceOpen by remember { mutableStateOf(false) }
+
+    val scan by viewModel.scan.collectAsStateWithLifecycle()
+    val scanContext = LocalContext.current
+    val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let { viewModel.scanImage(it) }
+    }
+    var cameraUri by remember { mutableStateOf<Uri?>(null) }
+    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+        if (taken) cameraUri?.let { viewModel.scanImage(it) }
+    }
 
     val budgetCents = if (budgetEnabled) entry.list.budgetCents else 0L
     val spent = entry.spentCents
@@ -127,8 +147,19 @@ fun ListDetailScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { addingItem = true }) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.item_add))
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                SmallFloatingActionButton(onClick = { scanSourceOpen = true }) {
+                    Icon(
+                        painterResource(R.drawable.ic_photo_camera),
+                        contentDescription = stringResource(R.string.item_add_from_image),
+                    )
+                }
+                FloatingActionButton(onClick = { addingItem = true }) {
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.item_add))
+                }
             }
         },
     ) { padding ->
@@ -172,6 +203,56 @@ fun ListDetailScreen(
                 }
             }
         }
+    }
+
+    if (scanSourceOpen) {
+        AlertDialog(
+            onDismissRequest = { scanSourceOpen = false },
+            title = { Text(stringResource(R.string.item_add_from_image)) },
+            text = { Text(stringResource(R.string.scan_source_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    scanSourceOpen = false
+                    val uri = newCameraImageUri(scanContext)
+                    cameraUri = uri
+                    takePicture.launch(uri)
+                }) { Text(stringResource(R.string.scan_camera)) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    scanSourceOpen = false
+                    pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }) { Text(stringResource(R.string.scan_pick)) }
+            },
+        )
+    }
+
+    when (val state = scan) {
+        is ScanState.None -> Unit
+
+        is ScanState.Working -> AlertDialog(
+            onDismissRequest = viewModel::dismissScan,
+            text = { Text(stringResource(R.string.scan_working)) },
+            confirmButton = {},
+        )
+
+        is ScanState.Empty -> AlertDialog(
+            onDismissRequest = viewModel::dismissScan,
+            text = { Text(stringResource(R.string.scan_none)) },
+            confirmButton = {
+                TextButton(onClick = viewModel::dismissScan) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+
+        is ScanState.Found -> ScanReviewDialog(
+            items = state.items,
+            showQuantity = showQuantity,
+            showPrice = showPrice,
+            onConfirm = { viewModel.addScanned(entry.list.id, it) },
+            onDismiss = viewModel::dismissScan,
+        )
     }
 
     pendingTick?.let { row ->
