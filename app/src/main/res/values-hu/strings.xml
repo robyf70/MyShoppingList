@@ -94,7 +94,7 @@
     <string name="settings_share_app">Alkalmazás megosztása</string>
     <string name="settings_share_app_desc">Küldd el valakinek a telepítési hivatkozást</string>
     <string name="item_add_from_image">Hozzáadás képről</string>
-    <string name="scan_source_message">Beolvassa a termékeket egy listáról, jegyzetről vagy képernyőképről készült képről.</string>
+    <string name="scan_source_message">Beolvassa a termékeket egy listáról, jegyzetről vagy képernyőképről készült képről. A nyomtatott szöveget olvassa a legjobban — kézírásnál a számok gyakran hibásak, ezért ellenőrizd őket.</string>
     <string name="scan_camera">Fénykép készítése</string>
     <string name="scan_pick">Kép választása</string>
     <string name="scan_working">Kép beolvasása…</string>

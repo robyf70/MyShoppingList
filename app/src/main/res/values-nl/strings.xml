@@ -93,7 +93,7 @@
     <string name="settings_share_app">Deze app delen</string>
     <string name="settings_share_app_desc">Stuur iemand de link om hem te installeren</string>
     <string name="item_add_from_image">Toevoegen vanaf een afbeelding</string>
-    <string name="scan_source_message">Lees de producten van een foto van een lijst, een notitie of een schermafbeelding.</string>
+    <string name="scan_source_message">Lees de producten van een foto van een lijst, een notitie of een schermafbeelding. Gedrukte tekst gaat het best — bij handschrift kloppen de getallen vaak niet, dus controleer ze.</string>
     <string name="scan_camera">Maak er een</string>
     <string name="scan_pick">Kies er een</string>
     <string name="scan_working">Afbeelding wordt gelezen…</string>

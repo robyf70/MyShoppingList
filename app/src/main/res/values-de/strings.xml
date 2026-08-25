@@ -93,7 +93,7 @@
     <string name="settings_share_app">Diese App teilen</string>
     <string name="settings_share_app_desc">Jemandem den Link zum Installieren senden</string>
     <string name="item_add_from_image">Aus einem Bild hinzufügen</string>
-    <string name="scan_source_message">Die Produkte aus einem Foto einer Liste, einer Notiz oder einem Screenshot lesen.</string>
+    <string name="scan_source_message">Die Produkte aus einem Foto einer Liste, einer Notiz oder einem Screenshot lesen. Gedruckter Text wird am besten erkannt — bei Handschrift stimmen die Zahlen oft nicht, prüfe sie also.</string>
     <string name="scan_camera">Aufnehmen</string>
     <string name="scan_pick">Auswählen</string>
     <string name="scan_working">Bild wird gelesen…</string>

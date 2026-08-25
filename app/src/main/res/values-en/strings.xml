@@ -93,7 +93,7 @@
     <string name="settings_share_app">Share this app</string>
     <string name="settings_share_app_desc">Send someone the link to install it</string>
     <string name="item_add_from_image">Add from a picture</string>
-    <string name="scan_source_message">Read the items from a picture of a list, a note or a screenshot.</string>
+    <string name="scan_source_message">Read the items from a picture of a list, a note or a screenshot. Printed text reads best — handwriting often gets the numbers wrong, so check them.</string>
     <string name="scan_camera">Take one</string>
     <string name="scan_pick">Choose one</string>
     <string name="scan_working">Reading the picture…</string>
