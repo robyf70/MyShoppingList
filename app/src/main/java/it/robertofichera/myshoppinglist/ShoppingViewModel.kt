@@ -16,6 +16,11 @@ import it.robertofichera.myshoppinglist.data.downloadedApk
 import it.robertofichera.myshoppinglist.data.enqueueDownload
 import it.robertofichera.myshoppinglist.data.fetchLatestRelease
 import it.robertofichera.myshoppinglist.data.installIntent
+import it.robertofichera.myshoppinglist.data.ShareCodec
+import it.robertofichera.myshoppinglist.data.SharedItem
+import it.robertofichera.myshoppinglist.data.SharedList
+import it.robertofichera.myshoppinglist.data.lineTotalCents
+import it.robertofichera.myshoppinglist.data.totalCents
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -189,6 +194,43 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                 DownloadResult.Running -> delay(POLL_INTERVAL_MS)
             }
         }
+    }
+
+    /**
+     * Readable on its own for someone without the app; the token on the last line is what the
+     * app reads back. Quantity and price always travel, whatever Settings currently renders.
+     */
+    fun shareText(entry: ListWithItems, money: MoneyFormat): String {
+        val app = getApplication<Application>()
+        val lines = entry.items.map { row ->
+            app.getString(
+                R.string.format_share_line,
+                row.product.name,
+                formatQuantity(row.item.quantity),
+                money.format(row.lineTotalCents),
+            )
+        }
+        val total = app.getString(
+            R.string.format_dot_pair,
+            app.getString(R.string.summary_to_spend),
+            money.format(entry.totalCents),
+        )
+        val payload = ShareCodec.encode(
+            SharedList(
+                uuid = entry.list.uuid,
+                name = entry.list.name,
+                budgetCents = entry.list.budgetCents,
+                items = entry.items.map { row ->
+                    SharedItem(
+                        name = row.product.name,
+                        quantity = row.item.quantity,
+                        priceCents = row.item.priceCents,
+                        bought = row.item.bought,
+                    )
+                },
+            ),
+        )
+        return (listOf(entry.list.name) + lines + listOf(total, "", payload)).joinToString("\n")
     }
 
     /**

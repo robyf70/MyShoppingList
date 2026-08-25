@@ -10,6 +10,7 @@
     <string name="action_delete">Elimina</string>
     <string name="action_back">Indietro</string>
     <string name="action_settings">Impostazioni</string>
+    <string name="action_share">Condividi</string>
     <string name="delete_named">Elimina %1$s</string>
     <string name="delete_confirm_title">Eliminare %1$s?</string>
     <string name="delete_list_message">La lista e tutto ciò che contiene verranno eliminati.</string>

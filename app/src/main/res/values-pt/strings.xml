@@ -10,6 +10,7 @@
     <string name="action_delete">Eliminar</string>
     <string name="action_back">Voltar</string>
     <string name="action_settings">Definições</string>
+    <string name="action_share">Partilhar</string>
     <string name="delete_named">Eliminar %1$s</string>
     <string name="delete_confirm_title">Eliminar %1$s?</string>
     <string name="delete_list_message">A lista e tudo o que contém serão eliminados.</string>

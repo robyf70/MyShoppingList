@@ -10,6 +10,7 @@
     <string name="action_delete">Διαγραφή</string>
     <string name="action_back">Πίσω</string>
     <string name="action_settings">Ρυθμίσεις</string>
+    <string name="action_share">Κοινή χρήση</string>
     <string name="delete_named">Διαγραφή %1$s</string>
     <string name="delete_confirm_title">Διαγραφή %1$s;</string>
     <string name="delete_list_message">Η λίστα και όλα όσα περιέχει θα διαγραφούν.</string>

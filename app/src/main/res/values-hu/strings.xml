@@ -10,6 +10,7 @@
     <string name="action_delete">Törlés</string>
     <string name="action_back">Vissza</string>
     <string name="action_settings">Beállítások</string>
+    <string name="action_share">Megosztás</string>
     <string name="delete_named">%1$s törlése</string>
     <string name="delete_confirm_title">Törli a következőt: %1$s?</string>
     <string name="delete_list_message">A lista és a teljes tartalma törlődik.</string>

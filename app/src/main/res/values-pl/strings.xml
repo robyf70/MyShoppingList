@@ -10,6 +10,7 @@
     <string name="action_delete">Usuń</string>
     <string name="action_back">Wstecz</string>
     <string name="action_settings">Ustawienia</string>
+    <string name="action_share">Udostępnij</string>
     <string name="delete_named">Usuń %1$s</string>
     <string name="delete_confirm_title">Usunąć %1$s?</string>
     <string name="delete_list_message">Lista i cała jej zawartość zostaną usunięte.</string>

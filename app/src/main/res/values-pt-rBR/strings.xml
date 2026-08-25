@@ -10,6 +10,7 @@
     <string name="action_delete">Excluir</string>
     <string name="action_back">Voltar</string>
     <string name="action_settings">Configurações</string>
+    <string name="action_share">Compartilhar</string>
     <string name="delete_named">Excluir %1$s</string>
     <string name="delete_confirm_title">Excluir %1$s?</string>
     <string name="delete_list_message">A lista e tudo o que ela contém serão excluídos.</string>

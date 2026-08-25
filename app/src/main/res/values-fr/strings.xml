@@ -10,6 +10,7 @@
     <string name="action_delete">Supprimer</string>
     <string name="action_back">Retour</string>
     <string name="action_settings">Paramètres</string>
+    <string name="action_share">Partager</string>
     <string name="delete_named">Supprimer %1$s</string>
     <string name="delete_confirm_title">Supprimer %1$s ?</string>
     <string name="delete_list_message">La liste et tout ce qu\'elle contient seront supprimés.</string>

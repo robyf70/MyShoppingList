@@ -10,6 +10,7 @@
     <string name="action_delete">Löschen</string>
     <string name="action_back">Zurück</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="action_share">Teilen</string>
     <string name="delete_named">%1$s löschen</string>
     <string name="delete_confirm_title">%1$s löschen?</string>
     <string name="delete_list_message">Die Liste und ihr gesamter Inhalt werden gelöscht.</string>
