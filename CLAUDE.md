@@ -30,10 +30,11 @@ MainActivity.kt        Activity + ShoppingApp() root composable (owns the back s
 ShoppingViewModel.kt   the app's only ViewModel; holds the DAO and SettingsStore
 Money.kt               price/quantity parsing and formatting
 data/
-  Entities.kt          ShoppingList + Product + Item @Entity, ItemWithProduct,
-                       ListWithItems, ProductWithUsage, total helpers
+  Entities.kt          ShoppingList (uuid, colorArgb) + Product + Item @Entity,
+                       ItemWithProduct, ListWithItems, ProductWithUsage, total helpers
   ShoppingDao.kt       @Dao, returns Flows for reads
-  AppDatabase.kt       @Database(version = 4) + getInstance() + MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4
+  AppDatabase.kt       @Database(version = 5) + getInstance() + MIGRATION_1_2, MIGRATION_2_3,
+                       MIGRATION_3_4, MIGRATION_4_5
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
   ShareCodec.kt        encode/decode a list into an `msl:<version>:` share token
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
@@ -45,10 +46,12 @@ ui/
   ListDetailScreen.kt  items within one list
   SettingsScreen.kt    field-visibility toggles + link to Products
   ProductsScreen.kt    catalog manager: add, edit, delete-when-unused
-  ListDialog.kt        create/edit a list: name + optional max budget
+  ListDialog.kt        create/edit a list: name, optional max budget, card colour
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
-  ImportDialog.kt       offer to import a received share or skip it
+  ImportDialog.kt      offer to import a received share or skip it
+  ShareList.kt         hands a list's share text to the system share sheet
+  ColorPicker.kt       the list colour swatches, the custom sliders, and readableOn
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
   CurrencyDialog.kt    country picker for the currency, "Automatic" first
   theme/               Material 3 theme (from the Android Studio template)
@@ -93,7 +96,11 @@ mid-download does not abandon it. Tags are compared by `isNewerVersion`, which i
 
 **The budget is measured against what has been spent, not what is planned.** `Remaining = budget − spent` (bought items only), and the over-budget prompt fires when *ticking an item as bought* would push spend past `ShoppingList.budgetCents`. Unticking never prompts. `budgetCents = 0` means no budget. If a list is already over, every further tick asks again — deliberately, so the warning does not go quiet once breached. Editing a bought item's price can still push spend over without prompting; the check is on ticking only.
 
-**A list is shared as a copy with a stable identity.** `ShoppingList.uuid` travels with the share, so re-importing a list the device already has replaces it rather than duplicating it; merge granularity is the whole list, last writer wins. The payload is gzipped JSON behind an `msl:<version>:` token inside an ordinary `text/plain` share, so the text stays readable to someone without the app and the app never touches the network to send it. Items travel by product *name* — ids are local to a device. Receiving is a `text/plain` share target plus a `myshoppinglist://` scheme; both hand raw text to `ShareCodec.decode`, which returns null for anything malformed because a chat message is untrusted. Import never rewrites an existing product's `defaultPriceCents`: that is the last price *this* user entered.
+**A list is shared as a copy with a stable identity.** `ShoppingList.uuid` travels with the share, so re-importing a list the device already has replaces it rather than duplicating it; merge granularity is the whole list, last writer wins. The payload is gzipped JSON behind an `msl:<version>:` token, carried in the **fragment** of a link — `share_link_url` — so it never reaches a server, and the readable list above it stands on its own for someone without the app. Items travel by product *name* — ids are local to a device.
+
+**The share is a link because a messenger will not hand over a text message.** WhatsApp offers no Share on one at all — only Copy and Forward, neither of which reaches another app — and messengers linkify `https` and nothing else. So the app declares an `autoVerify` filter for `https://robyf70.github.io/msl`, verified against `.well-known/assetlinks.json` in the separate `robyf70.github.io` repo, which must sit at the **domain root** where a project page cannot reach. That file names the *release* signing fingerprint, so debug builds never verify. `msl/index.html` there is the fallback for browsers that ignore a verified link: it reads the fragment and offers an `intent://` button, which is why the `myshoppinglist://` filter and the `text/plain` share target both remain. All three paths hand raw text to `ShareCodec.decode`, which returns null for anything malformed because a chat message is untrusted. Import never rewrites an existing product's `defaultPriceCents`: that is the last price *this* user entered.
+
+**A list's colour is stored as plain ARGB, and 0 means the theme decides.** A preset swatch and a hand-picked colour are therefore the same thing to the database, and there is one code path rather than two. Because a custom colour can be anything, the text over it is not themed but derived: `readableOn` picks black or white by luminance, and both the card and the detail screen's top bar go through it. Do not name that helper `contentColorFor` — Material 3 has one, and two of that name in one package invites the wrong one being called.
 
 **Settings change what is rendered, never what is stored.** `showQuantity` / `showPrice` hide fields in the dialogs and rows; values already on an `Item` are preserved and reappear when the toggle goes back on. With price shown but quantity hidden, rows display the line total (not the unit price), so a "3 × €2" line isn't misrepresented.
 
