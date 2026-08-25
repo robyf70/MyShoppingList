@@ -87,4 +87,8 @@
     <string name="import_update_title">Frissíti a(z) %1$s listát?</string>
     <string name="import_update_message">A lista saját másolatát felülírja a megosztott változat.</string>
     <string name="import_failed">Ez az üzenet nem tartalmaz megosztott listát</string>
+    <string name="field_color">Szín</string>
+    <string name="color_default">Alapértelmezett</string>
+    <string name="color_custom">Egyéni</string>
+    <string name="color_swatch">%1$d. szín</string>
 </resources>

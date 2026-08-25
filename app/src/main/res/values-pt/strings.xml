@@ -86,4 +86,8 @@
     <string name="import_update_title">Atualizar %1$s?</string>
     <string name="import_update_message">A tua cópia desta lista será substituída pela partilhada.</string>
     <string name="import_failed">Essa mensagem não contém uma lista partilhada</string>
+    <string name="field_color">Cor</string>
+    <string name="color_default">Predefinido</string>
+    <string name="color_custom">Personalizado</string>
+    <string name="color_swatch">Cor %1$d</string>
 </resources>

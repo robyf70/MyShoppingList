@@ -86,4 +86,8 @@
     <string name="import_update_title">Ενημέρωση %1$s;</string>
     <string name="import_update_message">Το αντίγραφό σας αυτής της λίστας θα αντικατασταθεί από την κοινόχρηστη.</string>
     <string name="import_failed">Αυτό το μήνυμα δεν περιέχει κοινόχρηστη λίστα</string>
+    <string name="field_color">Χρώμα</string>
+    <string name="color_default">Προεπιλογή</string>
+    <string name="color_custom">Προσαρμογή</string>
+    <string name="color_swatch">Χρώμα %1$d</string>
 </resources>

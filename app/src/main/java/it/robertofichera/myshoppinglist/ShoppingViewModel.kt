@@ -68,12 +68,21 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     fun observeList(listId: Long): Flow<ListWithItems?> = dao.observeList(listId)
 
-    fun addList(name: String, budgetCents: Long) = viewModelScope.launch {
-        dao.insertList(ShoppingList(name = name.trim(), budgetCents = budgetCents))
+    fun addList(name: String, budgetCents: Long, colorArgb: Int) = viewModelScope.launch {
+        dao.insertList(
+            ShoppingList(name = name.trim(), budgetCents = budgetCents, colorArgb = colorArgb),
+        )
     }
 
-    fun updateList(list: ShoppingList, name: String, budgetCents: Long) = viewModelScope.launch {
-        dao.updateList(list.copy(name = name.trim(), budgetCents = budgetCents))
+    fun updateList(
+        list: ShoppingList,
+        name: String,
+        budgetCents: Long,
+        colorArgb: Int,
+    ) = viewModelScope.launch {
+        dao.updateList(
+            list.copy(name = name.trim(), budgetCents = budgetCents, colorArgb = colorArgb),
+        )
     }
 
     fun deleteList(list: ShoppingList) = viewModelScope.launch { dao.deleteList(list) }
@@ -86,6 +95,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                     name = getApplication<Application>()
                         .getString(R.string.list_copy_name, entry.list.name),
                     budgetCents = entry.list.budgetCents,
+                    colorArgb = entry.list.colorArgb,
                 )
             )
             entry.items.forEach { row ->

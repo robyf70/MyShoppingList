@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -114,8 +116,8 @@ fun ListsScreen(
             title = stringResource(R.string.list_new),
             showBudget = budgetEnabled,
             onDismiss = { showNewDialog = false },
-            onConfirm = { name, budgetCents ->
-                viewModel.addList(name, budgetCents)
+            onConfirm = { name, budgetCents, colorArgb ->
+                viewModel.addList(name, budgetCents, colorArgb)
                 showNewDialog = false
             },
         )
@@ -126,10 +128,11 @@ fun ListsScreen(
             title = stringResource(R.string.list_edit),
             initialName = list.name,
             initialBudgetCents = list.budgetCents,
+            initialColorArgb = list.colorArgb,
             showBudget = budgetEnabled,
             onDismiss = { editing = null },
-            onConfirm = { name, budgetCents ->
-                viewModel.updateList(list, name, budgetCents)
+            onConfirm = { name, budgetCents, colorArgb ->
+                viewModel.updateList(list, name, budgetCents, colorArgb)
                 editing = null
             },
         )
@@ -159,7 +162,19 @@ private fun ListCard(
     var menuOpen by remember { mutableStateOf(false) }
     val boughtCount = entry.items.count { it.item.bought }
 
-    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
+    val colors = if (entry.list.colorArgb == COLOR_DEFAULT) {
+        CardDefaults.cardColors()
+    } else {
+        CardDefaults.cardColors(
+            containerColor = Color(entry.list.colorArgb),
+            contentColor = contentColorFor(entry.list.colorArgb),
+        )
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen),
+        colors = colors,
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,

@@ -29,11 +29,13 @@ fun ListDialog(
     title: String,
     initialName: String = "",
     initialBudgetCents: Long = 0,
+    initialColorArgb: Int = COLOR_DEFAULT,
     showBudget: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (name: String, budgetCents: Long) -> Unit,
+    onConfirm: (name: String, budgetCents: Long, colorArgb: Int) -> Unit,
 ) {
     var name by remember { mutableStateOf(initialName) }
+    var colorArgb by remember { mutableStateOf(initialColorArgb) }
     var budgetText by remember {
         mutableStateOf(
             if (initialBudgetCents > 0) "%.2f".format(initialBudgetCents / 100.0) else ""
@@ -69,12 +71,13 @@ fun ListDialog(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     )
                 }
+                ColorChoice(selected = colorArgb, onSelect = { colorArgb = it })
             }
         },
         confirmButton = {
             TextButton(
                 enabled = isValid,
-                onClick = { onConfirm(name, budgetCents ?: 0L) },
+                onClick = { onConfirm(name, budgetCents ?: 0L, colorArgb) },
             ) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },

@@ -18,6 +18,8 @@ data class ShoppingList(
     @ColumnInfo(defaultValue = "0") val budgetCents: Long = 0,
     /** Identifies the list across devices, so a shared copy coming back updates it in place. */
     @ColumnInfo(defaultValue = "") val uuid: String = UUID.randomUUID().toString(),
+    /** The card's background as ARGB; 0 leaves it to the theme. */
+    @ColumnInfo(defaultValue = "0") val colorArgb: Int = 0,
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */

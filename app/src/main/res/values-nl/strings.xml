@@ -86,4 +86,8 @@
     <string name="import_update_title">%1$s bijwerken?</string>
     <string name="import_update_message">Je kopie van deze lijst wordt vervangen door de gedeelde versie.</string>
     <string name="import_failed">Dit bericht bevat geen gedeelde lijst</string>
+    <string name="field_color">Kleur</string>
+    <string name="color_default">Standaard</string>
+    <string name="color_custom">Aangepast</string>
+    <string name="color_swatch">Kleur %1$d</string>
 </resources>

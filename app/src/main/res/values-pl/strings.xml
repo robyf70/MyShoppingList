@@ -93,4 +93,8 @@
     <string name="import_update_title">Zaktualizować %1$s?</string>
     <string name="import_update_message">Twoja kopia tej listy zostanie zastąpiona udostępnioną.</string>
     <string name="import_failed">Ta wiadomość nie zawiera udostępnionej listy</string>
+    <string name="field_color">Kolor</string>
+    <string name="color_default">Domyślny</string>
+    <string name="color_custom">Własny</string>
+    <string name="color_swatch">Kolor %1$d</string>
 </resources>

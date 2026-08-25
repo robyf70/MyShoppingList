@@ -115,4 +115,8 @@
     <string name="format_qty_price_total" translatable="false">%1$s × %2$s = %3$s</string>
     <string name="format_qty_only" translatable="false">× %1$s</string>
     <string name="format_share_line" translatable="false">- %1$s × %2$s = %3$s</string>
+    <string name="field_color">Colour</string>
+    <string name="color_default">Default</string>
+    <string name="color_custom">Custom</string>
+    <string name="color_swatch">Colour %1$d</string>
 </resources>
