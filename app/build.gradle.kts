@@ -86,5 +86,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
+    // org.json is an empty stub in unit tests; this supplies the real one.
+    testImplementation(libs.json)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
