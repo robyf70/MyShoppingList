@@ -1,0 +1,7 @@
+# ML Kit registers its components by reflection at startup: MlKitInitProvider looks each
+# ComponentRegistrar up by the name the merged manifest records, then calls its no-argument
+# constructor. Neither is referenced anywhere R8 can see, so without this the registrars are
+# stripped, text recognition never registers, and every scan quietly comes back empty.
+-keep class * implements com.google.firebase.components.ComponentRegistrar {
+    <init>();
+}
