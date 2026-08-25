@@ -91,4 +91,6 @@
     <string name="color_default">Alapértelmezett</string>
     <string name="color_custom">Egyéni</string>
     <string name="color_swatch">%1$d. szín</string>
+    <string name="settings_share_app">Alkalmazás megosztása</string>
+    <string name="settings_share_app_desc">Küldd el valakinek a telepítési hivatkozást</string>
 </resources>

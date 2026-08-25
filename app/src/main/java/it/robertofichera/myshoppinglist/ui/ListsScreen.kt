@@ -100,7 +100,7 @@ fun ListsScreen(
                         onEdit = { editing = entry.list },
                         onDuplicate = { viewModel.copyList(entry) },
                         onShare = {
-                            shareList(context, entry.list.name, viewModel.shareText(entry, money))
+                            sendText(context, entry.list.name, viewModel.shareText(entry, money))
                         },
                         onDelete = {
                             if (confirmDelete) deleting = entry.list else viewModel.deleteList(entry.list)

@@ -115,7 +115,7 @@ fun ListDetailScreen(
                     val money = LocalMoneyFormat.current
                     IconButton(
                         onClick = {
-                            shareList(context, entry.list.name, viewModel.shareText(entry, money))
+                            sendText(context, entry.list.name, viewModel.shareText(entry, money))
                         },
                     ) {
                         Icon(

@@ -90,4 +90,6 @@
     <string name="color_default">Προεπιλογή</string>
     <string name="color_custom">Προσαρμογή</string>
     <string name="color_swatch">Χρώμα %1$d</string>
+    <string name="settings_share_app">Κοινή χρήση αυτής της εφαρμογής</string>
+    <string name="settings_share_app_desc">Στείλτε σε κάποιον τον σύνδεσμο για να την εγκαταστήσει</string>
 </resources>

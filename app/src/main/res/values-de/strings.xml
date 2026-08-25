@@ -90,4 +90,6 @@
     <string name="color_default">Standard</string>
     <string name="color_custom">Eigene</string>
     <string name="color_swatch">Farbe %1$d</string>
+    <string name="settings_share_app">Diese App teilen</string>
+    <string name="settings_share_app_desc">Jemandem den Link zum Installieren senden</string>
 </resources>

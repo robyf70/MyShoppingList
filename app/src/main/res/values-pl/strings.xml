@@ -97,4 +97,6 @@
     <string name="color_default">Domyślny</string>
     <string name="color_custom">Własny</string>
     <string name="color_swatch">Kolor %1$d</string>
+    <string name="settings_share_app">Udostępnij tę aplikację</string>
+    <string name="settings_share_app_desc">Wyślij komuś link do instalacji</string>
 </resources>

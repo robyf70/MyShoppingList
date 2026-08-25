@@ -90,4 +90,6 @@
     <string name="color_default">Standaard</string>
     <string name="color_custom">Aangepast</string>
     <string name="color_swatch">Kleur %1$d</string>
+    <string name="settings_share_app">Deze app delen</string>
+    <string name="settings_share_app_desc">Stuur iemand de link om hem te installeren</string>
 </resources>

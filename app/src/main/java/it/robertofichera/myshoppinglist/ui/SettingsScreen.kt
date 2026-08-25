@@ -111,6 +111,15 @@ fun SettingsScreen(
                 // A device with no browser would otherwise throw ActivityNotFoundException.
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
             }
+            val releasesUrl = stringResource(R.string.releases_url)
+            val appName = stringResource(R.string.app_name)
+            val shareAppText = stringResource(R.string.format_share_app, appName, releasesUrl)
+            NavigationRow(
+                title = stringResource(R.string.settings_share_app),
+                subtitle = stringResource(R.string.settings_share_app_desc),
+                onClick = { sendText(context, appName, shareAppText) },
+            )
+            HorizontalDivider()
             val repositoryUrl = stringResource(R.string.repository_url)
             NavigationRow(
                 title = stringResource(R.string.settings_source),
