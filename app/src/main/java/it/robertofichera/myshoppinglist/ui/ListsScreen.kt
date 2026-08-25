@@ -34,10 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.ShoppingViewModel
+import it.robertofichera.myshoppinglist.LocalMoneyFormat
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.ShoppingList
 import it.robertofichera.myshoppinglist.data.remainingCents
@@ -59,6 +61,8 @@ fun ListsScreen(
     var showNewDialog by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<ShoppingList?>(null) }
     var deleting by remember { mutableStateOf<ShoppingList?>(null) }
+    val context = LocalContext.current
+    val money = LocalMoneyFormat.current
 
     Scaffold(
         topBar = {
@@ -93,6 +97,9 @@ fun ListsScreen(
                         onOpen = { onOpenList(entry.list.id) },
                         onEdit = { editing = entry.list },
                         onDuplicate = { viewModel.copyList(entry) },
+                        onShare = {
+                            shareList(context, entry.list.name, viewModel.shareText(entry, money))
+                        },
                         onDelete = {
                             if (confirmDelete) deleting = entry.list else viewModel.deleteList(entry.list)
                         },
@@ -146,6 +153,7 @@ private fun ListCard(
     onOpen: () -> Unit,
     onEdit: () -> Unit,
     onDuplicate: () -> Unit,
+    onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
@@ -190,6 +198,10 @@ private fun ListCard(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.action_duplicate)) },
                         onClick = { menuOpen = false; onDuplicate() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_share)) },
+                        onClick = { menuOpen = false; onShare() },
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.action_delete)) },

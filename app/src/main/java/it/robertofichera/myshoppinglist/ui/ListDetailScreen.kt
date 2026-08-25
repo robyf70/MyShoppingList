@@ -14,7 +14,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
-import android.content.Intent
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -101,12 +100,7 @@ fun ListDetailScreen(
                     val money = LocalMoneyFormat.current
                     IconButton(
                         onClick = {
-                            val send = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, entry.list.name)
-                                putExtra(Intent.EXTRA_TEXT, viewModel.shareText(entry, money))
-                            }
-                            context.startActivity(Intent.createChooser(send, null))
+                            shareList(context, entry.list.name, viewModel.shareText(entry, money))
                         },
                     ) {
                         Icon(
