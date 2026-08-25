@@ -37,7 +37,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        offerImport(intent)
+        // Only offer import on first creation; a recreation will re-read the same sticky intent.
+        if (savedInstanceState == null) {
+            offerImport(intent)
+        }
         setContent {
             MyShoppingListTheme {
                 Surface(
