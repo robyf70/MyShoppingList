@@ -80,4 +80,10 @@
         <item quantity="one">%1$d produit enregistré</item>
         <item quantity="other">%1$d produits enregistrés</item>
     </plurals>
+
+    <string name="import_title">Importer %1$s ?</string>
+    <string name="import_message">Elle sera ajoutée comme nouvelle liste.</string>
+    <string name="import_update_title">Mettre à jour %1$s ?</string>
+    <string name="import_update_message">Votre copie de cette liste sera remplacée par celle partagée.</string>
+    <string name="import_failed">Ce message ne contient aucune liste partagée</string>
 </resources>

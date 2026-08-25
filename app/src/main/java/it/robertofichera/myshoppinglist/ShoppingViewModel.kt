@@ -32,6 +32,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/** [Offered.existing] is the local list this share replaces, or null when it is new here. */
+sealed interface ImportState {
+    data object None : ImportState
+    data class Offered(val shared: SharedList, val existing: ShoppingList?) : ImportState
+    data object Failed : ImportState
+}
+
 class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     private val db = AppDatabase.getInstance(app)
@@ -42,6 +49,9 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val update: StateFlow<UpdateState> = _update.asStateFlow()
+
+    private val _pendingImport = MutableStateFlow<ImportState>(ImportState.None)
+    val pendingImport: StateFlow<ImportState> = _pendingImport.asStateFlow()
 
     init {
         checkForUpdate(force = false)
@@ -231,6 +241,59 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
             ),
         )
         return (listOf(entry.list.name) + lines + listOf(total, "", payload)).joinToString("\n")
+    }
+
+    /** Decodes a share and asks before touching anything; [text] is whatever the intent carried. */
+    fun offerImport(text: String?) = viewModelScope.launch {
+        val shared = text?.let { ShareCodec.decode(it) }
+        _pendingImport.value = if (shared == null) {
+            ImportState.Failed
+        } else {
+            ImportState.Offered(shared, dao.findListByUuid(shared.uuid))
+        }
+    }
+
+    fun dismissImport() {
+        _pendingImport.value = ImportState.None
+    }
+
+    /**
+     * One transaction, so a half-imported list cannot exist. An existing list keeps its row and
+     * loses its items; the shared copy wins outright.
+     */
+    fun confirmImport() = viewModelScope.launch {
+        val offered = _pendingImport.value as? ImportState.Offered ?: return@launch
+        _pendingImport.value = ImportState.None
+        db.withTransaction {
+            val listId = offered.existing?.let { existing ->
+                dao.updateList(
+                    existing.copy(name = offered.shared.name, budgetCents = offered.shared.budgetCents),
+                )
+                dao.deleteItemsOfList(existing.id)
+                existing.id
+            } ?: dao.insertList(
+                ShoppingList(
+                    name = offered.shared.name,
+                    budgetCents = offered.shared.budgetCents,
+                    uuid = offered.shared.uuid,
+                ),
+            )
+            offered.shared.items.forEach { item ->
+                // An existing product's defaultPriceCents is the last price this user entered,
+                // which someone else's list is not, so it is left alone.
+                val productId = dao.findProductByName(item.name)?.id
+                    ?: dao.insertProduct(Product(name = item.name, defaultPriceCents = item.priceCents))
+                dao.insertItem(
+                    Item(
+                        listId = listId,
+                        productId = productId,
+                        quantity = item.quantity,
+                        priceCents = item.priceCents,
+                        bought = item.bought,
+                    ),
+                )
+            }
+        }
     }
 
     /**

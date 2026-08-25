@@ -81,4 +81,10 @@
         <item quantity="one">%1$d mentett termék</item>
         <item quantity="other">%1$d mentett termék</item>
     </plurals>
+
+    <string name="import_title">Importálja a(z) %1$s listát?</string>
+    <string name="import_message">Új listaként lesz hozzáadva.</string>
+    <string name="import_update_title">Frissíti a(z) %1$s listát?</string>
+    <string name="import_update_message">A lista saját másolatát felülírja a megosztott változat.</string>
+    <string name="import_failed">Ez az üzenet nem tartalmaz megosztott listát</string>
 </resources>

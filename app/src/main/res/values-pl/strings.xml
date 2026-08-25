@@ -87,4 +87,10 @@
         <item quantity="many">%1$d zapisanych produktów</item>
         <item quantity="other">%1$d zapisanego produktu</item>
     </plurals>
+
+    <string name="import_title">Zaimportować %1$s?</string>
+    <string name="import_message">Zostanie dodana jako nowa lista.</string>
+    <string name="import_update_title">Zaktualizować %1$s?</string>
+    <string name="import_update_message">Twoja kopia tej listy zostanie zastąpiona udostępnioną.</string>
+    <string name="import_failed">Ta wiadomość nie zawiera udostępnionej listy</string>
 </resources>

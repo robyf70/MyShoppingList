@@ -80,4 +80,10 @@
         <item quantity="one">%1$d αποθηκευμένο προϊόν</item>
         <item quantity="other">%1$d αποθηκευμένα προϊόντα</item>
     </plurals>
+
+    <string name="import_title">Εισαγωγή %1$s;</string>
+    <string name="import_message">Θα προστεθεί ως νέα λίστα.</string>
+    <string name="import_update_title">Ενημέρωση %1$s;</string>
+    <string name="import_update_message">Το αντίγραφό σας αυτής της λίστας θα αντικατασταθεί από την κοινόχρηστη.</string>
+    <string name="import_failed">Αυτό το μήνυμα δεν περιέχει κοινόχρηστη λίστα</string>
 </resources>

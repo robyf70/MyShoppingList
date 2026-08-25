@@ -80,4 +80,10 @@
         <item quantity="one">%1$d producto guardado</item>
         <item quantity="other">%1$d productos guardados</item>
     </plurals>
+
+    <string name="import_title">¿Importar %1$s?</string>
+    <string name="import_message">Se añadirá como una lista nueva.</string>
+    <string name="import_update_title">¿Actualizar %1$s?</string>
+    <string name="import_update_message">Tu copia de esta lista se sustituirá por la compartida.</string>
+    <string name="import_failed">Ese mensaje no contiene ninguna lista compartida</string>
 </resources>

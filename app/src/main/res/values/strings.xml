@@ -97,6 +97,13 @@
     <string name="releases_url" translatable="false">https://github.com/robyf70/MyShoppingList/releases/latest</string>
     <string name="releases_api_url" translatable="false">https://api.github.com/repos/robyf70/MyShoppingList/releases/latest</string>
 
+    <!-- Import -->
+    <string name="import_title">Import %1$s?</string>
+    <string name="import_message">It will be added as a new list.</string>
+    <string name="import_update_title">Update %1$s?</string>
+    <string name="import_update_message">Your copy of this list will be replaced with the shared one.</string>
+    <string name="import_failed">That message does not contain a shared list</string>
+
     <!-- Layout-only formats: symbols and separators, identical in every language -->
     <string name="format_title_budget" translatable="false">%1$s · %2$s</string>
     <string name="format_currency" translatable="false">%1$s · %2$s</string>
