@@ -52,7 +52,13 @@ android {
             signingConfig = signingConfigs.findByName("release")
             // ML Kit's OCR library is ~10 MB per architecture and every phone runs one of them.
             // Debug keeps them all so an x86_64 emulator still works.
-            ndk { abiFilters += "arm64-v8a" }
+            ndk {
+                abiFilters += "arm64-v8a"
+                // -PemulatorAbi adds x86_64 so a minified build can be run on an emulator.
+                // R8 problems surface nowhere else: a debug build is not minified, and a
+                // release build without this cannot start on one.
+                if (project.hasProperty("emulatorAbi")) abiFilters += "x86_64"
+            }
             optimization {
                 enable = true
             }

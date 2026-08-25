@@ -182,8 +182,16 @@ list, add an item and check autocomplete, since Room resolves its generated `App
 name and that is the first thing a missing rule would break.
 
 Project-specific keep rules go in `app/src/main/keepRules/*.keep`, which AGP combines automatically
-(there is no `proguardFiles` entry). None are currently needed: Room and Compose ship their own
-consumer rules.
+(there is no `proguardFiles` entry). Room and Compose ship their own consumer rules; `mlkit.keep`
+is needed because ML Kit instantiates each `ComponentRegistrar` by the name the merged manifest
+records, which R8 cannot see, and a stripped registrar makes every scan read as empty rather than
+fail loudly.
+
+**Test a release build on the emulator with `./gradlew assembleRelease -PemulatorAbi`.** Release
+carries only `arm64-v8a`, because ML Kit's OCR library is about 10 MB per architecture; that flag
+adds `x86_64` so a minified build will run on an emulator at all. Without it there is no way to
+exercise the shipped code before shipping it, which is how a release once went out with text
+recognition stripped out of it.
 
 **Room schema export is on**, written to `app/schemas/` via the `room.schemaLocation` ksp arg. When writing a migration, build first and copy the DDL out of the exported JSON — the migration's SQL must match Room's generated DDL exactly or the app throws `IllegalStateException: Migration didn't properly handle…` at open. Kotlin default values do **not** become SQL `DEFAULT` clauses.
 
