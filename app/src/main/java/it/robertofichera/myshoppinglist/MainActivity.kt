@@ -37,10 +37,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Only offer import on first creation; a recreation will re-read the same sticky intent.
-        if (savedInstanceState == null) {
-            offerImport(intent)
-        }
+        offerImport(intent)
         setContent {
             MyShoppingListTheme {
                 Surface(
@@ -60,14 +57,24 @@ class MainActivity : ComponentActivity() {
         offerImport(intent)
     }
 
-    /** Both filters carry the payload as text; the codec finds the token wherever it sits. */
+    /**
+     * Both filters carry the payload as text; the codec finds the token wherever it sits.
+     * The share is marked on the intent once offered, so a recreation re-reading that same
+     * intent stays quiet while a newly arrived one is always offered.
+     */
     private fun offerImport(intent: Intent) {
+        if (intent.getBooleanExtra(EXTRA_OFFERED, false)) return
         val text = when (intent.action) {
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
             Intent.ACTION_VIEW -> intent.dataString
             else -> return
         }
+        intent.putExtra(EXTRA_OFFERED, true)
         viewModel.offerImport(text)
+    }
+
+    private companion object {
+        const val EXTRA_OFFERED = "it.robertofichera.myshoppinglist.OFFERED"
     }
 }
 
