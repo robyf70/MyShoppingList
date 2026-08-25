@@ -33,8 +33,9 @@ data/
   Entities.kt          ShoppingList + Product + Item @Entity, ItemWithProduct,
                        ListWithItems, ProductWithUsage, total helpers
   ShoppingDao.kt       @Dao, returns Flows for reads
-  AppDatabase.kt       @Database(version = 3) + getInstance() + MIGRATION_1_2, MIGRATION_2_3
+  AppDatabase.kt       @Database(version = 4) + getInstance() + MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
+  ShareCodec.kt        encode/decode a list into an `msl:<version>:` share token
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
   Budget.kt            spentCents / remainingCents / overspendCents — pure, unit-tested
   Updates.kt           GitHub release lookup, DownloadManager download, install intent
@@ -47,6 +48,7 @@ ui/
   ListDialog.kt        create/edit a list: name + optional max budget
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
+  ImportDialog.kt       offer to import a received share or skip it
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
   CurrencyDialog.kt    country picker for the currency, "Automatic" first
   theme/               Material 3 theme (from the Android Studio template)
@@ -90,6 +92,8 @@ mid-download does not abandon it. Tags are compared by `isNewerVersion`, which i
 **Navigation is three saveable values, not a library.** `ShoppingApp()` holds `openListId: Long?`, `showSettings: Boolean` and `showProducts: Boolean` in `rememberSaveable`, with a `BackHandler` unwinding products → settings → lists. All three types are natively saveable, so no custom `Saver` is needed. The hierarchy is a strict linear drill-down; adopt `navigation-compose` when deep links, screen-to-screen arguments, or transition animations arrive — the screen count alone is not the trigger.
 
 **The budget is measured against what has been spent, not what is planned.** `Remaining = budget − spent` (bought items only), and the over-budget prompt fires when *ticking an item as bought* would push spend past `ShoppingList.budgetCents`. Unticking never prompts. `budgetCents = 0` means no budget. If a list is already over, every further tick asks again — deliberately, so the warning does not go quiet once breached. Editing a bought item's price can still push spend over without prompting; the check is on ticking only.
+
+**A list is shared as a copy with a stable identity.** `ShoppingList.uuid` travels with the share, so re-importing a list the device already has replaces it rather than duplicating it; merge granularity is the whole list, last writer wins. The payload is gzipped JSON behind an `msl:<version>:` token inside an ordinary `text/plain` share, so the text stays readable to someone without the app and the app never touches the network to send it. Items travel by product *name* — ids are local to a device. Receiving is a `text/plain` share target plus a `myshoppinglist://` scheme; both hand raw text to `ShareCodec.decode`, which returns null for anything malformed because a chat message is untrusted. Import never rewrites an existing product's `defaultPriceCents`: that is the last price *this* user entered.
 
 **Settings change what is rendered, never what is stored.** `showQuantity` / `showPrice` hide fields in the dialogs and rows; values already on an `Item` are preserved and reappear when the toggle goes back on. With price shown but quantity hidden, rows display the line total (not the unit price), so a "3 × €2" line isn't misrepresented.
 
@@ -149,6 +153,8 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 `UpdatesTest.kt` covers `isNewerVersion`. Keep version comparison pure and out of the networking path — offering a downgrade, or refusing a real update, is the failure that matters there.
 
 `ProductSuggestionsTest.kt` covers `filterProducts` / `isSettledOn`. Keep autocomplete logic in `ProductSuggestions.kt` as pure functions so it stays testable without an emulator.
+
+`ShareCodecTest.kt` covers `ShareCodec`. Every malformed input must decode to null — a share arrives from a messenger, so it is untrusted, and a partial import is worse than no import.
 
 UI and Room wiring are verified by running the app, not by tests. If you add a Flow-level test, add Turbine at that point.
 
