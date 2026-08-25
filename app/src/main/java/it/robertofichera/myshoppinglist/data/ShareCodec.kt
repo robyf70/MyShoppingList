@@ -13,6 +13,8 @@ data class SharedList(
     val name: String,
     val budgetCents: Long,
     val items: List<SharedItem>,
+    /** The card colour as ARGB; 0 leaves it to the reader's theme. */
+    val colorArgb: Int = 0,
 )
 
 data class SharedItem(
@@ -49,6 +51,7 @@ object ShareCodec {
                 .put("u", list.uuid)
                 .put("n", list.name)
                 .put("b", list.budgetCents)
+                .put("c", list.colorArgb)
                 .put("i", items)
                 .toString(),
         )
@@ -68,6 +71,10 @@ object ShareCodec {
                 uuid = json.getString("u"),
                 name = json.getString("n"),
                 budgetCents = json.getLong("b"),
+                // Optional, so a share written before colours existed still reads, and one
+                // written now still reads on an app that predates them. Bumping the version
+                // instead would make those apps refuse the share outright.
+                colorArgb = json.optInt("c", 0),
                 items = List(items.length()) { index ->
                     val item = items.getJSONObject(index)
                     SharedItem(

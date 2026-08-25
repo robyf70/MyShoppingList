@@ -282,6 +282,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                 uuid = entry.list.uuid,
                 name = entry.list.name,
                 budgetCents = entry.list.budgetCents,
+                colorArgb = entry.list.colorArgb,
                 items = entry.items.map { row ->
                     SharedItem(
                         name = row.product.name,
@@ -320,7 +321,11 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         db.withTransaction {
             val listId = offered.existing?.let { existing ->
                 dao.updateList(
-                    existing.copy(name = offered.shared.name, budgetCents = offered.shared.budgetCents),
+                    existing.copy(
+                        name = offered.shared.name,
+                        budgetCents = offered.shared.budgetCents,
+                        colorArgb = offered.shared.colorArgb,
+                    ),
                 )
                 dao.deleteItemsOfList(existing.id)
                 existing.id
@@ -329,6 +334,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                     name = offered.shared.name,
                     budgetCents = offered.shared.budgetCents,
                     uuid = offered.shared.uuid,
+                    colorArgb = offered.shared.colorArgb,
                 ),
             )
             offered.shared.items.forEach { item ->

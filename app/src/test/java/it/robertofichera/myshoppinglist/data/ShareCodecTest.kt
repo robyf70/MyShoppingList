@@ -14,6 +14,7 @@ class ShareCodecTest {
             SharedItem(name = "Milk", quantity = 2.0, priceCents = 150, bought = false),
             SharedItem(name = "Ham", quantity = 0.25, priceCents = 1999, bought = true),
         ),
+        colorArgb = 0xFF2F5EA8.toInt(),
     )
 
     @Test
@@ -55,6 +56,19 @@ class ShareCodecTest {
     @Test
     fun `rejects a payload that is not gzip`() {
         assertNull(ShareCodec.decode("msl:1:bm90Z3ppcA"))
+    }
+
+    @Test
+    fun `round trips the list colour`() {
+        assertEquals(0xFF2F5EA8.toInt(), ShareCodec.decode(ShareCodec.encode(sample))?.colorArgb)
+    }
+
+    @Test
+    fun `reads a share written before colours existed`() {
+        val old = ShareCodec.encodeRaw(
+            """{"v":1,"u":"abc","n":"Groceries","b":0,"i":[]}""",
+        )
+        assertEquals(0, ShareCodec.decode(old)?.colorArgb)
     }
 
     @Test
