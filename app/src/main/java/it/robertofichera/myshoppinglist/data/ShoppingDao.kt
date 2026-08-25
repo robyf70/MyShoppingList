@@ -28,6 +28,12 @@ interface ShoppingDao {
     @Delete
     suspend fun deleteList(list: ShoppingList)
 
+    @Query("SELECT * FROM shopping_lists WHERE uuid = :uuid LIMIT 1")
+    suspend fun findListByUuid(uuid: String): ShoppingList?
+
+    @Query("DELETE FROM items WHERE listId = :listId")
+    suspend fun deleteItemsOfList(listId: Long)
+
     @Insert
     suspend fun insertItem(item: Item)
 

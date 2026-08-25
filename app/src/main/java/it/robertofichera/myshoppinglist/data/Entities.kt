@@ -7,14 +7,17 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import java.util.UUID
 
-@Entity(tableName = "shopping_lists")
+@Entity(tableName = "shopping_lists", indices = [Index(value = ["uuid"], unique = true)])
 data class ShoppingList(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val createdAt: Long = System.currentTimeMillis(),
     /** 0 means no budget set. The SQL default lets migration 2→3 add the column in place. */
     @ColumnInfo(defaultValue = "0") val budgetCents: Long = 0,
+    /** Identifies the list across devices, so a shared copy coming back updates it in place. */
+    @ColumnInfo(defaultValue = "") val uuid: String = UUID.randomUUID().toString(),
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */

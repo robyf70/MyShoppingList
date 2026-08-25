@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 3)
+@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun shoppingDao(): ShoppingDao
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "shopping.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build().also { instance = it }
             }
 
         /**
@@ -72,6 +72,20 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     "ALTER TABLE `shopping_lists` ADD COLUMN `budgetCents` INTEGER NOT NULL DEFAULT 0"
+                )
+            }
+        }
+
+        /**
+         * Identifies each list across devices. Existing rows are filled in so a list created
+         * before sharing existed can still be shared and recognised when it comes back.
+         */
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `shopping_lists` ADD COLUMN `uuid` TEXT NOT NULL DEFAULT ''")
+                db.execSQL("UPDATE `shopping_lists` SET `uuid` = lower(hex(randomblob(16)))")
+                db.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_shopping_lists_uuid` ON `shopping_lists` (`uuid`)"
                 )
             }
         }
