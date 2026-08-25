@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,10 +74,24 @@ fun ListDetailScreen(
 
     val budgetCents = if (budgetEnabled) entry.list.budgetCents else 0L
     val spent = entry.spentCents
+    val listColor = entry.list.colorArgb
+    val barColors = if (listColor == COLOR_DEFAULT) {
+        TopAppBarDefaults.topAppBarColors()
+    } else {
+        // One derived colour for every element on the bar, so a custom pick stays legible.
+        val on = readableOn(listColor)
+        TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(listColor),
+            titleContentColor = on,
+            navigationIconContentColor = on,
+            actionIconContentColor = on,
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = barColors,
                 title = {
                     Text(
                         if (budgetCents > 0) {

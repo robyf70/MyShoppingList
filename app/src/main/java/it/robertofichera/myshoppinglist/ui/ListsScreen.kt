@@ -167,7 +167,7 @@ private fun ListCard(
     } else {
         CardDefaults.cardColors(
             containerColor = Color(entry.list.colorArgb),
-            contentColor = contentColorFor(entry.list.colorArgb),
+            contentColor = readableOn(entry.list.colorArgb),
         )
     }
 

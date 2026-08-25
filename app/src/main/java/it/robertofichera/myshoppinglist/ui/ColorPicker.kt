@@ -57,7 +57,7 @@ val LIST_COLORS = listOf(
  * Black or white, whichever the eye can read on [background]. A custom colour can be
  * anything at all, so the contrast has to be derived rather than themed.
  */
-fun contentColorFor(background: Int): Color =
+fun readableOn(background: Int): Color =
     if (Color(background).luminance() > 0.45f) Color.Black else Color.White
 
 private fun isCustom(color: Int) = color != COLOR_DEFAULT && color !in LIST_COLORS
@@ -162,7 +162,7 @@ private fun Swatch(
     val tick = if (color == COLOR_DEFAULT) {
         MaterialTheme.colorScheme.onSurfaceVariant
     } else {
-        contentColorFor(color)
+        readableOn(color)
     }
 
     Row(
