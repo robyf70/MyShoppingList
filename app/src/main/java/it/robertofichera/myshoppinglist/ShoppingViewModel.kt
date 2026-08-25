@@ -240,7 +240,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                 },
             ),
         )
-        return (listOf(entry.list.name) + lines + listOf(total, "", payload)).joinToString("\n")
+        val link = app.getString(R.string.share_link_url, payload)
+        return (listOf(entry.list.name) + lines + listOf(total, "", link)).joinToString("\n")
     }
 
     /** Decodes a share and asks before touching anything; [text] is whatever the intent carried. */

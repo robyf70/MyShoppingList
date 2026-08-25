@@ -96,6 +96,8 @@
     <string name="repository_url" translatable="false">https://github.com/robyf70/MyShoppingList</string>
     <string name="releases_url" translatable="false">https://github.com/robyf70/MyShoppingList/releases/latest</string>
     <string name="releases_api_url" translatable="false">https://api.github.com/repos/robyf70/MyShoppingList/releases/latest</string>
+    <!-- The payload rides in the fragment, so it never leaves the phone with the request. -->
+    <string name="share_link_url" translatable="false">https://robyf70.github.io/msl/#%1$s</string>
 
     <!-- Import -->
     <string name="import_title">Import %1$s?</string>

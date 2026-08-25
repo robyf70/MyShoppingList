@@ -37,7 +37,23 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
 
-            <!-- Tapping the payload where a messenger turns it into a link. -->
+            <!--
+              The shared link. Verified against .well-known/assetlinks.json on the host, so a
+              messenger that linkifies https - which is all of them - opens the app directly.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="robyf70.github.io"
+                    android:pathPrefix="/msl" />
+            </intent-filter>
+
+            <!-- The page's fallback for browsers that ignore a verified link. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
