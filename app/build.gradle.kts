@@ -30,8 +30,8 @@ android {
         applicationId = "it.robertofichera.myshoppinglist"
         minSdk = 31
         targetSdk = 37
-        versionCode = 21
-        versionName = "1.13"
+        versionCode = 22
+        versionName = "1.14"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

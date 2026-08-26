@@ -17,3 +17,10 @@ data class ScannedLine(
     val centerX: Int get() = (left + right) / 2
     val centerY: Int get() = (top + bottom) / 2
 }
+
+/** The words of [lines] in reading order, as one name. */
+fun nameOf(lines: List<ScannedLine>): String =
+    lines.sortedWith(compareBy({ it.top }, { it.left }))
+        .joinToString(" ") { it.text.trim() }
+        .replace(Regex("""\s+"""), " ")
+        .trim()

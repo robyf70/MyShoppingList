@@ -51,6 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.robertofichera.myshoppinglist.ScanState
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
+import it.robertofichera.myshoppinglist.data.ScannedItem
+import it.robertofichera.myshoppinglist.data.nameOf
 import it.robertofichera.myshoppinglist.data.newCameraImageUri
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
@@ -82,6 +84,7 @@ fun ListDetailScreen(
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
     var scanSourceOpen by remember { mutableStateOf(false) }
     var picking by remember { mutableStateOf(false) }
+    var settling by remember { mutableStateOf<ScannedItem?>(null) }
 
     val scan by viewModel.scan.collectAsStateWithLifecycle()
     val scanContext = LocalContext.current
@@ -247,26 +250,43 @@ fun ListDetailScreen(
             },
         )
 
-        is ScanState.Found -> if (picking) {
-            ScanPickScreen(
-                uri = state.uri,
-                lines = state.lines,
-                initiallyPicked = state.picked,
-                onConfirm = { chosen ->
-                    picking = false
-                    viewModel.addPicked(entry.list.id, chosen)
-                },
-                onBack = { picking = false },
-            )
-        } else {
-            ScanReviewDialog(
-                items = state.items,
-                showQuantity = showQuantity,
-                showPrice = showPrice,
-                onConfirm = { viewModel.addScanned(entry.list.id, it) },
-                onPickFromPicture = { picking = true },
-                onDismiss = viewModel::dismissScan,
-            )
+        is ScanState.Found -> {
+            // A leaflet names one product, so its picture is what to work from; a written list
+            // names many, and those are read off as rows to tick.
+            val fromFlyer = state.picked.isNotEmpty()
+            val settled = settling
+            when {
+                settled != null -> ScannedItemDialog(
+                    item = settled,
+                    showQuantity = showQuantity,
+                    showPrice = showPrice,
+                    onDismiss = { settling = null },
+                    onConfirm = { item ->
+                        settling = null
+                        picking = false
+                        viewModel.addScanned(entry.list.id, listOf(item))
+                    },
+                )
+
+                fromFlyer || picking -> ScanPickScreen(
+                    uri = state.uri,
+                    lines = state.lines,
+                    initiallyPicked = state.picked,
+                    onConfirm = { chosen ->
+                        settling = ScannedItem(nameOf(chosen), quantity = 1.0, priceCents = 0)
+                    },
+                    onBack = { if (picking) picking = false else viewModel.dismissScan() },
+                )
+
+                else -> ScanReviewDialog(
+                    items = state.items,
+                    showQuantity = showQuantity,
+                    showPrice = showPrice,
+                    onConfirm = { viewModel.addScanned(entry.list.id, it) },
+                    onPickFromPicture = { picking = true },
+                    onDismiss = viewModel::dismissScan,
+                )
+            }
         }
     }
 

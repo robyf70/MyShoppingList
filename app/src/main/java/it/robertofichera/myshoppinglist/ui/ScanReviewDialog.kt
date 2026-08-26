@@ -122,9 +122,9 @@ fun ScanReviewDialog(
     }
 }
 
-/** Correcting one row before it becomes an item; the same rules as typing one in by hand. */
+/** Settling an item before it is added: the same rules as typing one in by hand. */
 @Composable
-private fun ScannedItemDialog(
+fun ScannedItemDialog(
     item: ScannedItem,
     showQuantity: Boolean,
     showPrice: Boolean,

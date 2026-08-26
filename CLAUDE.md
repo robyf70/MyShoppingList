@@ -162,6 +162,10 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 
 `ProductSuggestionsTest.kt` covers `filterProducts` / `isSettledOn`. Keep autocomplete logic in `ProductSuggestions.kt` as pure functions so it stays testable without an emulator.
 
+A leaflet goes straight to `ScanPickScreen` and then to the item editor: it names one product, so
+there is nothing to tick, and the price is printed on the page for the reader to copy if they want
+it. A photographed written list keeps the rows.
+
 A flyer's label is a guess, so it is correctable: `ScanPickScreen` shows the picture with every
 recognised line boxed and the guessed ones marked, and a tap adds or drops one. That is why the
 rules for finding a label need only be useful rather than right — five leaflets have each broken

@@ -87,18 +87,6 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         _scan.value = ScanState.None
     }
 
-    /** What the reader pointed at on the picture, joined in reading order into one item. */
-    fun addPicked(listId: Long, lines: List<ScannedLine>) {
-        val name = lines.joinToString(" ") { it.text.trim() }
-            .replace(Regex("""\s+"""), " ")
-            .trim()
-        if (name.isEmpty()) {
-            dismissScan()
-            return
-        }
-        addScanned(listId, listOf(ScannedItem(name = name, quantity = 1.0, priceCents = 0)))
-    }
-
     /** One transaction, so a picture full of items either lands or does not. */
     fun addScanned(listId: Long, items: List<ScannedItem>) = viewModelScope.launch {
         _scan.value = ScanState.None

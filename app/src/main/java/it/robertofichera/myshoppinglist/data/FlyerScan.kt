@@ -57,7 +57,7 @@ private val EXAMPLE = Regex("""\b(un\s+)?esempio\b|\bes\.""", RegexOption.IGNORE
  */
 fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
     val label = flyerLabel(lines) ?: return null
-    val name = label.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
+    val name = nameOf(label)
     if (name.isEmpty()) return null
     return ScannedItem(name = name, quantity = 1.0, priceCents = 0)
 }
