@@ -1,5 +1,7 @@
 package it.robertofichera.myshoppinglist.data
 
+import it.robertofichera.myshoppinglist.parsePriceCents
+
 /**
  * A supermarket flyer names one offer in a way no wording reveals: a price set several times
  * larger than anything else, with the product's label in a column beside or above it. Everything
@@ -51,6 +53,50 @@ private const val LABEL_REACH = 3.0
  */
 private val EXAMPLE = Regex("""\b(un\s+)?esempio\b|\bes\.""", RegexOption.IGNORE_CASE)
 
+/** A sum as recognition returns it — `€3,49`, `2.50 €`. Two decimals, and never part of a date. */
+private val MONEY = Regex("""\d+[.,]\d{2}(?![.,]?\d)""")
+
+/**
+ * What [line] says in cents, or null when its text does not read as a sum of money. A discount is
+ * written the same way and means the opposite, so a percentage is never one.
+ */
+fun priceOf(line: ScannedLine): Long? {
+    if (line.text.contains('%')) return null
+    return MONEY.find(line.text)?.value?.let { parsePriceCents(it) }
+}
+
+/** The price a flyer shouts: the tallest line that could be one, towering over the page. */
+fun flyerPrice(lines: List<ScannedLine>): ScannedLine? {
+    if (lines.isEmpty()) return null
+    val median = lines.map { it.height }.sorted()[lines.size / 2]
+    if (median <= 0) return null
+    val price = lines.filter { looksLikePrice(it.text) }.maxByOrNull { it.height } ?: return null
+    return price.takeIf { it.height >= median * FLYER_PRICE_RATIO }
+}
+
+/**
+ * The sum to offer as the item's price. On a flyer only the shouted price counts, and only where
+ * recognition made a legible number of it — display type usually defeats it, and the small print
+ * beside it prices a kilo or a loyalty card rather than the offer. On any other picture a single
+ * sum is unambiguous; where there are several, none is proposed and the reader says which.
+ */
+fun proposedPrice(lines: List<ScannedLine>): ScannedLine? {
+    flyerPrice(lines)?.let { shouted -> return shouted.takeIf { priceOf(it) != null } }
+    return lines.filter { priceOf(it) != null }.singleOrNull()
+}
+
+/**
+ * What to mark before the reader has said anything. A flyer's label where there is one; otherwise
+ * the first line of a picture holding barely any, since one or two lines are what a shelf label or
+ * a photographed packet yields and the first of them names it. A price is never part of a name.
+ */
+fun proposedLabel(lines: List<ScannedLine>, price: ScannedLine?): List<ScannedLine> {
+    flyerLabel(lines)?.let { return it }
+    if (lines.size > 2) return emptyList()
+    val first = lines.sortedWith(compareBy({ it.top }, { it.left })).firstOrNull { it !== price }
+    return listOfNotNull(first)
+}
+
 /**
  * The one offer this picture is about, or null when the picture is not a flyer — in which case
  * the caller reads it line by line, as a written list.
@@ -68,15 +114,7 @@ fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
  */
 fun flyerLabel(lines: List<ScannedLine>): List<ScannedLine>? {
     if (lines.size < 3) return null
-
-    val median = lines.map { it.height }.sorted()[lines.size / 2]
-    if (median <= 0) return null
-
-    val price = lines
-        .filter { looksLikePrice(it.text) }
-        .maxByOrNull { it.height }
-        ?: return null
-    if (price.height < median * FLYER_PRICE_RATIO) return null
+    val price = flyerPrice(lines) ?: return null
 
     val candidates = lines.filter {
         LETTER.containsMatchIn(it.text) && !PRICE_LIKE.containsMatchIn(it.text)

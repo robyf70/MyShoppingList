@@ -19,11 +19,13 @@ data class ScanResult(
     val lines: List<ScannedLine>,
     /** The lines the label was guessed from, marked when the reader points at the picture. */
     val picked: List<ScannedLine>,
+    /** The sum the page shouts, marked as the price, or null when it names none. */
+    val price: ScannedLine?,
 )
 
 suspend fun scanImageForItems(context: Context, uri: Uri): ScanResult {
     val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull()
-        ?: return ScanResult(emptyList(), emptyList())
+        ?: return ScanResult(emptyList(), emptyList(), null)
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     val recognised = suspendCoroutine { continuation ->
         recognizer.process(image)
@@ -38,7 +40,8 @@ suspend fun scanImageForItems(context: Context, uri: Uri): ScanResult {
             }
         }
     }
-    return ScanResult(lines, flyerLabel(lines).orEmpty())
+    val price = proposedPrice(lines)
+    return ScanResult(lines, proposedLabel(lines, price), price)
 }
 
 /**

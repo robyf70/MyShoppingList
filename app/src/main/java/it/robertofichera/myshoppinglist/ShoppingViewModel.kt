@@ -48,6 +48,8 @@ sealed interface ScanState {
     data class Found(
         val lines: List<ScannedLine>,
         val picked: List<ScannedLine>,
+        /** The sum the page shouts, marked as the price, or null when it names none. */
+        val price: ScannedLine?,
         val uri: Uri,
     ) : ScanState
     data object Empty : ScanState
@@ -96,7 +98,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         _scan.value = if (result.lines.isEmpty()) {
             ScanState.Empty
         } else {
-            ScanState.Found(result.lines, result.picked, uri)
+            ScanState.Found(result.lines, result.picked, result.price, uri)
         }
     }
 

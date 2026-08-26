@@ -33,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import it.robertofichera.myshoppinglist.data.findItemNamed
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
 import it.robertofichera.myshoppinglist.data.ScannedItem
 import it.robertofichera.myshoppinglist.data.nameOf
+import it.robertofichera.myshoppinglist.data.priceOf
 import it.robertofichera.myshoppinglist.data.newCameraImageUri
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
@@ -267,26 +269,38 @@ fun ListDetailScreen(
             confirmButton = {},
         )
 
-        is BarcodeState.Found -> ScannedItemDialog(
-            item = ScannedItem(
-                name = state.name,
-                quantity = 1.0,
-                priceCents = state.product?.defaultPriceCents ?: 0,
-            ),
-            showQuantity = showQuantity,
-            showPrice = showPrice,
-            onDismiss = viewModel::dismissBarcode,
-            onConfirm = { scanned ->
-                val existing = findItemNamed(entry.items, scanned.name)
-                if (existing != null) {
+        is BarcodeState.Found -> {
+            val onList = findItemNamed(entry.items, state.name)
+            if (onList != null) {
+                // The list already has a line for it, so settling the scan and then editing that
+                // line would ask for the same three fields twice. Go straight to the line.
+                LaunchedEffect(state) {
                     // The barcode still belongs to the product, whichever line it lands on.
-                    viewModel.rememberBarcode(existing.product.id, state.barcode)
-                    editingItem = existing
-                } else {
-                    viewModel.addScannedBarcode(entry.list.id, state.barcode, scanned)
+                    viewModel.rememberBarcode(onList.product.id, state.barcode)
+                    editingItem = onList
                 }
-            },
-        )
+            } else {
+                ScannedItemDialog(
+                    item = ScannedItem(
+                        name = state.name,
+                        quantity = 1.0,
+                        priceCents = state.product?.defaultPriceCents ?: 0,
+                    ),
+                    showQuantity = showQuantity,
+                    showPrice = showPrice,
+                    onDismiss = viewModel::dismissBarcode,
+                    onConfirm = { scanned ->
+                        val existing = findItemNamed(entry.items, scanned.name)
+                        if (existing != null) {
+                            viewModel.rememberBarcode(existing.product.id, state.barcode)
+                            editingItem = existing
+                        } else {
+                            viewModel.addScannedBarcode(entry.list.id, state.barcode, scanned)
+                        }
+                    },
+                )
+            }
+        }
     }
 
     when (val state = scan) {
@@ -335,8 +349,22 @@ fun ListDetailScreen(
                     uri = state.uri,
                     lines = state.lines,
                     initiallyPicked = state.picked,
-                    onConfirm = { chosen ->
-                        settling = ScannedItem(nameOf(chosen), quantity = 1.0, priceCents = 0)
+                    priceLine = state.price,
+                    onConfirm = { chosen, price ->
+                        val name = nameOf(chosen)
+                        // A line for it already exists: edit that one rather than settle a
+                        // second one beside it.
+                        val onList = findItemNamed(entry.items, name)
+                        if (onList != null) {
+                            viewModel.dismissScan()
+                            editingItem = onList
+                        } else {
+                            settling = ScannedItem(
+                                name = name,
+                                quantity = 1.0,
+                                priceCents = price?.let { priceOf(it) } ?: 0,
+                            )
+                        }
                     },
                     onBack = viewModel::dismissScan,
                 )

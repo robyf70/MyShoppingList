@@ -185,8 +185,17 @@ detected by geometry, not wording — a price set several times taller than the 
 label is the contiguous column of lines beside that price, which is why `ScannedLine` carries
 bounding boxes all the way from ML Kit. The flyer fixtures in `app/src/test/resources/flyers/` are
 the real recogniser's output for photographed leaflets, captured on a device: invented coordinates
-would test nothing. A flyer yields one item with a name only — the size (`150 ml`, `conf. da 60
-pezzi`) belongs to the name, and the price on the page belongs to the shop, not to the list.
+would test nothing. A flyer yields one item, and the size (`150 ml`, `conf. da 60 pezzi`) belongs
+to its name.
+
+**A price is proposed only where the picture states one unambiguously.** `proposedPrice` offers the
+shouted price of a flyer when recognition made a legible sum of it — on all five fixtures it did
+not, since display type comes back as `2`, `2:`, `L69` — and otherwise the picture's only sum, which
+is what a shelf label or a photographed packet yields. Several sums propose none: the small print
+beside an offer prices a kilo or a loyalty card, a percentage is a discount, and `02.09.2024` is a
+date. `proposedLabel` marks the flyer's label, or the first line of a picture holding one or two.
+Both are proposals: they start marked and pulsing on `ScanPickScreen` until the first tap, and a
+tap on the price box takes the price off the item.
 
 `ShareCodecTest.kt` covers `ShareCodec`. Every malformed input must decode to null — a share arrives from a messenger, so it is untrusted, and a partial import is worse than no import.
 

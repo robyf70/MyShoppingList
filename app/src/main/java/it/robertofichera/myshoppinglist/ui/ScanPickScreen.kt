@@ -4,6 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -46,10 +51,15 @@ import kotlinx.coroutines.withContext
 /** Wide enough to read on any phone, small enough that a leaflet photograph is not held twice. */
 private const val PREVIEW_WIDTH = 1080
 
+/** How long one breath of the proposal's pulse takes. */
+private const val PULSE_MS = 800
+
 /**
  * The picture with every recognised line drawn over it, for the reader to tap the ones that name
- * the product. What was guessed starts marked, so a right guess costs nothing and a wrong one
- * costs a tap — which is why no rule for finding a label has to be right, only useful.
+ * the product. What was guessed starts marked and pulses until the first tap, so a right guess
+ * costs nothing and a wrong one costs a tap — which is why no rule for finding a label has to be
+ * right, only useful. [priceLine] is the one box that stands for the price rather than the name:
+ * tapping it takes the price off the item, tapping any other box adds or drops a word of the name.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,12 +67,22 @@ fun ScanPickScreen(
     uri: Uri,
     lines: List<ScannedLine>,
     initiallyPicked: List<ScannedLine>,
-    onConfirm: (List<ScannedLine>) -> Unit,
+    priceLine: ScannedLine?,
+    onConfirm: (name: List<ScannedLine>, price: ScannedLine?) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     var preview by remember(uri) { mutableStateOf<Preview?>(null) }
     val picked = remember(lines) { initiallyPicked.toMutableStateList() }
+    var priceMarked by remember(lines) { mutableStateOf(priceLine != null) }
+    // The pulse is a hint, and a hint outstays its welcome the moment the reader has answered it.
+    var touched by remember(lines) { mutableStateOf(false) }
+    val pulse by rememberInfiniteTransition(label = "proposal").animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(PULSE_MS), RepeatMode.Reverse),
+        label = "pulse",
+    )
 
     LaunchedEffect(uri) { preview = withContext(Dispatchers.IO) { loadPreview(context, uri) } }
 
@@ -93,7 +113,7 @@ fun ScanPickScreen(
             if (shown != null) {
                 val outline = MaterialTheme.colorScheme.outline
                 val chosen = MaterialTheme.colorScheme.primary
-                val chosenFill = chosen.copy(alpha = 0.25f)
+                val chosenPrice = MaterialTheme.colorScheme.tertiary
 
                 Box(modifier = Modifier.fillMaxWidth().weight(1f).clipToBounds()) {
                     Canvas(
@@ -103,7 +123,12 @@ fun ScanPickScreen(
                                 detectTapGestures { tap ->
                                     val scale = fit(shown, size.width.toFloat(), size.height.toFloat())
                                     hit(lines, tap, scale)?.let { line ->
-                                        if (!picked.remove(line)) picked.add(line)
+                                        touched = true
+                                        if (line === priceLine) {
+                                            priceMarked = !priceMarked
+                                        } else if (!picked.remove(line)) {
+                                            picked.add(line)
+                                        }
                                     }
                                 }
                             },
@@ -118,7 +143,10 @@ fun ScanPickScreen(
                             ),
                         )
                         lines.forEach { line ->
-                            val marked = line in picked
+                            val isPrice = line === priceLine
+                            val marked = if (isPrice) priceMarked else line in picked
+                            val colour = if (isPrice) chosenPrice else chosen
+                            val alpha = if (marked && !touched) pulse else 1f
                             val topLeft = Offset(
                                 scale.dx + line.left * scale.perSource,
                                 scale.dy + line.top * scale.perSource,
@@ -127,9 +155,9 @@ fun ScanPickScreen(
                                 (line.right - line.left) * scale.perSource,
                                 line.height * scale.perSource,
                             )
-                            if (marked) drawRect(chosenFill, topLeft, boxSize)
+                            if (marked) drawRect(colour.copy(alpha = 0.25f * alpha), topLeft, boxSize)
                             drawRect(
-                                color = if (marked) chosen else outline,
+                                color = if (marked) colour.copy(alpha = alpha) else outline,
                                 topLeft = topLeft,
                                 size = boxSize,
                                 style = Stroke(width = if (marked) 4f else 2f),
@@ -142,7 +170,12 @@ fun ScanPickScreen(
             }
 
             Button(
-                onClick = { onConfirm(picked.sortedWith(compareBy({ it.top }, { it.left }))) },
+                onClick = {
+                    onConfirm(
+                        picked.sortedWith(compareBy({ it.top }, { it.left })),
+                        priceLine.takeIf { priceMarked },
+                    )
+                },
                 enabled = picked.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
             ) { Text(stringResource(R.string.action_continue)) }
