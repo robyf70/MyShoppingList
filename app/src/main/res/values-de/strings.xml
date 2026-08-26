@@ -98,11 +98,9 @@
     <string name="scan_pick">Auswählen</string>
     <string name="scan_working">Bild wird gelesen…</string>
     <string name="scan_none">In diesem Bild waren keine Produkte zu lesen</string>
-    <string name="scan_title">Gefundene Produkte</string>
     <string name="scan_pick_title">Aus dem Bild wählen</string>
     <string name="scan_pick_message">Tippe die Zeilen an, die das Produkt benennen.</string>
     <string name="scan_barcode">Barcode scannen</string>
     <string name="barcode_working">Wird nachgeschlagen…</string>
     <string name="barcode_unavailable">Barcode-Scannen ist auf diesem Telefon nicht verfügbar</string>
-    <string name="scan_read_all">Stattdessen jede Zeile lesen</string>
 </resources>

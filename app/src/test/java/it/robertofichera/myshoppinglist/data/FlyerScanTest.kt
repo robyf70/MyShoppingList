@@ -103,12 +103,4 @@ class FlyerScanTest {
         assertNull(parseFlyer(emptyList()))
     }
 
-    @Test
-    fun `a flyer routes through parseScan, a list does not`() {
-        assertEquals(1, parseScan(fixture("deodorante")).size)
-        val note = listOf("Milk 1.50", "2 x Bread").mapIndexed { index, text ->
-            ScannedLine(text, left = 80, top = 100 + index * 120, right = 600, bottom = 160 + index * 120)
-        }
-        assertEquals(2, parseScan(note).size)
-    }
 }

@@ -98,10 +98,6 @@ fun flyerLabel(lines: List<ScannedLine>): List<ScannedLine>? {
     return label.takeWhile { !EXAMPLE.containsMatchIn(it.text) }.ifEmpty { null }
 }
 
-/** A flyer yields its one offer; anything else is read as a written list, a line per item. */
-fun parseScan(lines: List<ScannedLine>): List<ScannedItem> =
-    parseFlyer(lines)?.let { listOf(it) } ?: lines.mapNotNull { parseScannedLine(it.text) }
-
 /** Distance from [line] to [box], counting an overlap on either axis as no distance at all. */
 private fun gapTo(box: ScannedLine, line: ScannedLine): Int {
     val dx = maxOf(0, maxOf(box.left - line.right, line.left - box.right))

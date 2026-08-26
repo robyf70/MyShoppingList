@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +58,6 @@ fun ScanPickScreen(
     lines: List<ScannedLine>,
     initiallyPicked: List<ScannedLine>,
     onConfirm: (List<ScannedLine>) -> Unit,
-    onReadEveryLine: () -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -146,14 +144,8 @@ fun ScanPickScreen(
             Button(
                 onClick = { onConfirm(picked.sortedWith(compareBy({ it.top }, { it.left }))) },
                 enabled = picked.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
             ) { Text(stringResource(R.string.action_continue)) }
-
-            // For a photographed list rather than one offer: every line becomes its own item.
-            TextButton(
-                onClick = onReadEveryLine,
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            ) { Text(stringResource(R.string.scan_read_all)) }
         }
     }
 }

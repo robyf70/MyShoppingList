@@ -84,7 +84,6 @@ fun ListDetailScreen(
     var deletingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
     var scanSourceOpen by remember { mutableStateOf(false) }
-    var reviewing by remember { mutableStateOf(false) }
     var settling by remember { mutableStateOf<ScannedItem?>(null) }
     val barcode by viewModel.barcode.collectAsStateWithLifecycle()
 
@@ -315,13 +314,6 @@ fun ListDetailScreen(
                     },
                 )
 
-                reviewing -> ScanReviewDialog(
-                    items = state.items,
-                    showQuantity = showQuantity,
-                    showPrice = showPrice,
-                    onConfirm = { viewModel.addScanned(entry.list.id, it) },
-                    onDismiss = { reviewing = false },
-                )
 
                 else -> ScanPickScreen(
                     uri = state.uri,
@@ -330,7 +322,6 @@ fun ListDetailScreen(
                     onConfirm = { chosen ->
                         settling = ScannedItem(nameOf(chosen), quantity = 1.0, priceCents = 0)
                     },
-                    onReadEveryLine = { reviewing = true },
                     onBack = viewModel::dismissScan,
                 )
             }

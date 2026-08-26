@@ -46,7 +46,6 @@ sealed interface ScanState {
     data object Working : ScanState
     /** [lines] and [uri] are kept so the reader can point at the picture when the guess is wrong. */
     data class Found(
-        val items: List<ScannedItem>,
         val lines: List<ScannedLine>,
         val picked: List<ScannedLine>,
         val uri: Uri,
@@ -92,10 +91,12 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     fun scanImage(uri: Uri) = viewModelScope.launch {
         _scan.value = ScanState.Working
         val result = scanImageForItems(getApplication(), uri)
-        _scan.value = if (result.items.isEmpty()) {
+        // Nothing recognised at all is the only emptiness now: what the lines mean is the
+        // reader's to say, not the parser's.
+        _scan.value = if (result.lines.isEmpty()) {
             ScanState.Empty
         } else {
-            ScanState.Found(result.items, result.lines, result.picked, uri)
+            ScanState.Found(result.lines, result.picked, uri)
         }
     }
 

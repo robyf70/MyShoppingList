@@ -16,15 +16,14 @@ import kotlin.coroutines.suspendCoroutine
  */
 /** Everything a picture yielded: what was read, and where each line of it sat. */
 data class ScanResult(
-    val items: List<ScannedItem>,
     val lines: List<ScannedLine>,
-    /** The lines the label was read from, marked when the reader points at the picture. */
+    /** The lines the label was guessed from, marked when the reader points at the picture. */
     val picked: List<ScannedLine>,
 )
 
 suspend fun scanImageForItems(context: Context, uri: Uri): ScanResult {
     val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull()
-        ?: return ScanResult(emptyList(), emptyList(), emptyList())
+        ?: return ScanResult(emptyList(), emptyList())
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     val recognised = suspendCoroutine { continuation ->
         recognizer.process(image)
@@ -39,7 +38,7 @@ suspend fun scanImageForItems(context: Context, uri: Uri): ScanResult {
             }
         }
     }
-    return ScanResult(parseScan(lines), lines, flyerLabel(lines).orEmpty())
+    return ScanResult(lines, flyerLabel(lines).orEmpty())
 }
 
 /**

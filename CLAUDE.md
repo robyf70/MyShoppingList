@@ -51,6 +51,7 @@ ui/
   ItemDialog.kt        add/edit an item, with product autocomplete
   ImportDialog.kt      offer to import a received share or skip it
   ScanPickScreen.kt    the picture with each recognised line boxed, to tap what names the product
+  ScannedItemDialog.kt settle a scanned item's name, quantity and price before it is added
   ShareList.kt         hands a list's share text to the system share sheet
   ColorPicker.kt       the list colour swatches, the custom sliders, and readableOn
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
@@ -171,15 +172,15 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 
 **Every picture goes to `ScanPickScreen` first**, then to the item editor. Whether a page is a
 leaflet is itself a guess, so the reader is never made to live with it: the guessed label starts
-marked and a tap changes it. Reading every line as its own item — what a photographed written list
-wants — is a button on that screen rather than the default.
+marked and a tap changes it. One picture yields one item — there is no reading of every line into a
+row apiece, because photographing a written list is not what this is for.
 
 A flyer's label is a guess, so it is correctable: `ScanPickScreen` shows the picture with every
 recognised line boxed and the guessed ones marked, and a tap adds or drops one. That is why the
 rules for finding a label need only be useful rather than right — five leaflets have each broken
 the rule the one before it established, and a sixth probably will.
 
-`ScannedLinesTest.kt` and `FlyerScanTest.kt` cover reading items off a picture. A flyer is
+`FlyerScanTest.kt` covers reading an item off a picture. A flyer is
 detected by geometry, not wording — a price set several times taller than the median line — and its
 label is the contiguous column of lines beside that price, which is why `ScannedLine` carries
 bounding boxes all the way from ML Kit. The flyer fixtures in `app/src/test/resources/flyers/` are

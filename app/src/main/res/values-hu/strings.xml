@@ -99,11 +99,9 @@
     <string name="scan_pick">Kép választása</string>
     <string name="scan_working">Kép beolvasása…</string>
     <string name="scan_none">Ezen a képen nem volt olvasható termék</string>
-    <string name="scan_title">Talált termékek</string>
     <string name="scan_pick_title">Választás a képről</string>
     <string name="scan_pick_message">Koppints a sorokra, amelyek a terméket nevezik meg.</string>
     <string name="scan_barcode">Vonalkód beolvasása</string>
     <string name="barcode_working">Keresés…</string>
     <string name="barcode_unavailable">A vonalkód-beolvasás nem érhető el ezen a telefonon</string>
-    <string name="scan_read_all">Inkább minden sor beolvasása</string>
 </resources>

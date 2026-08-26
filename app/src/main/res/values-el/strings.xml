@@ -98,11 +98,9 @@
     <string name="scan_pick">Επιλογή</string>
     <string name="scan_working">Ανάγνωση εικόνας…</string>
     <string name="scan_none">Δεν διαβάστηκαν προϊόντα σε αυτήν την εικόνα</string>
-    <string name="scan_title">Προϊόντα που βρέθηκαν</string>
     <string name="scan_pick_title">Επιλογή από την εικόνα</string>
     <string name="scan_pick_message">Πατήστε τις γραμμές που ονομάζουν το προϊόν.</string>
     <string name="scan_barcode">Σάρωση γραμμωτού κώδικα</string>
     <string name="barcode_working">Γίνεται αναζήτηση…</string>
     <string name="barcode_unavailable">Η σάρωση γραμμωτού κώδικα δεν είναι διαθέσιμη σε αυτό το τηλέφωνο</string>
-    <string name="scan_read_all">Ανάγνωση όλων των γραμμών</string>
 </resources>

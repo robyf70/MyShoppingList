@@ -98,11 +98,9 @@
     <string name="scan_pick">Elegir una</string>
     <string name="scan_working">Leyendo la imagen…</string>
     <string name="scan_none">No se ha podido leer ningún producto en esa imagen</string>
-    <string name="scan_title">Productos encontrados</string>
     <string name="scan_pick_title">Elegir en la imagen</string>
     <string name="scan_pick_message">Toca las líneas que nombran el producto.</string>
     <string name="scan_barcode">Escanear un código de barras</string>
     <string name="barcode_working">Buscando…</string>
     <string name="barcode_unavailable">El escaneo de códigos de barras no está disponible en este teléfono</string>
-    <string name="scan_read_all">Leer todas las líneas en su lugar</string>
 </resources>

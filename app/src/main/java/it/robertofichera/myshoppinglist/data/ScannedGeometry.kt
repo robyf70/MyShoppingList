@@ -1,5 +1,12 @@
 package it.robertofichera.myshoppinglist.data
 
+/** An item read off a picture, before the reader has settled its quantity and price. */
+data class ScannedItem(
+    val name: String,
+    val quantity: Double,
+    val priceCents: Long,
+)
+
 /**
  * One recognised line and where it sat on the picture. A flyer says what it means by layout
  * rather than by wording, so the geometry has to survive as far as the parser.

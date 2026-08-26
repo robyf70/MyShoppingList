@@ -105,11 +105,9 @@
     <string name="scan_pick">Wybierz zdjęcie</string>
     <string name="scan_working">Odczytywanie zdjęcia…</string>
     <string name="scan_none">Nie odczytano żadnych produktów z tego zdjęcia</string>
-    <string name="scan_title">Znalezione produkty</string>
     <string name="scan_pick_title">Wybierz ze zdjęcia</string>
     <string name="scan_pick_message">Dotknij wierszy, które nazywają produkt.</string>
     <string name="scan_barcode">Zeskanuj kod kreskowy</string>
     <string name="barcode_working">Wyszukiwanie…</string>
     <string name="barcode_unavailable">Skanowanie kodów kreskowych nie jest dostępne na tym telefonie</string>
-    <string name="scan_read_all">Odczytaj zamiast tego każdy wiersz</string>
 </resources>
