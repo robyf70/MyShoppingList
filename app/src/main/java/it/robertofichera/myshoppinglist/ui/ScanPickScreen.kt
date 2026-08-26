@@ -56,9 +56,9 @@ private const val PULSE_MS = 800
 
 /**
  * The picture with every recognised line drawn over it, for the reader to tap the ones that name
- * the product. What was guessed starts marked and pulses until the first tap, so a right guess
- * costs nothing and a wrong one costs a tap — which is why no rule for finding a label has to be
- * right, only useful. [priceLine] is the one box that stands for the price rather than the name:
+ * the product. What was guessed starts marked, and pulses until it is tapped one way or the other,
+ * so a right guess costs nothing and a wrong one costs a tap — which is why no rule for finding a
+ * label has to be right, only useful. [priceLine] is the one box that stands for the price rather than the name:
  * tapping it takes the price off the item, tapping any other box adds or drops a word of the name.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,8 +75,10 @@ fun ScanPickScreen(
     var preview by remember(uri) { mutableStateOf<Preview?>(null) }
     val picked = remember(lines) { initiallyPicked.toMutableStateList() }
     var priceMarked by remember(lines) { mutableStateOf(priceLine != null) }
-    // The pulse is a hint, and a hint outstays its welcome the moment the reader has answered it.
-    var touched by remember(lines) { mutableStateOf(false) }
+    // A hint outstays its welcome the moment it is answered, and each box is answered on its own.
+    val unanswered = remember(lines) {
+        (initiallyPicked + listOfNotNull(priceLine)).toMutableStateList()
+    }
     val pulse by rememberInfiniteTransition(label = "proposal").animateFloat(
         initialValue = 0.3f,
         targetValue = 1f,
@@ -123,7 +125,7 @@ fun ScanPickScreen(
                                 detectTapGestures { tap ->
                                     val scale = fit(shown, size.width.toFloat(), size.height.toFloat())
                                     hit(lines, tap, scale)?.let { line ->
-                                        touched = true
+                                        unanswered.remove(line)
                                         if (line === priceLine) {
                                             priceMarked = !priceMarked
                                         } else if (!picked.remove(line)) {
@@ -146,7 +148,7 @@ fun ScanPickScreen(
                             val isPrice = line === priceLine
                             val marked = if (isPrice) priceMarked else line in picked
                             val colour = if (isPrice) chosenPrice else chosen
-                            val alpha = if (marked && !touched) pulse else 1f
+                            val alpha = if (marked && line in unanswered) pulse else 1f
                             val topLeft = Offset(
                                 scale.dx + line.left * scale.perSource,
                                 scale.dy + line.top * scale.perSource,
