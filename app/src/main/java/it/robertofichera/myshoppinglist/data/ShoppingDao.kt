@@ -52,6 +52,10 @@ interface ShoppingDao {
     )
     fun observeProductsWithUsage(): Flow<List<ProductWithUsage>>
 
+    /** The whole catalogue at once, for matching a recognised name against every product. */
+    @Query("SELECT * FROM products")
+    suspend fun allProducts(): List<Product>
+
     /** NOCASE so typing "milk" reuses an existing "Milk" instead of creating a twin. */
     @Query("SELECT * FROM products WHERE name = :name COLLATE NOCASE LIMIT 1")
     suspend fun findProductByName(name: String): Product?

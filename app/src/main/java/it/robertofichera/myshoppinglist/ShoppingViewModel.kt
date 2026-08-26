@@ -12,6 +12,7 @@ import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.DownloadResult
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.ScannedItem
+import it.robertofichera.myshoppinglist.data.matchProduct
 import it.robertofichera.myshoppinglist.data.SettingsStore
 import it.robertofichera.myshoppinglist.data.scanImageForItems
 import it.robertofichera.myshoppinglist.data.ShoppingList
@@ -79,11 +80,15 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     fun addScanned(listId: Long, items: List<ScannedItem>) = viewModelScope.launch {
         _scan.value = ScanState.None
         db.withTransaction {
+            // A recognised name may spell a product it already holds — "ASIAG0" for "Asiago" —
+            // so the catalogue is consulted before a near-duplicate is created beside it.
+            val catalogue = dao.allProducts()
             items.forEach { item ->
+                val known = matchProduct(item.name, catalogue)
                 dao.insertItem(
                     Item(
                         listId = listId,
-                        productId = productIdFor(item.name, item.priceCents),
+                        productId = known?.id ?: productIdFor(item.name, item.priceCents),
                         quantity = item.quantity,
                         priceCents = item.priceCents,
                     ),
