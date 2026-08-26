@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -73,7 +75,13 @@ fun SettingsScreen(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        // Fixed rows, and enough of them that a large display size or a short screen pushes the
+        // last one past the bottom edge; without this it cannot be reached at all.
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
+        ) {
             SwitchRow(
                 title = stringResource(R.string.settings_show_quantity),
                 subtitle = stringResource(R.string.settings_show_quantity_desc),
