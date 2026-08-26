@@ -102,4 +102,7 @@
     <string name="scan_pick_title">Escolher na imagem</string>
     <string name="scan_pick_message">Toca nas linhas que indicam o produto.</string>
     <string name="scan_pick_action">Escolher na imagem</string>
+    <string name="scan_barcode">Ler um código de barras</string>
+    <string name="barcode_working">A procurar…</string>
+    <string name="barcode_unavailable">A leitura de códigos de barras não está disponível neste telemóvel</string>
 </resources>

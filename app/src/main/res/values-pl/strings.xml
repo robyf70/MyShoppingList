@@ -109,4 +109,7 @@
     <string name="scan_pick_title">Wybierz ze zdjęcia</string>
     <string name="scan_pick_message">Dotknij wierszy, które nazywają produkt.</string>
     <string name="scan_pick_action">Wybierz ze zdjęcia</string>
+    <string name="scan_barcode">Zeskanuj kod kreskowy</string>
+    <string name="barcode_working">Wyszukiwanie…</string>
+    <string name="barcode_unavailable">Skanowanie kodów kreskowych nie jest dostępne na tym telefonie</string>
 </resources>

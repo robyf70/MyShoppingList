@@ -52,6 +52,12 @@ interface ShoppingDao {
     )
     fun observeProductsWithUsage(): Flow<List<ProductWithUsage>>
 
+    @Query("SELECT * FROM products WHERE barcode = :barcode LIMIT 1")
+    suspend fun findProductByBarcode(barcode: String): Product?
+
+    @Query("UPDATE products SET barcode = :barcode WHERE id = :productId")
+    suspend fun updateProductBarcode(productId: Long, barcode: String)
+
     /** The whole catalogue at once, for matching a recognised name against every product. */
     @Query("SELECT * FROM products")
     suspend fun allProducts(): List<Product>

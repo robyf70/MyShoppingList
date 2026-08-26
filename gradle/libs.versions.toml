@@ -11,6 +11,7 @@ composeBom = "2026.02.01"
 ksp = "2.2.10-2.0.2"
 room = "2.8.1"
 mlkitText = "16.0.1"
+codeScanner = "16.1.0"
 json = "20250107"
 
 [libraries]
@@ -35,6 +36,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitText" }
+play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "codeScanner" }
 json = { group = "org.json", name = "json", version.ref = "json" }
 
 [plugins]

@@ -23,11 +23,16 @@ data class ShoppingList(
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */
-@Entity(tableName = "products", indices = [Index(value = ["name"], unique = true)])
+@Entity(
+    tableName = "products",
+    indices = [Index(value = ["name"], unique = true), Index(value = ["barcode"])],
+)
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val defaultPriceCents: Long = 0,
+    /** The barcode last scanned for this product; null until one is. */
+    val barcode: String? = null,
 )
 
 @Entity(

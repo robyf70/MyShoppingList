@@ -12,6 +12,7 @@ import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.DownloadResult
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.ScannedItem
+import it.robertofichera.myshoppinglist.data.lookUpBarcode
 import it.robertofichera.myshoppinglist.data.ScannedLine
 import it.robertofichera.myshoppinglist.data.matchProduct
 import it.robertofichera.myshoppinglist.data.SettingsStore
@@ -26,6 +27,7 @@ import it.robertofichera.myshoppinglist.data.SharedItem
 import it.robertofichera.myshoppinglist.data.SharedList
 import it.robertofichera.myshoppinglist.data.lineTotalCents
 import it.robertofichera.myshoppinglist.data.totalCents
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -50,6 +52,20 @@ sealed interface ScanState {
         val uri: Uri,
     ) : ScanState
     data object Empty : ScanState
+}
+
+/** A scanned barcode on its way to becoming an item. */
+sealed interface BarcodeState {
+    data object None : BarcodeState
+    data object Working : BarcodeState
+    /** [product] is the catalogue entry it turned out to be, null when it is new here. */
+    data class Found(
+        val barcode: String,
+        val name: String,
+        val product: Product?,
+    ) : BarcodeState
+    /** Play Services could not supply a scanner: this phone reads pictures and nothing else. */
+    data object Unavailable : BarcodeState
 }
 
 sealed interface ImportState {
@@ -105,6 +121,56 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                     ),
                 )
             }
+        }
+    }
+
+    private val _barcode = MutableStateFlow<BarcodeState>(BarcodeState.None)
+    val barcode: StateFlow<BarcodeState> = _barcode.asStateFlow()
+
+    /**
+     * The catalogue answers first, so a product scanned once is known offline ever after and under
+     * the name this user gave it. Only a barcode never seen here reaches Open Food Facts.
+     */
+    fun resolveBarcode(code: String) = viewModelScope.launch {
+        _barcode.value = BarcodeState.Working
+        val known = dao.findProductByBarcode(code)
+        if (known != null) {
+            _barcode.value = BarcodeState.Found(code, known.name, known)
+            return@launch
+        }
+        val app = getApplication<Application>()
+        val looked = withContext(Dispatchers.IO) {
+            lookUpBarcode(
+                barcode = code,
+                language = Locale.getDefault().language,
+                userAgent = "${app.getString(R.string.app_name)}/${BuildConfig.VERSION_NAME}",
+            )
+        }
+        _barcode.value = BarcodeState.Found(code, looked.orEmpty(), null)
+    }
+
+    fun barcodeUnavailable() {
+        _barcode.value = BarcodeState.Unavailable
+    }
+
+    fun dismissBarcode() {
+        _barcode.value = BarcodeState.None
+    }
+
+    /** Adds the item and remembers the barcode against whichever product it became. */
+    fun addScannedBarcode(listId: Long, code: String, item: ScannedItem) = viewModelScope.launch {
+        _barcode.value = BarcodeState.None
+        db.withTransaction {
+            val productId = productIdFor(item.name, item.priceCents)
+            dao.updateProductBarcode(productId, code)
+            dao.insertItem(
+                Item(
+                    listId = listId,
+                    productId = productId,
+                    quantity = item.quantity,
+                    priceCents = item.priceCents,
+                ),
+            )
         }
     }
 

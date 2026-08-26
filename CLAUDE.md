@@ -81,6 +81,13 @@ The setting exists because a phone's region is not what a user thinks it is. And
 
 **Line totals round once per line, then sum** (`Item.lineTotalCents`, `ListWithItems.totalCents`). Quantities are `Double` because decimal quantities (1.5 kg) are supported, so `quantity * priceCents` needs rounding — doing it per line and summing matches how a receipt adds up. Don't sum unrounded products.
 
+**A barcode is remembered against the product it turned out to be.** `Product.barcode` is filled in
+when one is scanned, so the catalogue answers first ever after — offline, and under the name this
+user gave it. Only a barcode never seen here reaches Open Food Facts, which is the app's only
+request that does not go to GitHub and carries a barcode and nothing else. Scanning runs in Play
+Services' own screen (`play-services-code-scanner`), so there is no `CAMERA` permission and no
+viewfinder to maintain; a phone without Play Services says so plainly and reads pictures instead.
+
 **Products are a shared catalog, referenced by id.** They are created either from `ProductsScreen` directly or implicitly by naming one while adding a list item; the two are indistinguishable afterwards. `Item.productId` points at a `Product`; the name lives only in the catalog, so renaming a product renames it on every list including past ones. Editing a product's `defaultPriceCents` does **not** rewrite existing items — they keep the price of the trip they belong to. Deleting a product that is still referenced is blocked — `ProductsScreen` disables the button and shows the usage count, with `ForeignKey.RESTRICT` as the database-level backstop. Product lookup is `COLLATE NOCASE`, so typing "milk" reuses an existing "Milk" instead of creating a twin. A name read off a picture also goes through `matchProduct`, which equates a digit with the letter it resembles — `ASIAG0` finds `Asiago` — but never equates two letters, because that folds `Mele` into `Miele`. `Product.defaultPriceCents` is the last price entered for it and only prefills the dialog; each item still records what that trip actually cost.
 
 **The app updates itself from GitHub releases.** `ShoppingViewModel` checks

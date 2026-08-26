@@ -30,8 +30,8 @@ android {
         applicationId = "it.robertofichera.myshoppinglist"
         minSdk = 31
         targetSdk = 37
-        versionCode = 22
-        versionName = "1.14"
+        versionCode = 23
+        versionName = "1.15"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.mlkit.text.recognition)
+    implementation(libs.play.services.code.scanner)
     testImplementation(libs.junit)
     // org.json is an empty stub in unit tests; this supplies the real one.
     testImplementation(libs.json)

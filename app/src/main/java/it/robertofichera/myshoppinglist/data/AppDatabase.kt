@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 5)
+@Database(entities = [ShoppingList::class, Product::class, Item::class], version = 6)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun shoppingDao(): ShoppingDao
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "shopping.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build().also { instance = it }
             }
 
         /**
@@ -94,6 +94,14 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE `shopping_lists` ADD COLUMN `colorArgb` INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        /** The barcode a product was last scanned under, so scanning it again finds it. */
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `products` ADD COLUMN `barcode` TEXT")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_products_barcode` ON `products` (`barcode`)")
             }
         }
     }

@@ -102,4 +102,7 @@
     <string name="scan_pick_title">Pick from the picture</string>
     <string name="scan_pick_message">Tap the lines that name the product.</string>
     <string name="scan_pick_action">Pick from the picture</string>
+    <string name="scan_barcode">Scan a barcode</string>
+    <string name="barcode_working">Looking it up…</string>
+    <string name="barcode_unavailable">Barcode scanning is not available on this phone</string>
 </resources>

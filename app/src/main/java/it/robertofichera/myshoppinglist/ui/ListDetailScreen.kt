@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import it.robertofichera.myshoppinglist.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import it.robertofichera.myshoppinglist.BarcodeState
 import it.robertofichera.myshoppinglist.ScanState
 import it.robertofichera.myshoppinglist.ShoppingViewModel
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
@@ -85,6 +86,7 @@ fun ListDetailScreen(
     var scanSourceOpen by remember { mutableStateOf(false) }
     var picking by remember { mutableStateOf(false) }
     var settling by remember { mutableStateOf<ScannedItem?>(null) }
+    val barcode by viewModel.barcode.collectAsStateWithLifecycle()
 
     val scan by viewModel.scan.collectAsStateWithLifecycle()
     val scanContext = LocalContext.current
@@ -213,7 +215,21 @@ fun ListDetailScreen(
         AlertDialog(
             onDismissRequest = { scanSourceOpen = false },
             title = { Text(stringResource(R.string.item_add_from_image)) },
-            text = { Text(stringResource(R.string.scan_source_message)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(stringResource(R.string.scan_source_message))
+                    TextButton(
+                        onClick = {
+                            scanSourceOpen = false
+                            scanBarcode(
+                                context = scanContext,
+                                onScanned = { code -> viewModel.resolveBarcode(code) },
+                                onUnavailable = viewModel::barcodeUnavailable,
+                            )
+                        },
+                    ) { Text(stringResource(R.string.scan_barcode)) }
+                }
+            },
             confirmButton = {
                 TextButton(onClick = {
                     scanSourceOpen = false
@@ -228,6 +244,39 @@ fun ListDetailScreen(
                     pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }) { Text(stringResource(R.string.scan_pick)) }
             },
+        )
+    }
+
+
+    when (val state = barcode) {
+        is BarcodeState.None -> Unit
+
+        is BarcodeState.Unavailable -> AlertDialog(
+            onDismissRequest = viewModel::dismissBarcode,
+            text = { Text(stringResource(R.string.barcode_unavailable)) },
+            confirmButton = {
+                TextButton(onClick = viewModel::dismissBarcode) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+
+        is BarcodeState.Working -> AlertDialog(
+            onDismissRequest = viewModel::dismissBarcode,
+            text = { Text(stringResource(R.string.barcode_working)) },
+            confirmButton = {},
+        )
+
+        is BarcodeState.Found -> ScannedItemDialog(
+            item = ScannedItem(
+                name = state.name,
+                quantity = 1.0,
+                priceCents = state.product?.defaultPriceCents ?: 0,
+            ),
+            showQuantity = showQuantity,
+            showPrice = showPrice,
+            onDismiss = viewModel::dismissBarcode,
+            onConfirm = { viewModel.addScannedBarcode(entry.list.id, state.barcode, it) },
         )
     }
 
