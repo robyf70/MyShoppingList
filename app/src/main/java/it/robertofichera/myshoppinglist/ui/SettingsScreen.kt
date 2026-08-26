@@ -1,6 +1,7 @@
 package it.robertofichera.myshoppinglist.ui
 
 import android.content.Intent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import it.robertofichera.myshoppinglist.BuildConfig
 import it.robertofichera.myshoppinglist.R
+import it.robertofichera.myshoppinglist.ui.theme.Green40
+import it.robertofichera.myshoppinglist.ui.theme.Green80
 import it.robertofichera.myshoppinglist.UpdateState
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.Settings
@@ -209,8 +213,16 @@ private fun UpdateRow(
         is UpdateState.Available -> ({ onInstall(state.release) })
         else -> onCheck
     }
+    // Green from the moment a version is waiting until it is installed. Going grey again while it
+    // downloads would read as the news being withdrawn.
+    val titleColor = when (state) {
+        is UpdateState.Available, is UpdateState.Downloading ->
+            if (isSystemInDarkTheme()) Green80 else Green40
 
-    NavigationRow(title = title, subtitle = subtitle, onClick = onClick)
+        else -> Color.Unspecified
+    }
+
+    NavigationRow(title = title, subtitle = subtitle, onClick = onClick, titleColor = titleColor)
 }
 
 @Composable
@@ -218,6 +230,7 @@ private fun NavigationRow(
     title: String,
     subtitle: String,
     onClick: (() -> Unit)?,
+    titleColor: Color = Color.Unspecified,
 ) {
     Row(
         modifier = Modifier
@@ -227,7 +240,7 @@ private fun NavigationRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(title, style = MaterialTheme.typography.bodyLarge, color = titleColor)
             Text(
                 subtitle,
                 style = MaterialTheme.typography.bodySmall,
