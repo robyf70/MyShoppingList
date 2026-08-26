@@ -101,8 +101,8 @@
     <string name="scan_title">Gevonden producten</string>
     <string name="scan_pick_title">Kies uit de afbeelding</string>
     <string name="scan_pick_message">Tik op de regels die het product benoemen.</string>
-    <string name="scan_pick_action">Kies uit de afbeelding</string>
     <string name="scan_barcode">Streepjescode scannen</string>
     <string name="barcode_working">Wordt opgezocht…</string>
     <string name="barcode_unavailable">Streepjescodes scannen is niet beschikbaar op deze telefoon</string>
+    <string name="scan_read_all">Lees in plaats daarvan elke regel</string>
 </resources>

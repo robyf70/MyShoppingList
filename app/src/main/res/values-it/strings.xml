@@ -101,8 +101,8 @@
     <string name="scan_title">Prodotti trovati</string>
     <string name="scan_pick_title">Scegli dall\'immagine</string>
     <string name="scan_pick_message">Tocca le righe che indicano il prodotto.</string>
-    <string name="scan_pick_action">Scegli dall\'immagine</string>
     <string name="scan_barcode">Scansiona un codice a barre</string>
     <string name="barcode_working">Ricerca in corso…</string>
     <string name="barcode_unavailable">La scansione dei codici a barre non è disponibile su questo telefono</string>
+    <string name="scan_read_all">Leggi invece tutte le righe</string>
 </resources>

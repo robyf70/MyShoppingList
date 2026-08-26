@@ -50,7 +50,6 @@ fun ScanReviewDialog(
     showQuantity: Boolean,
     showPrice: Boolean,
     onConfirm: (List<ScannedItem>) -> Unit,
-    onPickFromPicture: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val rows = remember(items) { items.toMutableStateList() }
@@ -101,9 +100,7 @@ fun ScanReviewDialog(
             ) { Text(stringResource(R.string.action_continue)) }
         },
         dismissButton = {
-            TextButton(onClick = onPickFromPicture) {
-                Text(stringResource(R.string.scan_pick_action))
-            }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 
