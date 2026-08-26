@@ -56,6 +56,17 @@ private val EXAMPLE = Regex("""\b(un\s+)?esempio\b|\bes\.""", RegexOption.IGNORE
  * the caller reads it line by line, as a written list.
  */
 fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
+    val label = flyerLabel(lines) ?: return null
+    val name = label.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
+    if (name.isEmpty()) return null
+    return ScannedItem(name = name, quantity = 1.0, priceCents = 0)
+}
+
+/**
+ * The lines that name the offer, so the reader can be shown what was chosen and change it. Kept
+ * separate from the name because pointing at the picture needs the lines themselves.
+ */
+fun flyerLabel(lines: List<ScannedLine>): List<ScannedLine>? {
     if (lines.size < 3) return null
 
     val median = lines.map { it.height }.sorted()[lines.size / 2]
@@ -84,11 +95,7 @@ fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
         ?: within.minByOrNull { gapToGroup(price, it) }
         ?: return null
 
-    val named = label.takeWhile { !EXAMPLE.containsMatchIn(it.text) }
-
-    val name = named.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
-    if (name.isEmpty()) return null
-    return ScannedItem(name = name, quantity = 1.0, priceCents = 0)
+    return label.takeWhile { !EXAMPLE.containsMatchIn(it.text) }.ifEmpty { null }
 }
 
 /** A flyer yields its one offer; anything else is read as a written list, a line per item. */

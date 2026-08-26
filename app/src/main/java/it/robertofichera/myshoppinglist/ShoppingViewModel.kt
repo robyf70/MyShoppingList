@@ -12,6 +12,7 @@ import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.DownloadResult
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.ScannedItem
+import it.robertofichera.myshoppinglist.data.ScannedLine
 import it.robertofichera.myshoppinglist.data.matchProduct
 import it.robertofichera.myshoppinglist.data.SettingsStore
 import it.robertofichera.myshoppinglist.data.scanImageForItems
@@ -41,7 +42,13 @@ import kotlinx.coroutines.withContext
 sealed interface ScanState {
     data object None : ScanState
     data object Working : ScanState
-    data class Found(val items: List<ScannedItem>) : ScanState
+    /** [lines] and [uri] are kept so the reader can point at the picture when the guess is wrong. */
+    data class Found(
+        val items: List<ScannedItem>,
+        val lines: List<ScannedLine>,
+        val picked: List<ScannedLine>,
+        val uri: Uri,
+    ) : ScanState
     data object Empty : ScanState
 }
 
@@ -68,12 +75,28 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     /** Recognition happens off the main thread inside ML Kit; this only waits for it. */
     fun scanImage(uri: Uri) = viewModelScope.launch {
         _scan.value = ScanState.Working
-        val items = scanImageForItems(getApplication(), uri)
-        _scan.value = if (items.isEmpty()) ScanState.Empty else ScanState.Found(items)
+        val result = scanImageForItems(getApplication(), uri)
+        _scan.value = if (result.items.isEmpty()) {
+            ScanState.Empty
+        } else {
+            ScanState.Found(result.items, result.lines, result.picked, uri)
+        }
     }
 
     fun dismissScan() {
         _scan.value = ScanState.None
+    }
+
+    /** What the reader pointed at on the picture, joined in reading order into one item. */
+    fun addPicked(listId: Long, lines: List<ScannedLine>) {
+        val name = lines.joinToString(" ") { it.text.trim() }
+            .replace(Regex("""\s+"""), " ")
+            .trim()
+        if (name.isEmpty()) {
+            dismissScan()
+            return
+        }
+        addScanned(listId, listOf(ScannedItem(name = name, quantity = 1.0, priceCents = 0)))
     }
 
     /** One transaction, so a picture full of items either lands or does not. */

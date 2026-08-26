@@ -106,4 +106,7 @@
     <string name="scan_working">Odczytywanie zdjęcia…</string>
     <string name="scan_none">Nie odczytano żadnych produktów z tego zdjęcia</string>
     <string name="scan_title">Znalezione produkty</string>
+    <string name="scan_pick_title">Wybierz ze zdjęcia</string>
+    <string name="scan_pick_message">Dotknij wierszy, które nazywają produkt.</string>
+    <string name="scan_pick_action">Wybierz ze zdjęcia</string>
 </resources>

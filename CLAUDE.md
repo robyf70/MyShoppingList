@@ -50,6 +50,7 @@ ui/
   ProductDialog.kt     add/edit a product: name + default price, uniqueness enforced
   ItemDialog.kt        add/edit an item, with product autocomplete
   ImportDialog.kt      offer to import a received share or skip it
+  ScanPickScreen.kt    the picture with each recognised line boxed, to tap what names the product
   ShareList.kt         hands a list's share text to the system share sheet
   ColorPicker.kt       the list colour swatches, the custom sliders, and readableOn
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
@@ -160,6 +161,11 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 `UpdatesTest.kt` covers `isNewerVersion`. Keep version comparison pure and out of the networking path — offering a downgrade, or refusing a real update, is the failure that matters there.
 
 `ProductSuggestionsTest.kt` covers `filterProducts` / `isSettledOn`. Keep autocomplete logic in `ProductSuggestions.kt` as pure functions so it stays testable without an emulator.
+
+A flyer's label is a guess, so it is correctable: `ScanPickScreen` shows the picture with every
+recognised line boxed and the guessed ones marked, and a tap adds or drops one. That is why the
+rules for finding a label need only be useful rather than right — five leaflets have each broken
+the rule the one before it established, and a sixth probably will.
 
 `ScannedLinesTest.kt` and `FlyerScanTest.kt` cover reading items off a picture. A flyer is
 detected by geometry, not wording — a price set several times taller than the median line — and its

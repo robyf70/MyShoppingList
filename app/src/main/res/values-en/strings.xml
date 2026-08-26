@@ -99,4 +99,7 @@
     <string name="scan_working">Reading the picture…</string>
     <string name="scan_none">No items could be read from that picture</string>
     <string name="scan_title">Items found</string>
+    <string name="scan_pick_title">Pick from the picture</string>
+    <string name="scan_pick_message">Tap the lines that name the product.</string>
+    <string name="scan_pick_action">Pick from the picture</string>
 </resources>

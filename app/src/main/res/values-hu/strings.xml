@@ -100,4 +100,7 @@
     <string name="scan_working">Kép beolvasása…</string>
     <string name="scan_none">Ezen a képen nem volt olvasható termék</string>
     <string name="scan_title">Talált termékek</string>
+    <string name="scan_pick_title">Választás a képről</string>
+    <string name="scan_pick_message">Koppints a sorokra, amelyek a terméket nevezik meg.</string>
+    <string name="scan_pick_action">Választás a képről</string>
 </resources>

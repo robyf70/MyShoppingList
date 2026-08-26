@@ -81,6 +81,7 @@ fun ListDetailScreen(
     var deletingItem by remember { mutableStateOf<ItemWithProduct?>(null) }
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
     var scanSourceOpen by remember { mutableStateOf(false) }
+    var picking by remember { mutableStateOf(false) }
 
     val scan by viewModel.scan.collectAsStateWithLifecycle()
     val scanContext = LocalContext.current
@@ -246,13 +247,27 @@ fun ListDetailScreen(
             },
         )
 
-        is ScanState.Found -> ScanReviewDialog(
-            items = state.items,
-            showQuantity = showQuantity,
-            showPrice = showPrice,
-            onConfirm = { viewModel.addScanned(entry.list.id, it) },
-            onDismiss = viewModel::dismissScan,
-        )
+        is ScanState.Found -> if (picking) {
+            ScanPickScreen(
+                uri = state.uri,
+                lines = state.lines,
+                initiallyPicked = state.picked,
+                onConfirm = { chosen ->
+                    picking = false
+                    viewModel.addPicked(entry.list.id, chosen)
+                },
+                onBack = { picking = false },
+            )
+        } else {
+            ScanReviewDialog(
+                items = state.items,
+                showQuantity = showQuantity,
+                showPrice = showPrice,
+                onConfirm = { viewModel.addScanned(entry.list.id, it) },
+                onPickFromPicture = { picking = true },
+                onDismiss = viewModel::dismissScan,
+            )
+        }
     }
 
     pendingTick?.let { row ->

@@ -14,8 +14,17 @@ import kotlin.coroutines.suspendCoroutine
  * Reads [uri] and returns the items its text spells out, empty when there is nothing to read.
  * Recognition is on-device: the picture never leaves the phone.
  */
-suspend fun scanImageForItems(context: Context, uri: Uri): List<ScannedItem> {
-    val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull() ?: return emptyList()
+/** Everything a picture yielded: what was read, and where each line of it sat. */
+data class ScanResult(
+    val items: List<ScannedItem>,
+    val lines: List<ScannedLine>,
+    /** The lines the label was read from, marked when the reader points at the picture. */
+    val picked: List<ScannedLine>,
+)
+
+suspend fun scanImageForItems(context: Context, uri: Uri): ScanResult {
+    val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull()
+        ?: return ScanResult(emptyList(), emptyList(), emptyList())
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     val recognised = suspendCoroutine { continuation ->
         recognizer.process(image)
@@ -30,7 +39,7 @@ suspend fun scanImageForItems(context: Context, uri: Uri): List<ScannedItem> {
             }
         }
     }
-    return parseScan(lines)
+    return ScanResult(parseScan(lines), lines, flyerLabel(lines).orEmpty())
 }
 
 /**

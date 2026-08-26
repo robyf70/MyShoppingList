@@ -99,4 +99,7 @@
     <string name="scan_working">Bild wird gelesen…</string>
     <string name="scan_none">In diesem Bild waren keine Produkte zu lesen</string>
     <string name="scan_title">Gefundene Produkte</string>
+    <string name="scan_pick_title">Aus dem Bild wählen</string>
+    <string name="scan_pick_message">Tippe die Zeilen an, die das Produkt benennen.</string>
+    <string name="scan_pick_action">Aus dem Bild wählen</string>
 </resources>
