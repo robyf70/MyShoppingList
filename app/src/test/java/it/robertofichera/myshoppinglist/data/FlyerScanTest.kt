@@ -20,7 +20,10 @@ class FlyerScanTest {
         val array = JSONArray(json)
         return List(array.length()) { index ->
             val o = array.getJSONObject(index)
-            ScannedLine(o.getString("t"), o.getInt("l"), o.getInt("y"), o.getInt("r"), o.getInt("b"))
+            ScannedLine(
+                o.getString("t"), o.getInt("l"), o.getInt("y"), o.getInt("r"), o.getInt("b"),
+                o.optInt("k", 0),
+            )
         }
     }
 
@@ -68,8 +71,18 @@ class FlyerScanTest {
     }
 
     @Test
+    fun `ignores a loyalty badge sitting between the label and the price`() {
+        // "SOLO TITOLARI" and its card logos sit closer to the price than the label does, so
+        // proximity alone picks the badge. A label is set in one size; the badge is not.
+        assertEquals(
+            "BAGNODOCCIA PALMOLIVE vari tipi",
+            parseFlyer(fixture("palmolive"))?.name,
+        )
+    }
+
+    @Test
     fun `takes no price and no quantity from a flyer`() {
-        listOf("prosciutto", "deodorante", "salviettine", "fiordifrutta").forEach { name ->
+        listOf("prosciutto", "deodorante", "salviettine", "fiordifrutta", "palmolive").forEach { name ->
             val item = checkNotNull(parseFlyer(fixture(name))) { name }
             assertEquals(name, 0L, item.priceCents)
             assertEquals(name, 1.0, item.quantity, 0.0)

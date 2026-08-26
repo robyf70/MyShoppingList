@@ -10,6 +10,8 @@ data class ScannedLine(
     val top: Int,
     val right: Int,
     val bottom: Int,
+    /** Which paragraph the recogniser grouped this line into; its own layout analysis. */
+    val block: Int = 0,
 ) {
     val height: Int get() = bottom - top
     val centerX: Int get() = (left + right) / 2

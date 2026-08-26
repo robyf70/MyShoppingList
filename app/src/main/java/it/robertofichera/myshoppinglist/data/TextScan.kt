@@ -23,10 +23,10 @@ suspend fun scanImageForItems(context: Context, uri: Uri): List<ScannedItem> {
             .addOnFailureListener { continuation.resume(null) }
     }
     recognizer.close()
-    val lines = recognised?.textBlocks.orEmpty().flatMap { block ->
+    val lines = recognised?.textBlocks.orEmpty().flatMapIndexed { blockIndex: Int, block ->
         block.lines.mapNotNull { line ->
             line.boundingBox?.let { box ->
-                ScannedLine(line.text, box.left, box.top, box.right, box.bottom)
+                ScannedLine(line.text, box.left, box.top, box.right, box.bottom, blockIndex)
             }
         }
     }

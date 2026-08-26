@@ -34,6 +34,17 @@ private const val FLYER_PRICE_RATIO = 2.5
 private const val LABEL_LINE_GAP = 2.0
 
 /**
+ * How unevenly sized a group's lines may be and still read as one label. A label is set in one
+ * typeface at one size; a loyalty badge with a card logo under it, or the writing printed on the
+ * packet in the photograph, is not, and that is what tells them apart when the badge happens to
+ * sit closer to the price than the label does.
+ */
+private const val LABEL_HEIGHT_SPREAD = 2.0
+
+/** How far from the price a label may sit, as a multiple of the price's own height. */
+private const val LABEL_REACH = 3.0
+
+/**
  * Where a label stops naming the offer and starts illustrating it. "vari tipi e grammature, un
  * esempio: albicocche 250 g" covers every flavour; carrying the example into the name would put
  * apricot jam on a list that meant any of them.
@@ -59,14 +70,23 @@ fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
     val candidates = lines.filter {
         LETTER.containsMatchIn(it.text) && !PRICE_LIKE.containsMatchIn(it.text)
     }
-    val seed = candidates.minByOrNull { gapTo(price, it) } ?: return null
+    if (candidates.isEmpty()) return null
 
-    val column = candidates
-        .filter { it.left <= seed.right && it.right >= seed.left }
-        .sortedBy { it.top }
-    val label = runContaining(column, seed).takeWhile { !EXAMPLE.containsMatchIn(it.text) }
+    val reach = price.height * LABEL_REACH
+    val within = columns(candidates).filter { group -> gapToGroup(price, group) <= reach }
 
-    val name = label.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
+    // The most lines wins, because a label says more about the product than a badge does; where
+    // two say as much, the one nearer the price. Groups of one line are a last resort: a caption
+    // of one word competes with every stray word the packaging carries.
+    val label = within
+        .filter { it.size > 1 && evenlySet(it) }
+        .maxWithOrNull(compareBy({ it.size }, { -gapToGroup(price, it) }))
+        ?: within.minByOrNull { gapToGroup(price, it) }
+        ?: return null
+
+    val named = label.takeWhile { !EXAMPLE.containsMatchIn(it.text) }
+
+    val name = named.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
     if (name.isEmpty()) return null
     return ScannedItem(name = name, quantity = 1.0, priceCents = 0)
 }
@@ -82,16 +102,40 @@ private fun gapTo(box: ScannedLine, line: ScannedLine): Int {
     return dx + dy
 }
 
-/** The unbroken stretch of [sorted] around [seed]: a label's lines follow each other closely. */
-private fun runContaining(sorted: List<ScannedLine>, seed: ScannedLine): List<ScannedLine> {
-    val start = sorted.indexOf(seed)
-    if (start < 0) return listOf(seed)
+/**
+ * The page's text gathered into columns: lines that share a column and follow each other closely
+ * are one piece of writing, whether that is a label, a banner or the packet in the photograph.
+ */
+private fun columns(candidates: List<ScannedLine>): List<List<ScannedLine>> {
+    val groups = mutableListOf<MutableList<ScannedLine>>()
+    candidates.sortedBy { it.top }.forEach { line ->
+        val joined = groups.firstOrNull { group ->
+            val last = group.last()
+            val left = group.minOf { it.left }
+            val right = group.maxOf { it.right }
+            line.left <= right && line.right >= left && adjoin(last, line)
+        }
+        if (joined == null) groups.add(mutableListOf(line)) else joined.add(line)
+    }
+    return groups
+}
 
-    var first = start
-    while (first > 0 && adjoin(sorted[first - 1], sorted[first])) first--
-    var last = start
-    while (last < sorted.size - 1 && adjoin(sorted[last], sorted[last + 1])) last++
-    return sorted.subList(first, last + 1)
+/** Whether every line in [group] is set at much the same size, as one label's lines are. */
+private fun evenlySet(group: List<ScannedLine>): Boolean {
+    val shortest = group.minOf { it.height }
+    val tallest = group.maxOf { it.height }
+    return shortest > 0 && tallest <= shortest * LABEL_HEIGHT_SPREAD
+}
+
+private fun gapToGroup(price: ScannedLine, group: List<ScannedLine>): Int {
+    val box = ScannedLine(
+        text = "",
+        left = group.minOf { it.left },
+        top = group.minOf { it.top },
+        right = group.maxOf { it.right },
+        bottom = group.maxOf { it.bottom },
+    )
+    return gapTo(price, box)
 }
 
 private fun adjoin(above: ScannedLine, below: ScannedLine): Boolean =
