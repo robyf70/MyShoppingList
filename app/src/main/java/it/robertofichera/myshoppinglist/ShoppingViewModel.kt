@@ -158,6 +158,12 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         _barcode.value = BarcodeState.None
     }
 
+    /** Remembers the barcode against a product the list already holds a line for. */
+    fun rememberBarcode(productId: Long, code: String) = viewModelScope.launch {
+        _barcode.value = BarcodeState.None
+        dao.updateProductBarcode(productId, code)
+    }
+
     /** Adds the item and remembers the barcode against whichever product it became. */
     fun addScannedBarcode(listId: Long, code: String, item: ScannedItem) = viewModelScope.launch {
         _barcode.value = BarcodeState.None

@@ -1,10 +1,14 @@
 package it.robertofichera.myshoppinglist
 
+import it.robertofichera.myshoppinglist.data.Item
+import it.robertofichera.myshoppinglist.data.ItemWithProduct
 import it.robertofichera.myshoppinglist.data.Product
 import it.robertofichera.myshoppinglist.data.filterProducts
+import it.robertofichera.myshoppinglist.data.findItemNamed
 import it.robertofichera.myshoppinglist.data.isSettledOn
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -62,7 +66,30 @@ class ProductSuggestionsTest {
         assertFalse(isSettledOn(catalog.filter { it.name.contains("Milk") }, "Milk"))
     }
 
+    @Test
+    fun `finds the row already naming the product, whatever the typing`() {
+        val onList = listOf(row(10, catalog[1]), row(11, catalog[0]))
+        assertEquals(10L, findItemNamed(onList, "Milk")?.item?.id)
+        assertEquals(10L, findItemNamed(onList, "  milk ")?.item?.id)
+    }
+
+    @Test
+    fun `a name read off a picture finds the row it means`() {
+        val onList = listOf(row(10, product(5, "Asiago")))
+        assertEquals(10L, findItemNamed(onList, "ASIAG0")?.item?.id)
+    }
+
+    @Test
+    fun `a product not on the list matches no row`() {
+        val onList = listOf(row(10, catalog[1]))
+        assertNull(findItemNamed(onList, "Milk chocolate"))
+        assertNull(findItemNamed(emptyList(), "Milk"))
+    }
+
     private fun names(query: String) = filterProducts(catalog, query).map { it.name }
+
+    private fun row(id: Long, product: Product) =
+        ItemWithProduct(Item(id = id, listId = 1, productId = product.id), product)
 
     private fun product(id: Long, name: String) = Product(id = id, name = name)
 }

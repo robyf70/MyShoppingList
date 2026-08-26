@@ -51,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.robertofichera.myshoppinglist.BarcodeState
 import it.robertofichera.myshoppinglist.ScanState
 import it.robertofichera.myshoppinglist.ShoppingViewModel
+import it.robertofichera.myshoppinglist.data.findItemNamed
 import it.robertofichera.myshoppinglist.data.ItemWithProduct
 import it.robertofichera.myshoppinglist.data.ScannedItem
 import it.robertofichera.myshoppinglist.data.nameOf
@@ -275,7 +276,16 @@ fun ListDetailScreen(
             showQuantity = showQuantity,
             showPrice = showPrice,
             onDismiss = viewModel::dismissBarcode,
-            onConfirm = { viewModel.addScannedBarcode(entry.list.id, state.barcode, it) },
+            onConfirm = { scanned ->
+                val existing = findItemNamed(entry.items, scanned.name)
+                if (existing != null) {
+                    // The barcode still belongs to the product, whichever line it lands on.
+                    viewModel.rememberBarcode(existing.product.id, state.barcode)
+                    editingItem = existing
+                } else {
+                    viewModel.addScannedBarcode(entry.list.id, state.barcode, scanned)
+                }
+            },
         )
     }
 
@@ -310,7 +320,13 @@ fun ListDetailScreen(
                     onDismiss = { settling = null },
                     onConfirm = { item ->
                         settling = null
-                        viewModel.addScanned(entry.list.id, listOf(item))
+                        val existing = findItemNamed(entry.items, item.name)
+                        if (existing != null) {
+                            viewModel.dismissScan()
+                            editingItem = existing
+                        } else {
+                            viewModel.addScanned(entry.list.id, listOf(item))
+                        }
                     },
                 )
 
@@ -372,8 +388,14 @@ fun ListDetailScreen(
             showPrice = showPrice,
             onDismiss = { addingItem = false },
             onConfirm = { name, quantity, priceCents ->
-                viewModel.addItem(entry.list.id, name, quantity, priceCents)
                 addingItem = false
+                // A product already on the list is one line with a quantity, not two lines.
+                val existing = findItemNamed(entry.items, name)
+                if (existing != null) {
+                    editingItem = existing
+                } else {
+                    viewModel.addItem(entry.list.id, name, quantity, priceCents)
+                }
             },
         )
     }
