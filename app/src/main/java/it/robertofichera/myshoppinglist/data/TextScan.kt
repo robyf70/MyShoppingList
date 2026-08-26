@@ -17,13 +17,20 @@ import kotlin.coroutines.suspendCoroutine
 suspend fun scanImageForItems(context: Context, uri: Uri): List<ScannedItem> {
     val image = runCatching { InputImage.fromFilePath(context, uri) }.getOrNull() ?: return emptyList()
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-    val text = suspendCoroutine { continuation ->
+    val recognised = suspendCoroutine { continuation ->
         recognizer.process(image)
-            .addOnSuccessListener { continuation.resume(it.text) }
-            .addOnFailureListener { continuation.resume("") }
+            .addOnSuccessListener { continuation.resume(it) }
+            .addOnFailureListener { continuation.resume(null) }
     }
     recognizer.close()
-    return parseScannedText(text)
+    val lines = recognised?.textBlocks.orEmpty().flatMap { block ->
+        block.lines.mapNotNull { line ->
+            line.boundingBox?.let { box ->
+                ScannedLine(line.text, box.left, box.top, box.right, box.bottom)
+            }
+        }
+    }
+    return parseScan(lines)
 }
 
 /**

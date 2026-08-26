@@ -161,6 +161,14 @@ Say only what the code doesn't. Don't restate a signature or a type. Keep it to 
 
 `ProductSuggestionsTest.kt` covers `filterProducts` / `isSettledOn`. Keep autocomplete logic in `ProductSuggestions.kt` as pure functions so it stays testable without an emulator.
 
+`ScannedLinesTest.kt` and `FlyerScanTest.kt` cover reading items off a picture. A flyer is
+detected by geometry, not wording — a price set several times taller than the median line — and its
+label is the contiguous column of lines beside that price, which is why `ScannedLine` carries
+bounding boxes all the way from ML Kit. The flyer fixtures in `app/src/test/resources/flyers/` are
+the real recogniser's output for photographed leaflets, captured on a device: invented coordinates
+would test nothing. A flyer yields one item with a name only — the size (`150 ml`, `conf. da 60
+pezzi`) belongs to the name, and the price on the page belongs to the shop, not to the list.
+
 `ShareCodecTest.kt` covers `ShareCodec`. Every malformed input must decode to null — a share arrives from a messenger, so it is untrusted, and a partial import is worse than no import.
 
 UI and Room wiring are verified by running the app, not by tests. If you add a Flow-level test, add Turbine at that point.

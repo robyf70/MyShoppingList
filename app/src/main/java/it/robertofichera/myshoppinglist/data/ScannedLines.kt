@@ -78,3 +78,4 @@ fun parseScannedLine(raw: String): ScannedItem? {
 /** Every line worth offering, in the order they were read. */
 fun parseScannedText(text: String): List<ScannedItem> =
     text.lineSequence().mapNotNull(::parseScannedLine).toList()
+
