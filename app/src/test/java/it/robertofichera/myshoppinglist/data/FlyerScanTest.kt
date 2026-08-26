@@ -2,6 +2,7 @@ package it.robertofichera.myshoppinglist.data
 
 import org.json.JSONArray
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Test
 
@@ -48,8 +49,27 @@ class FlyerScanTest {
     }
 
     @Test
+    fun `finds the offer though the recogniser mangled the price into letters`() {
+        // The 2,69 on this page comes back as "L69": display type defeats recognition often
+        // enough that a landmark cannot be required to read as a number.
+        assertEquals(
+            "FIORDIFRUTTA BIO RIGONI DI ASIAG0 vari tipi e grammature",
+            parseFlyer(fixture("fiordifrutta"))?.name,
+        )
+    }
+
+    @Test
+    fun `stops the label where the flyer starts giving an example`() {
+        // "un esempio: albicocche 250 g" names one variant of an offer covering all of them;
+        // carrying it into the name would put apricot jam on a list that meant any flavour.
+        val name = checkNotNull(parseFlyer(fixture("fiordifrutta"))).name
+        assertFalse(name, name.contains("esempio", ignoreCase = true))
+        assertFalse(name, name.contains("albicocche", ignoreCase = true))
+    }
+
+    @Test
     fun `takes no price and no quantity from a flyer`() {
-        listOf("prosciutto", "deodorante", "salviettine").forEach { name ->
+        listOf("prosciutto", "deodorante", "salviettine", "fiordifrutta").forEach { name ->
             val item = checkNotNull(parseFlyer(fixture(name))) { name }
             assertEquals(name, 0L, item.priceCents)
             assertEquals(name, 1.0, item.quantity, 0.0)

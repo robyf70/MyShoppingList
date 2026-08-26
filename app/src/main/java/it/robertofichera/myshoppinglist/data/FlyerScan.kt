@@ -10,8 +10,17 @@ package it.robertofichera.myshoppinglist.data
  * costs and how many are wanted belong to the shop and to the reader, not to the picture.
  */
 
-/** Digits, separators and the symbols that keep them company. */
-private val NUMERIC = Regex("""^[\p{Sc}\d.,:%\-\s]+$""")
+/**
+ * Whether a line could be the price a flyer shouts. Display type defeats recognition routinely —
+ * a photographed "2,69" has come back as "L69" and "2:" — so the landmark cannot be required to
+ * read as a number. Short, and mostly digits, is as much as can be asked of it.
+ */
+private fun looksLikePrice(text: String): Boolean {
+    val compact = text.filterNot { it.isWhitespace() }
+    if (compact.isEmpty() || compact.length > 8) return false
+    val digits = compact.count { it.isDigit() }
+    return digits >= 1 && digits * 2 >= compact.length
+}
 
 /** A sum of money, wherever it sits: `€3,49`, `e3,89`, `al kg € 26,90`, `-30,85%`. */
 private val PRICE_LIKE = Regex("""\d[.,]\d{2}(\D|$)|\p{Sc}|%""")
@@ -25,6 +34,13 @@ private const val FLYER_PRICE_RATIO = 2.5
 private const val LABEL_LINE_GAP = 2.0
 
 /**
+ * Where a label stops naming the offer and starts illustrating it. "vari tipi e grammature, un
+ * esempio: albicocche 250 g" covers every flavour; carrying the example into the name would put
+ * apricot jam on a list that meant any of them.
+ */
+private val EXAMPLE = Regex("""\b(un\s+)?esempio\b|\bes\.""", RegexOption.IGNORE_CASE)
+
+/**
  * The one offer this picture is about, or null when the picture is not a flyer — in which case
  * the caller reads it line by line, as a written list.
  */
@@ -35,7 +51,7 @@ fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
     if (median <= 0) return null
 
     val price = lines
-        .filter { NUMERIC.matches(it.text.trim()) }
+        .filter { looksLikePrice(it.text) }
         .maxByOrNull { it.height }
         ?: return null
     if (price.height < median * FLYER_PRICE_RATIO) return null
@@ -48,7 +64,7 @@ fun parseFlyer(lines: List<ScannedLine>): ScannedItem? {
     val column = candidates
         .filter { it.left <= seed.right && it.right >= seed.left }
         .sortedBy { it.top }
-    val label = runContaining(column, seed)
+    val label = runContaining(column, seed).takeWhile { !EXAMPLE.containsMatchIn(it.text) }
 
     val name = label.joinToString(" ") { it.text.trim() }.replace(Regex("""\s+"""), " ").trim()
     if (name.isEmpty()) return null
