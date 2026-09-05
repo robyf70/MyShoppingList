@@ -124,6 +124,7 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
                     onBudgetEnabledChange = viewModel::setBudgetEnabled,
                     onConfirmDeleteChange = viewModel::setConfirmDelete,
                     onCurrencyCountryChange = viewModel::setCurrencyCountry,
+                    onUserNameChange = viewModel::setUserName,
                     update = update,
                     onCheckUpdate = { viewModel.checkForUpdate(force = true) },
                     onInstallUpdate = viewModel::downloadAndInstall,

@@ -77,6 +77,32 @@ class ShareCodecTest {
     }
 
     @Test
+    fun `round trips the sender's name`() {
+        val signed = sample.copy(sharedBy = "Roberto")
+        assertEquals("Roberto", ShareCodec.decode(ShareCodec.encode(signed))?.sharedBy)
+    }
+
+    @Test
+    fun `reads a share written before senders existed`() {
+        val old = ShareCodec.encodeRaw("""{"v":1,"u":"abc","n":"Groceries","b":0,"i":[]}""")
+        assertEquals("", ShareCodec.decode(old)?.sharedBy)
+    }
+
+    @Test
+    fun `truncates an oversized sender name`() {
+        val shouting = ShareCodec.encodeRaw(
+            """{"v":1,"u":"abc","n":"Groceries","b":0,"s":"${"A".repeat(500)}","i":[]}""",
+        )
+        assertEquals(ShareCodec.MAX_SHARED_BY, ShareCodec.decode(shouting)?.sharedBy?.length)
+    }
+
+    @Test
+    fun `trims a padded sender name`() {
+        val padded = ShareCodec.encodeRaw("""{"v":1,"u":"abc","n":"Groceries","b":0,"s":"  Ann  ","i":[]}""")
+        assertEquals("Ann", ShareCodec.decode(padded)?.sharedBy)
+    }
+
+    @Test
     fun `rejects json missing the uuid`() {
         val without = ShareCodec.encodeRaw("""{"v":1,"n":"Groceries","b":0,"i":[]}""")
         assertNull(ShareCodec.decode(without))

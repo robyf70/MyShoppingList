@@ -12,6 +12,8 @@ data class Settings(
     val confirmDelete: Boolean = true,
     /** ISO country whose currency prices use. Empty follows the phone, which is the default. */
     val currencyCountry: String = "",
+    /** Signs the lists this user shares. Empty means a share carries no sender at all. */
+    val userName: String = "",
 )
 
 /** Reads the values once at construction, so the blocking load is small enough to do inline. */
@@ -27,6 +29,7 @@ class SettingsStore(context: Context) {
             budgetEnabled = prefs.getBoolean(KEY_BUDGET, false),
             confirmDelete = prefs.getBoolean(KEY_CONFIRM_DELETE, true),
             currencyCountry = prefs.getString(KEY_CURRENCY_COUNTRY, "").orEmpty(),
+            userName = prefs.getString(KEY_USER_NAME, "").orEmpty(),
         )
     )
     val settings: StateFlow<Settings> = _settings.asStateFlow()
@@ -51,6 +54,13 @@ class SettingsStore(context: Context) {
         _settings.value = _settings.value.copy(currencyCountry = country)
     }
 
+    /** Capped where it is entered as well as where it is read, so the two ends agree. */
+    fun setUserName(name: String) {
+        val trimmed = name.trim().take(ShareCodec.MAX_SHARED_BY)
+        prefs.edit().putString(KEY_USER_NAME, trimmed).apply()
+        _settings.value = _settings.value.copy(userName = trimmed)
+    }
+
     /** Not part of [Settings]: it is bookkeeping for the update check, not something the user sets. */
     var lastUpdateCheck: Long
         get() = prefs.getLong(KEY_LAST_UPDATE_CHECK, 0L)
@@ -67,6 +77,7 @@ class SettingsStore(context: Context) {
         const val KEY_BUDGET = "budget_enabled"
         const val KEY_CONFIRM_DELETE = "confirm_delete"
         const val KEY_CURRENCY_COUNTRY = "currency_country"
+        const val KEY_USER_NAME = "user_name"
         const val KEY_LAST_UPDATE_CHECK = "last_update_check"
     }
 }

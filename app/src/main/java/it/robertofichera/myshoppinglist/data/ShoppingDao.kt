@@ -28,6 +28,10 @@ interface ShoppingDao {
     @Delete
     suspend fun deleteList(list: ShoppingList)
 
+    /** Items live in their own table, so a change to one has to be stamped on its list here. */
+    @Query("UPDATE shopping_lists SET updatedAt = :now WHERE id = :listId")
+    suspend fun touchList(listId: Long, now: Long)
+
     @Query("SELECT * FROM shopping_lists WHERE uuid = :uuid LIMIT 1")
     suspend fun findListByUuid(uuid: String): ShoppingList?
 

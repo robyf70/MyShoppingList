@@ -1,5 +1,6 @@
 package it.robertofichera.myshoppinglist.ui
 
+import android.text.format.DateUtils
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,12 +10,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -180,7 +183,16 @@ private fun ListCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(entry.list.name, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (entry.list.sharedBy != null) {
+                        Icon(
+                            Icons.Default.Share,
+                            contentDescription = stringResource(R.string.list_shared_badge),
+                            modifier = Modifier.padding(end = 6.dp).size(16.dp),
+                        )
+                    }
+                    Text(entry.list.name, style = MaterialTheme.typography.titleMedium)
+                }
                 Text(
                     pluralStringResource(
                         R.plurals.list_summary,
@@ -191,6 +203,16 @@ private fun ListCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                entry.list.sharedBy?.let { sender ->
+                    CaptionLine(
+                        if (sender.isEmpty()) {
+                            stringResource(R.string.list_shared_unknown)
+                        } else {
+                            stringResource(R.string.list_shared_by, sender)
+                        },
+                    )
+                }
+                CaptionLine(timestampLine(entry.list.createdAt, entry.list.updatedAt))
                 if (budgetEnabled && entry.list.budgetCents > 0) {
                     BudgetLine(entry.list.budgetCents, entry.spentCents)
                 }
@@ -226,6 +248,38 @@ private fun ListCard(
             }
         }
     }
+}
+
+/**
+ * A list never touched since it was made says so once: repeating the same moment as an update
+ * reads as two facts when there is only one.
+ */
+@Composable
+private fun timestampLine(createdAt: Long, updatedAt: Long): String {
+    val created = stringResource(R.string.list_created, formatWhen(createdAt))
+    if (updatedAt <= createdAt) return created
+    return stringResource(
+        R.string.format_dot_pair,
+        created,
+        stringResource(R.string.list_updated, formatWhen(updatedAt)),
+    )
+}
+
+/** The platform decides the order of the parts and the separators, so no locale is second-guessed. */
+@Composable
+private fun formatWhen(millis: Long): String = DateUtils.formatDateTime(
+    LocalContext.current,
+    millis,
+    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_ALL,
+)
+
+@Composable
+private fun CaptionLine(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 /** Once the budget is breached "left" would read as a negative, so the overspend gets its own wording. */

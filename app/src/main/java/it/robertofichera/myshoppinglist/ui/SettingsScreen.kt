@@ -58,10 +58,12 @@ fun SettingsScreen(
     onBudgetEnabledChange: (Boolean) -> Unit,
     onConfirmDeleteChange: (Boolean) -> Unit,
     onCurrencyCountryChange: (String) -> Unit,
+    onUserNameChange: (String) -> Unit,
     onOpenProducts: () -> Unit,
     onBack: () -> Unit,
 ) {
     var pickingCurrency by remember { mutableStateOf(false) }
+    var editingName by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -110,6 +112,12 @@ fun SettingsScreen(
             CurrencyRow(
                 selected = settings.currencyCountry,
                 onClick = { pickingCurrency = true },
+            )
+            HorizontalDivider()
+            NavigationRow(
+                title = stringResource(R.string.settings_your_name),
+                subtitle = settings.userName.ifEmpty { stringResource(R.string.settings_your_name_desc) },
+                onClick = { editingName = true },
             )
             HorizontalDivider()
             NavigationRow(
@@ -162,6 +170,17 @@ fun SettingsScreen(
                 pickingCurrency = false
             },
             onDismiss = { pickingCurrency = false },
+        )
+    }
+
+    if (editingName) {
+        NameDialog(
+            initialName = settings.userName,
+            onConfirm = { name ->
+                onUserNameChange(name)
+                editingName = false
+            },
+            onDismiss = { editingName = false },
         )
     }
 }

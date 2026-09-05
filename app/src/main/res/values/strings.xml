@@ -34,6 +34,11 @@
     </plurals>
     <string name="list_budget_remaining">%1$s left of %2$s</string>
     <string name="list_budget_over">%1$s over the %2$s budget</string>
+    <string name="list_shared_badge">Shared list</string>
+    <string name="list_shared_by">Shared by %1$s</string>
+    <string name="list_shared_unknown">Shared with you</string>
+    <string name="list_created">Created %1$s</string>
+    <string name="list_updated">Updated %1$s</string>
 
     <!-- List detail -->
     <string name="detail_empty">Nothing to buy yet.\nTap + to add a product.</string>
@@ -78,6 +83,8 @@
     <string name="settings_confirm_delete">Confirm before deleting</string>
     <string name="settings_confirm_delete_desc">Ask before removing a list or an item</string>
     <string name="settings_currency">Currency</string>
+    <string name="settings_your_name">Your name</string>
+    <string name="settings_your_name_desc">Signs the lists you share</string>
     <string name="currency_automatic">Automatic</string>
     <string name="settings_version">Version</string>
     <string name="settings_check_updates">Check for updates</string>

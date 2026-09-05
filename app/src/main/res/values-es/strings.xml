@@ -27,6 +27,11 @@
     </plurals>
     <string name="list_budget_remaining">Quedan %1$s de %2$s</string>
     <string name="list_budget_over">%1$s por encima del presupuesto de %2$s</string>
+    <string name="list_shared_badge">Lista compartida</string>
+    <string name="list_shared_by">Compartida por %1$s</string>
+    <string name="list_shared_unknown">Compartida contigo</string>
+    <string name="list_created">Creada el %1$s</string>
+    <string name="list_updated">Actualizada el %1$s</string>
 
     <string name="detail_empty">Nada que comprar todavía.\nToca + para añadir un producto.</string>
     <string name="summary_to_spend">Por gastar</string>
@@ -66,6 +71,8 @@
     <string name="settings_confirm_delete">Confirmar antes de eliminar</string>
     <string name="settings_confirm_delete_desc">Preguntar antes de quitar una lista o un artículo</string>
     <string name="settings_currency">Moneda</string>
+    <string name="settings_your_name">Tu nombre</string>
+    <string name="settings_your_name_desc">Firma las listas que compartes</string>
     <string name="currency_automatic">Automática</string>
     <string name="settings_version">Versión</string>
     <string name="settings_check_updates">Buscar actualizaciones</string>

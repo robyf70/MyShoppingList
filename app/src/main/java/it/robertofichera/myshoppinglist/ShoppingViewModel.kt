@@ -214,7 +214,12 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         colorArgb: Int,
     ) = viewModelScope.launch {
         dao.updateList(
-            list.copy(name = name.trim(), budgetCents = budgetCents, colorArgb = colorArgb),
+            list.copy(
+                name = name.trim(),
+                budgetCents = budgetCents,
+                colorArgb = colorArgb,
+                updatedAt = System.currentTimeMillis(),
+            ),
         )
     }
 
@@ -248,6 +253,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                     priceCents = priceCents,
                 )
             )
+            touch(listId)
         }
 
     fun updateItem(item: Item, productName: String, quantity: Double, priceCents: Long) =
@@ -256,13 +262,20 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
             dao.updateItem(
                 item.copy(productId = productId, quantity = quantity, priceCents = priceCents)
             )
+            touch(item.listId)
         }
 
     fun toggleBought(item: Item) = viewModelScope.launch {
         dao.updateItem(item.copy(bought = !item.bought))
+        touch(item.listId)
     }
 
-    fun deleteItem(item: Item) = viewModelScope.launch { dao.deleteItem(item) }
+    fun deleteItem(item: Item) = viewModelScope.launch {
+        dao.deleteItem(item)
+        touch(item.listId)
+    }
+
+    private suspend fun touch(listId: Long) = dao.touchList(listId, System.currentTimeMillis())
 
     /**
      * The dialog already refuses a duplicate name; this re-checks because the unique
@@ -296,6 +309,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     fun setConfirmDelete(enabled: Boolean) = settingsStore.setConfirmDelete(enabled)
 
     fun setCurrencyCountry(country: String) = settingsStore.setCurrencyCountry(country)
+
+    fun setUserName(name: String) = settingsStore.setUserName(name)
 
     /**
      * The launch check is silent and at most daily; [force] is the Settings button, which
@@ -374,6 +389,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                 name = entry.list.name,
                 budgetCents = entry.list.budgetCents,
                 colorArgb = entry.list.colorArgb,
+                sharedBy = settingsStore.settings.value.userName,
                 items = entry.items.map { row ->
                     SharedItem(
                         name = row.product.name,
@@ -409,6 +425,7 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     fun confirmImport() = viewModelScope.launch {
         val offered = _pendingImport.value as? ImportState.Offered ?: return@launch
         _pendingImport.value = ImportState.None
+        val now = System.currentTimeMillis()
         db.withTransaction {
             val listId = offered.existing?.let { existing ->
                 dao.updateList(
@@ -416,6 +433,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                         name = offered.shared.name,
                         budgetCents = offered.shared.budgetCents,
                         colorArgb = offered.shared.colorArgb,
+                        updatedAt = now,
+                        sharedBy = offered.shared.sharedBy,
                     ),
                 )
                 dao.deleteItemsOfList(existing.id)
@@ -426,6 +445,8 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                     budgetCents = offered.shared.budgetCents,
                     uuid = offered.shared.uuid,
                     colorArgb = offered.shared.colorArgb,
+                    updatedAt = now,
+                    sharedBy = offered.shared.sharedBy,
                 ),
             )
             offered.shared.items.forEach { item ->

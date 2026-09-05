@@ -20,6 +20,13 @@ data class ShoppingList(
     @ColumnInfo(defaultValue = "") val uuid: String = UUID.randomUUID().toString(),
     /** The card's background as ARGB; 0 leaves it to the theme. */
     @ColumnInfo(defaultValue = "0") val colorArgb: Int = 0,
+    /** Last time the list or anything on it changed, ticking an item off included. */
+    @ColumnInfo(defaultValue = "0") val updatedAt: Long = System.currentTimeMillis(),
+    /**
+     * Null on a list of one's own. On an imported one it is the sender's name, or empty
+     * when they have set none, so a share always marks the list even when it is unsigned.
+     */
+    val sharedBy: String? = null,
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */

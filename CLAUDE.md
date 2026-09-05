@@ -30,11 +30,11 @@ MainActivity.kt        Activity + ShoppingApp() root composable (owns the back s
 ShoppingViewModel.kt   the app's only ViewModel; holds the DAO and SettingsStore
 Money.kt               price/quantity parsing and formatting
 data/
-  Entities.kt          ShoppingList (uuid, colorArgb) + Product + Item @Entity,
+  Entities.kt          ShoppingList (uuid, colorArgb, updatedAt, sharedBy) + Product + Item @Entity,
                        ItemWithProduct, ListWithItems, ProductWithUsage, total helpers
   ShoppingDao.kt       @Dao, returns Flows for reads
-  AppDatabase.kt       @Database(version = 5) + getInstance() + MIGRATION_1_2, MIGRATION_2_3,
-                       MIGRATION_3_4, MIGRATION_4_5
+  AppDatabase.kt       @Database(version = 7) + getInstance() + MIGRATION_1_2, MIGRATION_2_3,
+                       MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
   ShareCodec.kt        encode/decode a list into an `msl:<version>:` share token
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
@@ -56,6 +56,7 @@ ui/
   ColorPicker.kt       the list colour swatches, the custom sliders, and readableOn
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
   CurrencyDialog.kt    country picker for the currency, "Automatic" first
+  NameDialog.kt        the name that signs a shared list; blank sends them unsigned
   theme/               Material 3 theme (from the Android Studio template)
 ```
 
@@ -104,6 +105,18 @@ mid-download does not abandon it. Tags are compared by `isNewerVersion`, which i
 **Navigation is three saveable values, not a library.** `ShoppingApp()` holds `openListId: Long?`, `showSettings: Boolean` and `showProducts: Boolean` in `rememberSaveable`, with a `BackHandler` unwinding products → settings → lists. All three types are natively saveable, so no custom `Saver` is needed. The hierarchy is a strict linear drill-down; adopt `navigation-compose` when deep links, screen-to-screen arguments, or transition animations arrive — the screen count alone is not the trigger.
 
 **The budget is measured against what has been spent, not what is planned.** `Remaining = budget − spent` (bought items only), and the over-budget prompt fires when *ticking an item as bought* would push spend past `ShoppingList.budgetCents`. Unticking never prompts. `budgetCents = 0` means no budget. If a list is already over, every further tick asks again — deliberately, so the warning does not go quiet once breached. Editing a bought item's price can still push spend over without prompting; the check is on ticking only.
+
+**A list carries when it changed and who sent it.** `updatedAt` covers the list *and* its items,
+so every item write goes through `ShoppingDao.touchList` — items are their own table and a write
+there is invisible to `shopping_lists` otherwise. Ticking an item counts, which makes "updated"
+mean the last time the list was touched at all. `sharedBy` is null on a list of one's own and
+non-null on an imported one, so the one column both marks the card and names the sender; empty
+means the sender set no name, which is why it is not merged into a plain `""` sentinel. The name
+travels as the optional `"s"` key with no `VERSION` bump, for the reason `colorArgb` does. It is
+capped at `ShareCodec.MAX_SHARED_BY` on the way in — a chat message is untrusted — and again in
+`SettingsStore.setUserName`, so both ends agree. The card renders the pair through
+`DateUtils.formatDateTime`, so no date layout is hand-written, and drops the update half when a
+list has never been touched since it was made.
 
 **A list is shared as a copy with a stable identity.** `ShoppingList.uuid` travels with the share, so re-importing a list the device already has replaces it rather than duplicating it; merge granularity is the whole list, last writer wins. The payload is gzipped JSON behind an `msl:<version>:` token, carried in the **fragment** of a link — `share_link_url` — so it never reaches a server, and the readable list above it stands on its own for someone without the app. Items travel by product *name* — ids are local to a device.
 

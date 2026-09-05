@@ -15,6 +15,8 @@ data class SharedList(
     val items: List<SharedItem>,
     /** The card colour as ARGB; 0 leaves it to the reader's theme. */
     val colorArgb: Int = 0,
+    /** The sender's name, empty when they have set none. */
+    val sharedBy: String = "",
 )
 
 data class SharedItem(
@@ -31,6 +33,9 @@ data class SharedItem(
 object ShareCodec {
 
     const val VERSION = 1
+
+    /** A sender's name arrives from a chat message, so it is truncated before it reaches a screen. */
+    const val MAX_SHARED_BY = 40
 
     private val TOKEN = Regex("""msl:(\d+):([A-Za-z0-9_-]+)""")
 
@@ -52,6 +57,7 @@ object ShareCodec {
                 .put("n", list.name)
                 .put("b", list.budgetCents)
                 .put("c", list.colorArgb)
+                .put("s", list.sharedBy)
                 .put("i", items)
                 .toString(),
         )
@@ -75,6 +81,7 @@ object ShareCodec {
                 // written now still reads on an app that predates them. Bumping the version
                 // instead would make those apps refuse the share outright.
                 colorArgb = json.optInt("c", 0),
+                sharedBy = json.optString("s").trim().take(MAX_SHARED_BY),
                 items = List(items.length()) { index ->
                     val item = items.getJSONObject(index)
                     SharedItem(

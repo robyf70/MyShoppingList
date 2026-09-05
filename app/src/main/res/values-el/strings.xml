@@ -27,6 +27,11 @@
     </plurals>
     <string name="list_budget_remaining">Απομένουν %1$s από %2$s</string>
     <string name="list_budget_over">%1$s πάνω από τον προϋπολογισμό των %2$s</string>
+    <string name="list_shared_badge">Κοινόχρηστη λίστα</string>
+    <string name="list_shared_by">Κοινοποιήθηκε από %1$s</string>
+    <string name="list_shared_unknown">Κοινοποιήθηκε σε εσάς</string>
+    <string name="list_created">Δημιουργήθηκε στις %1$s</string>
+    <string name="list_updated">Ενημερώθηκε στις %1$s</string>
 
     <string name="detail_empty">Δεν υπάρχει τίποτα για αγορά.\nΠατήστε + για να προσθέσετε ένα προϊόν.</string>
     <string name="summary_to_spend">Για δαπάνη</string>
@@ -66,6 +71,8 @@
     <string name="settings_confirm_delete">Επιβεβαίωση πριν τη διαγραφή</string>
     <string name="settings_confirm_delete_desc">Ερώτηση πριν την αφαίρεση λίστας ή είδους</string>
     <string name="settings_currency">Νόμισμα</string>
+    <string name="settings_your_name">Το όνομά σας</string>
+    <string name="settings_your_name_desc">Υπογράφει τις λίστες που κοινοποιείτε</string>
     <string name="currency_automatic">Αυτόματο</string>
     <string name="settings_version">Έκδοση</string>
     <string name="settings_check_updates">Έλεγχος για ενημερώσεις</string>
