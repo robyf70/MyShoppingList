@@ -33,10 +33,10 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 /**
- * The day first, then the time. [remindAt] is the reminder already set, or 0; a new one starts an
- * hour from now. Saving asks for the notification permission when it is not yet held, and saves
- * whatever the answer: a refusal only mutes the notification, and the system's app settings can
- * grant it later without touching the reminder.
+ * The day first, then the time. [remindAt] is the reminder already set, or 0; a new one, or one
+ * already past, starts [POSTPONE_MILLIS] from now. Saving asks for the notification permission
+ * when it is not yet held, and saves whatever the answer: a refusal only mutes the notification,
+ * and the system's app settings can grant it later without touching the reminder.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +49,9 @@ fun ReminderDialog(
     val context = LocalContext.current
     val zone = remember { ZoneId.systemDefault() }
     val initial = remember {
-        val at = if (remindAt > 0) remindAt else System.currentTimeMillis() + POSTPONE_MILLIS
+        // A reminder already past would preset a day the picker refuses.
+        val now = System.currentTimeMillis()
+        val at = if (remindAt > now) remindAt else now + POSTPONE_MILLIS
         Instant.ofEpochMilli(at).atZone(zone)
     }
     // The picker speaks in UTC midnights; today and the initial day are handed to it that way.
