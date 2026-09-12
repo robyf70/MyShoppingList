@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.withTransaction
 import it.robertofichera.myshoppinglist.data.AppDatabase
+import it.robertofichera.myshoppinglist.data.cancelReminder
+import it.robertofichera.myshoppinglist.data.scheduleReminder
 import it.robertofichera.myshoppinglist.data.Item
 import it.robertofichera.myshoppinglist.data.ListWithItems
 import it.robertofichera.myshoppinglist.data.Product
@@ -186,6 +188,18 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
     private val _pendingImport = MutableStateFlow<ImportState>(ImportState.None)
     val pendingImport: StateFlow<ImportState> = _pendingImport.asStateFlow()
 
+    private val _requestedList = MutableStateFlow<Long?>(null)
+    /** The list a notification tap asked for; the screen takes it and calls [consumeRequestedList]. */
+    val requestedList: StateFlow<Long?> = _requestedList.asStateFlow()
+
+    fun openList(listId: Long) {
+        _requestedList.value = listId
+    }
+
+    fun consumeRequestedList() {
+        _requestedList.value = null
+    }
+
     init {
         checkForUpdate(force = false)
     }
@@ -223,7 +237,22 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    fun deleteList(list: ShoppingList) = viewModelScope.launch { dao.deleteList(list) }
+    fun deleteList(list: ShoppingList) = viewModelScope.launch {
+        cancelReminder(getApplication(), list.id)
+        dao.deleteList(list)
+    }
+
+    /**
+     * [at] is epoch millis, or 0 to clear. The alarm follows the row, so the two never disagree;
+     * cancelling first also drops a notification still showing for the earlier time, whose Done
+     * would otherwise clear the new one.
+     */
+    fun setReminder(listId: Long, at: Long) = viewModelScope.launch {
+        dao.setRemindAt(listId, at, System.currentTimeMillis())
+        val app = getApplication<Application>()
+        cancelReminder(app, listId)
+        if (at > 0) dao.getList(listId)?.let { scheduleReminder(app, it) }
+    }
 
     /** A copy starts a fresh trip: same items and budget, nothing ticked off yet. */
     fun copyList(entry: ListWithItems) = viewModelScope.launch {

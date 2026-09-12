@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        offerImport(intent)
+        handle(intent)
         setContent {
             MyShoppingListTheme {
                 Surface(
@@ -54,29 +55,34 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        offerImport(intent)
+        handle(intent)
     }
 
     /**
-     * Both filters carry the payload as text; the codec finds the token wherever it sits.
-     * The share is marked on the intent once offered, so a recreation re-reading that same
-     * intent stays quiet while a newly arrived one is always offered.
+     * A notification tap names a list; a share carries text. Either is marked on the intent once
+     * handled, so a recreation re-reading that same intent stays quiet while a newly arrived one
+     * is always acted on.
      */
-    private fun offerImport(intent: Intent) {
-        if (intent.getBooleanExtra(EXTRA_OFFERED, false)) return
+    private fun handle(intent: Intent) {
+        if (intent.getBooleanExtra(EXTRA_HANDLED, false)) return
+        intent.putExtra(EXTRA_HANDLED, true)
+        val listId = intent.getLongExtra(EXTRA_LIST_ID, 0L)
+        if (listId != 0L) {
+            viewModel.openList(listId)
+            return
+        }
         val text = when (intent.action) {
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
             Intent.ACTION_VIEW -> intent.dataString
             else -> return
         }
-        intent.putExtra(EXTRA_OFFERED, true)
         viewModel.offerImport(text)
     }
 
     companion object {
         /** The list a notification tap wants opened. */
         const val EXTRA_LIST_ID = "it.robertofichera.myshoppinglist.LIST_ID"
-        private const val EXTRA_OFFERED = "it.robertofichera.myshoppinglist.OFFERED"
+        private const val EXTRA_HANDLED = "it.robertofichera.myshoppinglist.HANDLED"
     }
 }
 
@@ -93,6 +99,16 @@ fun ShoppingApp(viewModel: ShoppingViewModel = viewModel()) {
     val productsWithUsage by viewModel.productsWithUsage.collectAsStateWithLifecycle()
     val update by viewModel.update.collectAsStateWithLifecycle()
     val pendingImport by viewModel.pendingImport.collectAsStateWithLifecycle()
+    val requestedList by viewModel.requestedList.collectAsStateWithLifecycle()
+
+    // Whatever was open gives way: the tap said which list, and Settings or Products would hide it.
+    LaunchedEffect(requestedList) {
+        val id = requestedList ?: return@LaunchedEffect
+        showProducts = false
+        showSettings = false
+        openListId = id
+        viewModel.consumeRequestedList()
+    }
 
     val listId = openListId
 
