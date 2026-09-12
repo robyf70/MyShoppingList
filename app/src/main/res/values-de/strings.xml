@@ -33,6 +33,10 @@
     <string name="reminder_notification_text">Zeit zum Einkaufen</string>
     <string name="reminder_done">Erledigt</string>
     <string name="reminder_postpone">1 Std. später</string>
+    <string name="reminder_title">Erinnerung</string>
+    <string name="reminder_next">Weiter</string>
+    <string name="reminder_set">Festlegen</string>
+    <string name="reminder_clear">Entfernen</string>
     <string name="list_shared_unknown">Mit dir geteilt</string>
     <string name="list_created">Erstellt am %1$s</string>
     <string name="list_updated">Aktualisiert am %1$s</string>

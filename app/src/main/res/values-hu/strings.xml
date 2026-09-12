@@ -34,6 +34,10 @@
     <string name="reminder_notification_text">Ideje bevásárolni</string>
     <string name="reminder_done">Kész</string>
     <string name="reminder_postpone">Halasztás 1 órával</string>
+    <string name="reminder_title">Emlékeztető</string>
+    <string name="reminder_next">Tovább</string>
+    <string name="reminder_set">Beállítás</string>
+    <string name="reminder_clear">Törlés</string>
     <string name="list_shared_unknown">Megosztva veled</string>
     <string name="list_created">Létrehozva: %1$s</string>
     <string name="list_updated">Frissítve: %1$s</string>

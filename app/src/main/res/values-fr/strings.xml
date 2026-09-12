@@ -33,6 +33,10 @@
     <string name="reminder_notification_text">C\'est l\'heure des courses</string>
     <string name="reminder_done">Terminé</string>
     <string name="reminder_postpone">Reporter d\'1 h</string>
+    <string name="reminder_title">Rappel</string>
+    <string name="reminder_next">Suivant</string>
+    <string name="reminder_set">Définir</string>
+    <string name="reminder_clear">Supprimer</string>
     <string name="list_shared_unknown">Partagée avec vous</string>
     <string name="list_created">Créée le %1$s</string>
     <string name="list_updated">Mise à jour le %1$s</string>

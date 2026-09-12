@@ -33,6 +33,10 @@
     <string name="reminder_notification_text">Tijd om boodschappen te doen</string>
     <string name="reminder_done">Klaar</string>
     <string name="reminder_postpone">1 uur uitstellen</string>
+    <string name="reminder_title">Herinnering</string>
+    <string name="reminder_next">Volgende</string>
+    <string name="reminder_set">Instellen</string>
+    <string name="reminder_clear">Verwijderen</string>
     <string name="list_shared_unknown">Met jou gedeeld</string>
     <string name="list_created">Gemaakt op %1$s</string>
     <string name="list_updated">Bijgewerkt op %1$s</string>

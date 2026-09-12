@@ -33,6 +33,10 @@
     <string name="reminder_notification_text">Ώρα για ψώνια</string>
     <string name="reminder_done">Έγινε</string>
     <string name="reminder_postpone">Αναβολή 1 ώρα</string>
+    <string name="reminder_title">Υπενθύμιση</string>
+    <string name="reminder_next">Επόμενο</string>
+    <string name="reminder_set">Ορισμός</string>
+    <string name="reminder_clear">Αφαίρεση</string>
     <string name="list_shared_unknown">Κοινοποιήθηκε σε εσάς</string>
     <string name="list_created">Δημιουργήθηκε στις %1$s</string>
     <string name="list_updated">Ενημερώθηκε στις %1$s</string>

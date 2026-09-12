@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
@@ -88,6 +89,7 @@ fun ListDetailScreen(
     var pendingTick by remember { mutableStateOf<ItemWithProduct?>(null) }
     var scanSourceOpen by remember { mutableStateOf(false) }
     var settling by remember { mutableStateOf<ScannedItem?>(null) }
+    var settingReminder by remember { mutableStateOf(false) }
     val barcode by viewModel.barcode.collectAsStateWithLifecycle()
 
     val scan by viewModel.scan.collectAsStateWithLifecycle()
@@ -141,6 +143,12 @@ fun ListDetailScreen(
                 actions = {
                     val context = LocalContext.current
                     val money = LocalMoneyFormat.current
+                    IconButton(onClick = { settingReminder = true }) {
+                        Icon(
+                            Icons.Default.Notifications,
+                            contentDescription = stringResource(R.string.reminder_title),
+                        )
+                    }
                     IconButton(
                         onClick = {
                             sendText(context, entry.list.name, viewModel.shareText(entry, money))
@@ -439,6 +447,21 @@ fun ListDetailScreen(
                 viewModel.updateItem(row.item, name, quantity, priceCents)
                 editingItem = null
             },
+        )
+    }
+
+    if (settingReminder) {
+        ReminderDialog(
+            remindAt = entry.list.remindAt,
+            onSet = { at ->
+                viewModel.setReminder(entry.list.id, at)
+                settingReminder = false
+            },
+            onClear = {
+                viewModel.setReminder(entry.list.id, 0L)
+                settingReminder = false
+            },
+            onDismiss = { settingReminder = false },
         )
     }
 }
