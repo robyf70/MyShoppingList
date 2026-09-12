@@ -30,17 +30,19 @@ MainActivity.kt        Activity + ShoppingApp() root composable (owns the back s
 ShoppingViewModel.kt   the app's only ViewModel; holds the DAO and SettingsStore
 Money.kt               price/quantity parsing and formatting
 data/
-  Entities.kt          ShoppingList (uuid, colorArgb, updatedAt, sharedBy) + Product + Item @Entity,
+  Entities.kt          ShoppingList (uuid, colorArgb, updatedAt, sharedBy, remindAt) + Product + Item @Entity,
                        ItemWithProduct, ListWithItems, ProductWithUsage, total helpers
   ShoppingDao.kt       @Dao, returns Flows for reads
-  AppDatabase.kt       @Database(version = 7) + getInstance() + MIGRATION_1_2, MIGRATION_2_3,
-                       MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
+  AppDatabase.kt       @Database(version = 8) + getInstance() + MIGRATION_1_2, MIGRATION_2_3,
+                       MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8
   Settings.kt          Settings data class + SharedPreferences-backed SettingsStore
   ShareCodec.kt        encode/decode a list into an `msl:<version>:` share token
   ProductSuggestions.kt  filterProducts / isSettledOn — pure, unit-tested
   Budget.kt            spentCents / remainingCents / overspendCents — pure, unit-tested
   Updates.kt           GitHub release lookup, DownloadManager download, install intent
   Countries.kt         the currency picker's country list, collated for the reader's locale
+  Reminders.kt         reminderAt (pure), schedule/cancel via AlarmManager, the notification,
+                       ReminderReceiver (fire / done / postpone) and BootReceiver
 ui/
   ListsScreen.kt       list overview, EmptyState
   ListDetailScreen.kt  items within one list
@@ -57,6 +59,7 @@ ui/
   ConfirmDeleteDialog.kt  shared delete confirmation, gated by Settings.confirmDelete
   CurrencyDialog.kt    country picker for the currency, "Automatic" first
   NameDialog.kt        the name that signs a shared list; blank sends them unsigned
+  ReminderDialog.kt    the day, then the time, for a list's reminder; Clear when one is set
   theme/               Material 3 theme (from the Android Studio template)
 ```
 
@@ -117,6 +120,20 @@ capped at `ShareCodec.MAX_SHARED_BY` on the way in — a chat message is untrust
 `SettingsStore.setUserName`, so both ends agree. The card renders the pair through
 `DateUtils.formatDateTime`, so no date layout is hand-written, and drops the update half when a
 list has never been touched since it was made.
+
+**A list's reminder is one column, and the alarm follows it.** `ShoppingList.remindAt` is epoch
+millis, 0 for none, and every change to it goes through `ShoppingViewModel.setReminder` or
+`ReminderReceiver`, each of which writes the row and then arms or cancels the alarm — so the two
+cannot disagree, and `BootReceiver` can rebuild every alarm from the table alone after a reboot.
+The alarm is `AlarmManager.setAlarmClock`: exact, awake through Doze, and shown in the shade as a
+pending alarm. `USE_EXACT_ALARM` covers Android 13+ at install; on 12 the revocable
+`SCHEDULE_EXACT_ALARM` applies and a withdrawal degrades to a ten-minute `setWindow` rather than
+losing the reminder. The notification is heads-up because its channel is `IMPORTANCE_HIGH`; sound
+is the channel's, set in the system's settings, which the Settings row opens. Done and Postpone are
+broadcasts to the receiver; swiping the notification away is Done, so nothing lingers silently
+overdue, while a body tap only opens the list and leaves it standing. The date picker reports a
+day as midnight UTC and the time picker a wall-clock time, and `reminderAt` is the one place that
+composes them in the device's zone.
 
 **A list is shared as a copy with a stable identity.** `ShoppingList.uuid` travels with the share, so re-importing a list the device already has replaces it rather than duplicating it; merge granularity is the whole list, last writer wins. The payload is gzipped JSON behind an `msl:<version>:` token, carried in the **fragment** of a link — `share_link_url` — so it never reaches a server, and the readable list above it stands on its own for someone without the app. Items travel by product *name* — ids are local to a device.
 
@@ -211,6 +228,10 @@ Both are proposals: they start marked and pulsing on `ScanPickScreen` until the 
 tap on the price box takes the price off the item.
 
 `ShareCodecTest.kt` covers `ShareCodec`. Every malformed input must decode to null — a share arrives from a messenger, so it is untrusted, and a partial import is worse than no import.
+
+`RemindersTest.kt` covers `reminderAt`. The date picker speaks UTC midnight and the time picker
+wall-clock time; composed in the wrong zone, a reminder is silently an offset late, which is a
+reminder that never worked.
 
 UI and Room wiring are verified by running the app, not by tests. If you add a Flow-level test, add Turbine at that point.
 
