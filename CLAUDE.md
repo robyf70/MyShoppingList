@@ -127,9 +127,11 @@ millis, 0 for none, and every change to it goes through `ShoppingViewModel.setRe
 cannot disagree, and `BootReceiver` can rebuild every alarm from the table alone after a reboot.
 The alarm is `AlarmManager.setAlarmClock`: exact, awake through Doze, and shown in the shade as a
 pending alarm. `USE_EXACT_ALARM` covers Android 13+ at install; on 12 the revocable
-`SCHEDULE_EXACT_ALARM` applies: withdrawing it cancels every armed alarm, which is why
-`BootReceiver` also listens for the permission-change broadcast, and from then on
-`setAndAllowWhileIdle` fires the reminder late by minutes rather than never. The notification is
+`SCHEDULE_EXACT_ALARM` applies, and withdrawing it silently deletes every armed alarm — Android
+announces the re-grant, not the withdrawal. An app update and a force-stop delete them too. So
+`rearmReminders` rebuilds every alarm from the table at boot, on `MY_PACKAGE_REPLACED`, on the
+re-grant broadcast, and at every launch from `ShoppingViewModel`; without exact scheduling,
+`setAndAllowWhileIdle` fires late by minutes rather than never. The notification is
 heads-up because its channel is `IMPORTANCE_HIGH`; sound is the channel's, set in the system's
 settings, which the Settings row opens. Done and Postpone are
 broadcasts to the receiver; swiping the notification away is Done, so nothing lingers silently

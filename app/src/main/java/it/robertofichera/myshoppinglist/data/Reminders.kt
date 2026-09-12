@@ -159,26 +159,36 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 }
 
+/** Arms every list's reminder from the table; the receiver and the app's launch both call this. */
+suspend fun rearmReminders(context: Context, dao: ShoppingDao) {
+    dao.listsWithReminder().forEach { scheduleReminder(context, it) }
+}
+
 /**
- * Alarms do not survive a reboot, and withdrawing exact scheduling on Android 12 cancels every
- * armed one; either way every pending reminder is armed again from the table, and one already
- * due fires at once.
+ * Re-arms every pending reminder from the table. A reboot, an update of the app, and withdrawing
+ * exact scheduling on Android 12 each delete the app's alarms; the first two are announced, the
+ * third only once the permission is granted again, and `ShoppingViewModel` re-arms at every
+ * launch to cover the gap between. A reminder already due fires at once.
  */
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED &&
-            intent.action != AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED
-        ) {
-            return
-        }
+        if (intent.action !in ACTIONS) return
         val dao = AppDatabase.getInstance(context).shoppingDao()
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                dao.listsWithReminder().forEach { scheduleReminder(context, it) }
+                rearmReminders(context, dao)
             } finally {
                 pending.finish()
             }
         }
+    }
+
+    private companion object {
+        val ACTIONS = setOf(
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_MY_PACKAGE_REPLACED,
+            AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED,
+        )
     }
 }

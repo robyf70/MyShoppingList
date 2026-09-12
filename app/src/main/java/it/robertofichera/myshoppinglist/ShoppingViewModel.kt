@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.withTransaction
 import it.robertofichera.myshoppinglist.data.AppDatabase
 import it.robertofichera.myshoppinglist.data.cancelReminder
+import it.robertofichera.myshoppinglist.data.rearmReminders
 import it.robertofichera.myshoppinglist.data.scheduleReminder
 import it.robertofichera.myshoppinglist.data.Item
 import it.robertofichera.myshoppinglist.data.ListWithItems
@@ -202,6 +203,9 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         checkForUpdate(force = false)
+        // Alarms are lost to an app update, a force-stop, or Android 12 withdrawing exact
+        // scheduling; the table is the truth, so every launch arms what it holds.
+        viewModelScope.launch { rearmReminders(getApplication(), dao) }
     }
 
     val lists = dao.observeLists()

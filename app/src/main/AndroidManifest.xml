@@ -93,15 +93,17 @@
             android:exported="false" />
 
         <!--
-          Re-arms every pending reminder: alarms do not survive a reboot, and on Android 12
-          withdrawing exact scheduling cancels them. Both broadcasts come from the system, which
-          reaches a receiver that is not exported.
+          Re-arms every pending reminder from the database. A reboot, an update of the app, and
+          withdrawing exact scheduling on Android 12 each delete its alarms; the system announces
+          the first two, and the third only once the permission is granted again. All three
+          broadcasts come from the system, which reaches a receiver that is not exported.
         -->
         <receiver
             android:name=".data.BootReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
