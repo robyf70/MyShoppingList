@@ -219,17 +219,26 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
 
     fun observeList(listId: Long): Flow<ListWithItems?> = dao.observeList(listId)
 
-    fun addList(name: String, budgetCents: Long, colorArgb: Int) = viewModelScope.launch {
-        dao.insertList(
-            ShoppingList(name = name.trim(), budgetCents = budgetCents, colorArgb = colorArgb),
-        )
-    }
+    fun addList(name: String, budgetCents: Long, colorArgb: Int, remindAt: Long) =
+        viewModelScope.launch {
+            val id = dao.insertList(
+                ShoppingList(
+                    name = name.trim(),
+                    budgetCents = budgetCents,
+                    colorArgb = colorArgb,
+                    remindAt = remindAt,
+                ),
+            )
+            if (remindAt > 0) arm(id, remindAt)
+        }
 
+    /** The alarm is touched only when the reminder changed, so renaming leaves a showing notification alone. */
     fun updateList(
         list: ShoppingList,
         name: String,
         budgetCents: Long,
         colorArgb: Int,
+        remindAt: Long,
     ) = viewModelScope.launch {
         dao.updateList(
             list.copy(
@@ -237,8 +246,10 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
                 budgetCents = budgetCents,
                 colorArgb = colorArgb,
                 updatedAt = System.currentTimeMillis(),
+                remindAt = remindAt,
             ),
         )
+        if (remindAt != list.remindAt) arm(list.id, remindAt)
     }
 
     fun deleteList(list: ShoppingList) = viewModelScope.launch {
@@ -253,6 +264,10 @@ class ShoppingViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun setReminder(listId: Long, at: Long) = viewModelScope.launch {
         dao.setRemindAt(listId, at, System.currentTimeMillis())
+        arm(listId, at)
+    }
+
+    private suspend fun arm(listId: Long, at: Long) {
         val app = getApplication<Application>()
         cancelReminder(app, listId)
         if (at > 0) dao.getList(listId)?.let { scheduleReminder(app, it) }

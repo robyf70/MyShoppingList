@@ -120,8 +120,8 @@ fun ListsScreen(
             title = stringResource(R.string.list_new),
             showBudget = budgetEnabled,
             onDismiss = { showNewDialog = false },
-            onConfirm = { name, budgetCents, colorArgb ->
-                viewModel.addList(name, budgetCents, colorArgb)
+            onConfirm = { name, budgetCents, colorArgb, remindAt ->
+                viewModel.addList(name, budgetCents, colorArgb, remindAt)
                 showNewDialog = false
             },
         )
@@ -133,10 +133,11 @@ fun ListsScreen(
             initialName = list.name,
             initialBudgetCents = list.budgetCents,
             initialColorArgb = list.colorArgb,
+            initialRemindAt = list.remindAt,
             showBudget = budgetEnabled,
             onDismiss = { editing = null },
-            onConfirm = { name, budgetCents, colorArgb ->
-                viewModel.updateList(list, name, budgetCents, colorArgb)
+            onConfirm = { name, budgetCents, colorArgb, remindAt ->
+                viewModel.updateList(list, name, budgetCents, colorArgb, remindAt)
                 editing = null
             },
         )
@@ -269,7 +270,7 @@ private fun timestampLine(createdAt: Long, updatedAt: Long): String {
 
 /** The platform decides the order of the parts and the separators, so no locale is second-guessed. */
 @Composable
-private fun formatWhen(millis: Long): String = DateUtils.formatDateTime(
+internal fun formatWhen(millis: Long): String = DateUtils.formatDateTime(
     LocalContext.current,
     millis,
     DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_ALL,
