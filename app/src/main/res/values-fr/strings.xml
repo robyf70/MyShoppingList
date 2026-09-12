@@ -37,6 +37,9 @@
     <string name="reminder_next">Suivant</string>
     <string name="reminder_set">Définir</string>
     <string name="reminder_clear">Supprimer</string>
+    <string name="list_reminder">Rappel %1$s</string>
+    <string name="settings_reminder_sound">Son du rappel</string>
+    <string name="settings_reminder_sound_desc">Son et vibration, dans les paramètres de notification du système</string>
     <string name="list_shared_unknown">Partagée avec vous</string>
     <string name="list_created">Créée le %1$s</string>
     <string name="list_updated">Mise à jour le %1$s</string>

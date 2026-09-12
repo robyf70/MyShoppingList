@@ -37,6 +37,9 @@
     <string name="reminder_next">Avanti</string>
     <string name="reminder_set">Imposta</string>
     <string name="reminder_clear">Rimuovi</string>
+    <string name="list_reminder">Promemoria %1$s</string>
+    <string name="settings_reminder_sound">Suono del promemoria</string>
+    <string name="settings_reminder_sound_desc">Suono e vibrazione, nelle impostazioni di notifica del sistema</string>
     <string name="list_shared_unknown">Condivisa con te</string>
     <string name="list_created">Creata il %1$s</string>
     <string name="list_updated">Aggiornata il %1$s</string>

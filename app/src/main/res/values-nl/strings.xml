@@ -37,6 +37,9 @@
     <string name="reminder_next">Volgende</string>
     <string name="reminder_set">Instellen</string>
     <string name="reminder_clear">Verwijderen</string>
+    <string name="list_reminder">Herinnering %1$s</string>
+    <string name="settings_reminder_sound">Herinneringsgeluid</string>
+    <string name="settings_reminder_sound_desc">Geluid en trillen, in de meldingsinstellingen van het systeem</string>
     <string name="list_shared_unknown">Met jou gedeeld</string>
     <string name="list_created">Gemaakt op %1$s</string>
     <string name="list_updated">Bijgewerkt op %1$s</string>

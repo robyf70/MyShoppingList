@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -213,6 +214,7 @@ private fun ListCard(
                     )
                 }
                 CaptionLine(timestampLine(entry.list.createdAt, entry.list.updatedAt))
+                if (entry.list.remindAt > 0) ReminderLine(entry.list.remindAt)
                 if (budgetEnabled && entry.list.budgetCents > 0) {
                     BudgetLine(entry.list.budgetCents, entry.spentCents)
                 }
@@ -280,6 +282,26 @@ private fun CaptionLine(text: String) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+}
+
+/** A reminder never answered stays on the card in the error colour, so the overview says so. */
+@Composable
+private fun ReminderLine(remindAt: Long) {
+    val overdue = remindAt < System.currentTimeMillis()
+    val color = if (overdue) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            Icons.Default.Notifications,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.padding(end = 4.dp).size(14.dp),
+        )
+        Text(
+            stringResource(R.string.list_reminder, formatWhen(remindAt)),
+            style = MaterialTheme.typography.bodySmall,
+            color = color,
+        )
+    }
 }
 
 /** Once the budget is breached "left" would read as a negative, so the overspend gets its own wording. */

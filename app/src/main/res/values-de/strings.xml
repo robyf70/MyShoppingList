@@ -37,6 +37,9 @@
     <string name="reminder_next">Weiter</string>
     <string name="reminder_set">Festlegen</string>
     <string name="reminder_clear">Entfernen</string>
+    <string name="list_reminder">Erinnerung %1$s</string>
+    <string name="settings_reminder_sound">Erinnerungston</string>
+    <string name="settings_reminder_sound_desc">Ton und Vibration, in den Benachrichtigungseinstellungen des Systems</string>
     <string name="list_shared_unknown">Mit dir geteilt</string>
     <string name="list_created">Erstellt am %1$s</string>
     <string name="list_updated">Aktualisiert am %1$s</string>

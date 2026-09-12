@@ -38,6 +38,9 @@
     <string name="reminder_next">Tovább</string>
     <string name="reminder_set">Beállítás</string>
     <string name="reminder_clear">Törlés</string>
+    <string name="list_reminder">Emlékeztető: %1$s</string>
+    <string name="settings_reminder_sound">Emlékeztető hangja</string>
+    <string name="settings_reminder_sound_desc">Hang és rezgés, a rendszer értesítési beállításaiban</string>
     <string name="list_shared_unknown">Megosztva veled</string>
     <string name="list_created">Létrehozva: %1$s</string>
     <string name="list_updated">Frissítve: %1$s</string>

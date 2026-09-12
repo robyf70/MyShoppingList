@@ -40,6 +40,9 @@
     <string name="reminder_next">Dalej</string>
     <string name="reminder_set">Ustaw</string>
     <string name="reminder_clear">Usuń</string>
+    <string name="list_reminder">Przypomnienie %1$s</string>
+    <string name="settings_reminder_sound">Dźwięk przypomnienia</string>
+    <string name="settings_reminder_sound_desc">Dźwięk i wibracje, w ustawieniach powiadomień systemu</string>
     <string name="list_shared_unknown">Udostępniona Tobie</string>
     <string name="list_created">Utworzono %1$s</string>
     <string name="list_updated">Zaktualizowano %1$s</string>

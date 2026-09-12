@@ -44,6 +44,9 @@
     <string name="reminder_next">Next</string>
     <string name="reminder_set">Set</string>
     <string name="reminder_clear">Clear</string>
+    <string name="list_reminder">Reminder %1$s</string>
+    <string name="settings_reminder_sound">Reminder sound</string>
+    <string name="settings_reminder_sound_desc">Sound and vibration, in the system\'s notification settings</string>
     <string name="list_shared_unknown">Shared with you</string>
     <string name="list_created">Created %1$s</string>
     <string name="list_updated">Updated %1$s</string>

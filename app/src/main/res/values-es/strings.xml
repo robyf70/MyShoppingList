@@ -37,6 +37,9 @@
     <string name="reminder_next">Siguiente</string>
     <string name="reminder_set">Establecer</string>
     <string name="reminder_clear">Quitar</string>
+    <string name="list_reminder">Recordatorio %1$s</string>
+    <string name="settings_reminder_sound">Sonido del recordatorio</string>
+    <string name="settings_reminder_sound_desc">Sonido y vibración, en los ajustes de notificaciones del sistema</string>
     <string name="list_shared_unknown">Compartida contigo</string>
     <string name="list_created">Creada el %1$s</string>
     <string name="list_updated">Actualizada el %1$s</string>

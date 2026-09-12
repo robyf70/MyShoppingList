@@ -37,6 +37,9 @@
     <string name="reminder_next">Avançar</string>
     <string name="reminder_set">Definir</string>
     <string name="reminder_clear">Remover</string>
+    <string name="list_reminder">Lembrete %1$s</string>
+    <string name="settings_reminder_sound">Som do lembrete</string>
+    <string name="settings_reminder_sound_desc">Som e vibração, nas configurações de notificação do sistema</string>
     <string name="list_shared_unknown">Compartilhada com você</string>
     <string name="list_created">Criada em %1$s</string>
     <string name="list_updated">Atualizada em %1$s</string>

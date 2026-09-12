@@ -40,9 +40,11 @@ import it.robertofichera.myshoppinglist.R
 import it.robertofichera.myshoppinglist.ui.theme.Green40
 import it.robertofichera.myshoppinglist.ui.theme.Green80
 import it.robertofichera.myshoppinglist.UpdateState
+import it.robertofichera.myshoppinglist.data.REMINDER_CHANNEL
 import it.robertofichera.myshoppinglist.data.Release
 import it.robertofichera.myshoppinglist.data.Settings
 import it.robertofichera.myshoppinglist.data.countryChoice
+import it.robertofichera.myshoppinglist.data.ensureReminderChannel
 import it.robertofichera.myshoppinglist.phoneCountry
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,6 +133,22 @@ fun SettingsScreen(
                 // A device with no browser would otherwise throw ActivityNotFoundException.
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
             }
+            NavigationRow(
+                title = stringResource(R.string.settings_reminder_sound),
+                subtitle = stringResource(R.string.settings_reminder_sound_desc),
+                onClick = {
+                    // The channel must exist before its settings page can be opened.
+                    ensureReminderChannel(context)
+                    runCatching {
+                        context.startActivity(
+                            Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                .putExtra(android.provider.Settings.EXTRA_CHANNEL_ID, REMINDER_CHANNEL),
+                        )
+                    }
+                },
+            )
+            HorizontalDivider()
             val appName = stringResource(R.string.app_name)
             // The install page, not the releases list: it resolves the APK and says how to install it.
             val appPageUrl = stringResource(R.string.app_page_url)
