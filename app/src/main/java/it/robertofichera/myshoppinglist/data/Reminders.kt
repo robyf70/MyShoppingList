@@ -30,10 +30,7 @@ const val REMINDER_CHANNEL = "reminders"
 private const val ACTION_FIRE = "it.robertofichera.myshoppinglist.REMINDER_FIRE"
 private const val ACTION_DONE = "it.robertofichera.myshoppinglist.REMINDER_DONE"
 private const val ACTION_POSTPONE = "it.robertofichera.myshoppinglist.REMINDER_POSTPONE"
-private const val EXTRA_LIST_ID = "listId"
-
-/** How late a reminder may run when exact scheduling has been withdrawn on Android 12. */
-private const val WINDOW_MILLIS = 10 * 60 * 1000L
+private const val EXTRA_ID = "listId"
 
 /**
  * The instant a reminder fires. [dateUtcMillis] is the picked day as Material's date picker
@@ -49,7 +46,9 @@ fun reminderAt(dateUtcMillis: Long, hour: Int, minute: Int, zone: ZoneId): Long 
 /**
  * Arms the list's reminder, replacing any earlier one; a list with none set arms nothing.
  * A [ShoppingList.remindAt] already in the past fires at once, which is what a reminder that
- * came due while the phone was off should do.
+ * came due while the phone was off should do. Without exact scheduling — withdrawn by the user
+ * on Android 12 — the alarm is inexact but still fires inside Doze, so a reminder is late by
+ * minutes rather than held until the phone wakes.
  */
 fun scheduleReminder(context: Context, list: ShoppingList) {
     if (list.remindAt <= 0) return
@@ -61,7 +60,7 @@ fun scheduleReminder(context: Context, list: ShoppingList) {
             fire,
         )
     } else {
-        alarms.setWindow(AlarmManager.RTC_WAKEUP, list.remindAt, WINDOW_MILLIS, fire)
+        alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, list.remindAt, fire)
     }
 }
 
@@ -90,7 +89,7 @@ private fun receiverIntent(context: Context, action: String, listId: Long): Pend
         listId.toInt(),
         Intent(context, ReminderReceiver::class.java)
             .setAction(action)
-            .putExtra(EXTRA_LIST_ID, listId),
+            .putExtra(EXTRA_ID, listId),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
@@ -133,7 +132,7 @@ private fun showReminder(context: Context, list: ShoppingList) {
 /** Every action reads or writes the database, so the receiver stays alive under goAsync until it is done. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val listId = intent.getLongExtra(EXTRA_LIST_ID, 0L)
+        val listId = intent.getLongExtra(EXTRA_ID, 0L)
         if (listId == 0L) return
         val dao = AppDatabase.getInstance(context).shoppingDao()
         val pending = goAsync()
@@ -160,10 +159,18 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 }
 
-/** Alarms do not survive a reboot; every pending reminder is armed again, and one already due fires at once. */
+/**
+ * Alarms do not survive a reboot, and withdrawing exact scheduling on Android 12 cancels every
+ * armed one; either way every pending reminder is armed again from the table, and one already
+ * due fires at once.
+ */
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
+        if (intent.action != Intent.ACTION_BOOT_COMPLETED &&
+            intent.action != AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED
+        ) {
+            return
+        }
         val dao = AppDatabase.getInstance(context).shoppingDao()
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {

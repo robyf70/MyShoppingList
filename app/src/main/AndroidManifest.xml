@@ -9,7 +9,7 @@
     <!--
       Reminders. USE_EXACT_ALARM is granted at install from Android 13; on Android 12 the exact-alarm
       permission is SCHEDULE_EXACT_ALARM, granted by default but revocable, and scheduleReminder falls
-      back to an inexact window when it has been withdrawn.
+      back to an inexact alarm that still fires in Doze when it has been withdrawn.
     -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission
@@ -92,12 +92,17 @@
             android:name=".data.ReminderReceiver"
             android:exported="false" />
 
-        <!-- Alarms do not survive a reboot; this arms every pending reminder again. -->
+        <!--
+          Re-arms every pending reminder: alarms do not survive a reboot, and on Android 12
+          withdrawing exact scheduling cancels them. Both broadcasts come from the system, which
+          reaches a receiver that is not exported.
+        -->
         <receiver
             android:name=".data.BootReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
     </application>
