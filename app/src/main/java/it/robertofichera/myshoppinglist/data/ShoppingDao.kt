@@ -35,6 +35,16 @@ interface ShoppingDao {
     @Query("SELECT * FROM shopping_lists WHERE uuid = :uuid LIMIT 1")
     suspend fun findListByUuid(uuid: String): ShoppingList?
 
+    /** Setting or clearing the reminder counts as touching the list. */
+    @Query("UPDATE shopping_lists SET remindAt = :at, updatedAt = :now WHERE id = :listId")
+    suspend fun setRemindAt(listId: Long, at: Long, now: Long)
+
+    @Query("SELECT * FROM shopping_lists WHERE id = :listId")
+    suspend fun getList(listId: Long): ShoppingList?
+
+    @Query("SELECT * FROM shopping_lists WHERE remindAt > 0")
+    suspend fun listsWithReminder(): List<ShoppingList>
+
     @Query("DELETE FROM items WHERE listId = :listId")
     suspend fun deleteItemsOfList(listId: Long)
 

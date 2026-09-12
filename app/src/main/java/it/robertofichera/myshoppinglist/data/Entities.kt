@@ -27,6 +27,8 @@ data class ShoppingList(
      * when they have set none, so a share always marks the list even when it is unsigned.
      */
     val sharedBy: String? = null,
+    /** When to remind about this list, as epoch millis; 0 means no reminder is set. */
+    @ColumnInfo(defaultValue = "0") val remindAt: Long = 0,
 )
 
 /** A product the user can put on any list. [defaultPriceCents] is the last price they entered for it. */
