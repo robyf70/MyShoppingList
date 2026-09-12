@@ -6,6 +6,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!--
+      Reminders. USE_EXACT_ALARM is granted at install from Android 13; on Android 12 the exact-alarm
+      permission is SCHEDULE_EXACT_ALARM, granted by default but revocable, and scheduleReminder falls
+      back to an inexact window when it has been withdrawn.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -74,6 +86,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Fires a reminder, and takes Done / Postpone from its notification. -->
+        <receiver
+            android:name=".data.ReminderReceiver"
+            android:exported="false" />
+
+        <!-- Alarms do not survive a reboot; this arms every pending reminder again. -->
+        <receiver
+            android:name=".data.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

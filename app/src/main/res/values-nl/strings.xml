@@ -29,6 +29,10 @@
     <string name="list_budget_over">%1$s boven het budget van %2$s</string>
     <string name="list_shared_badge">Gedeelde lijst</string>
     <string name="list_shared_by">Gedeeld door %1$s</string>
+    <string name="reminder_channel">Herinneringen</string>
+    <string name="reminder_notification_text">Tijd om boodschappen te doen</string>
+    <string name="reminder_done">Klaar</string>
+    <string name="reminder_postpone">1 uur uitstellen</string>
     <string name="list_shared_unknown">Met jou gedeeld</string>
     <string name="list_created">Gemaakt op %1$s</string>
     <string name="list_updated">Bijgewerkt op %1$s</string>

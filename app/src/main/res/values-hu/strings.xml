@@ -30,6 +30,10 @@
     <string name="list_budget_over">%1$s a(z) %2$s kereten felül</string>
     <string name="list_shared_badge">Megosztott lista</string>
     <string name="list_shared_by">Megosztotta: %1$s</string>
+    <string name="reminder_channel">Emlékeztetők</string>
+    <string name="reminder_notification_text">Ideje bevásárolni</string>
+    <string name="reminder_done">Kész</string>
+    <string name="reminder_postpone">Halasztás 1 órával</string>
     <string name="list_shared_unknown">Megosztva veled</string>
     <string name="list_created">Létrehozva: %1$s</string>
     <string name="list_updated">Frissítve: %1$s</string>

@@ -73,8 +73,10 @@ class MainActivity : ComponentActivity() {
         viewModel.offerImport(text)
     }
 
-    private companion object {
-        const val EXTRA_OFFERED = "it.robertofichera.myshoppinglist.OFFERED"
+    companion object {
+        /** The list a notification tap wants opened. */
+        const val EXTRA_LIST_ID = "it.robertofichera.myshoppinglist.LIST_ID"
+        private const val EXTRA_OFFERED = "it.robertofichera.myshoppinglist.OFFERED"
     }
 }
 

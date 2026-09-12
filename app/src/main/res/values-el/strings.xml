@@ -29,6 +29,10 @@
     <string name="list_budget_over">%1$s πάνω από τον προϋπολογισμό των %2$s</string>
     <string name="list_shared_badge">Κοινόχρηστη λίστα</string>
     <string name="list_shared_by">Κοινοποιήθηκε από %1$s</string>
+    <string name="reminder_channel">Υπενθυμίσεις</string>
+    <string name="reminder_notification_text">Ώρα για ψώνια</string>
+    <string name="reminder_done">Έγινε</string>
+    <string name="reminder_postpone">Αναβολή 1 ώρα</string>
     <string name="list_shared_unknown">Κοινοποιήθηκε σε εσάς</string>
     <string name="list_created">Δημιουργήθηκε στις %1$s</string>
     <string name="list_updated">Ενημερώθηκε στις %1$s</string>

@@ -29,6 +29,10 @@
     <string name="list_budget_over">%1$s über dem Budget von %2$s</string>
     <string name="list_shared_badge">Geteilte Liste</string>
     <string name="list_shared_by">Geteilt von %1$s</string>
+    <string name="reminder_channel">Erinnerungen</string>
+    <string name="reminder_notification_text">Zeit zum Einkaufen</string>
+    <string name="reminder_done">Erledigt</string>
+    <string name="reminder_postpone">1 Std. später</string>
     <string name="list_shared_unknown">Mit dir geteilt</string>
     <string name="list_created">Erstellt am %1$s</string>
     <string name="list_updated">Aktualisiert am %1$s</string>
